@@ -3,6 +3,7 @@
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Field, Placeholder, PageHead } from '../components/ui.jsx';
+import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -43,18 +44,9 @@ export function About(){
           <Glass strong className="rounded-[30px] p-8">
             <h3 className="text-2xl font-medium lowercase">get in touch</h3>
             <p className="mt-2 text-[14px] text-white/55">Booking a group, party or corporate day? Tell us what you need.</p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <Field label="your name" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="First & last" /></Field>
-              <Field label="phone" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="07…" /></Field>
+            <div className="mt-6">
+              <EnquiryForm cta="send enquiry" placeholder="e.g. birthday party for 14 kids on a Saturday…" />
             </div>
-            <div className="mt-4">
-              <Field label="email" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@email.com" /></Field>
-            </div>
-            <label className="mt-4 block">
-              <span className="mb-2 block text-[12px] uppercase tracking-wide text-white/45">message</span>
-              <textarea rows="4" className="glass glass-soft w-full rounded-2xl px-4 py-3 text-[14px] outline-none placeholder:text-white/35" placeholder="e.g. birthday party for 14 kids on a Saturday…"></textarea>
-            </label>
-            <div className="mt-5"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>send enquiry</Btn></div>
           </Glass>
 
           <aside className="space-y-4">

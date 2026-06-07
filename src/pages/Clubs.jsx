@@ -4,6 +4,7 @@ import { I } from '../lib/icons.jsx';
 import { CONTACT, PITCHES, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Field, PageHead } from '../components/ui.jsx';
+import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -36,13 +37,7 @@ export function Clubs(){
           <aside id="club-enquiry">
             <Glass strong className="rounded-[28px] p-7">
               <div className="text-[12px] uppercase tracking-wide text-white/45">get in touch</div>
-              <form onSubmit={e=>e.preventDefault()} className="mt-4 grid gap-3.5">
-                <Field icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="Name" /></Field>
-                <Field icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="Email" /></Field>
-                <Field icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="Contact number" /></Field>
-                <textarea rows="3" className="glass glass-soft w-full rounded-2xl px-4 py-3 text-[14px] outline-none placeholder:text-white/35" placeholder="Send a message — how many teams & when?"></textarea>
-                <Btn kind="primary" size="lg" type="submit" className="w-full" iconEnd={I.arrow({})}>get in touch</Btn>
-              </form>
+              <div className="mt-4"><EnquiryForm cta="get in touch" labels={false} placeholder="Send a message — how many teams & when?" /></div>
               <p className="mt-3 text-center text-[12px] text-white/40">or call {CONTACT.phone}</p>
             </Glass>
           </aside>

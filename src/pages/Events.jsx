@@ -3,6 +3,7 @@
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Tag, Field, PageHead } from '../components/ui.jsx';
+import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -85,18 +86,7 @@ export function Events(){
               <h2 className="hero-title text-3xl md:text-4xl font-semibold lowercase">get in touch</h2>
               <p className="mt-3 text-[15px] leading-relaxed text-white/60">Call <span className="accent-text">{CONTACT.phone}</span> or fill in the form and one of the team will be in touch to build your perfect event.</p>
             </div>
-            <form onSubmit={e=>e.preventDefault()} className="grid gap-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="name" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="Your name" /></Field>
-                <Field label="contact number" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="07…" /></Field>
-              </div>
-              <Field label="email" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@email.com" /></Field>
-              <label className="block">
-                <span className="mb-2 block text-[12px] uppercase tracking-wide text-white/45">tell us about your event</span>
-                <textarea rows="3" className="glass glass-soft w-full rounded-2xl px-4 py-3 text-[14px] outline-none placeholder:text-white/35" placeholder="e.g. 24 staff, tournament + food, a Friday afternoon…"></textarea>
-              </label>
-              <Btn kind="primary" size="lg" type="submit" className="w-full" iconEnd={I.arrow({})}>get in touch</Btn>
-            </form>
+            <EnquiryForm cta="get in touch" placeholder="e.g. 24 staff, tournament + food, a Friday afternoon…" />
           </div>
         </Glass>
       </section>

@@ -135,6 +135,27 @@ export function TopNav(){
   );
 }
 
+function Newsletter(){
+  const [email,setEmail] = useState('');
+  const [sent,setSent] = useState(false);
+  function submit(e){ e.preventDefault(); if (!email.trim()) return; setSent(true); }
+  return (
+    <div className="mt-6 max-w-xs">
+      <div className="text-[11px] uppercase tracking-[.2em] text-white/40">stay in the loop</div>
+      {sent ? (
+        <div className="mt-3 flex items-center gap-2 text-[13px] accent-text"><span style={{width:16,height:16}}>{I.check({})}</span> you’re subscribed — see you on the pitch</div>
+      ) : (
+        <form className="mt-3 flex items-center gap-2" onSubmit={submit}>
+          <span className="glass glass-soft flex h-11 flex-1 items-center rounded-full px-4">
+            <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="your email" />
+          </span>
+          <Btn kind="primary" type="submit" className="h-11 w-11 !px-0" icon={I.arrow({})} aria-label="subscribe" />
+        </form>
+      )}
+    </div>
+  );
+}
+
 export function Footer(){
   return (
     <footer className="mt-28 px-6 pb-10">
@@ -145,15 +166,7 @@ export function Footer(){
               <Logo h={40} />
               <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-white/55">{CONTACT.strap}. 4G pitches, LED floodlights & rebound boards — open to all.</p>
               {/* newsletter signup */}
-              <div className="mt-6 max-w-xs">
-                <div className="text-[11px] uppercase tracking-[.2em] text-white/40">stay in the loop</div>
-                <form className="mt-3 flex items-center gap-2" onSubmit={e=>e.preventDefault()}>
-                  <span className="glass glass-soft flex h-11 flex-1 items-center rounded-full px-4">
-                    <input type="email" required className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="your email" />
-                  </span>
-                  <Btn kind="primary" type="submit" className="h-11 w-11 !px-0" icon={I.arrow({})} aria-label="subscribe" />
-                </form>
-              </div>
+              <Newsletter />
               <div className="mt-6 flex items-center gap-2.5">
                 <span className="glass grid h-10 w-10 place-items-center rounded-full text-white/70">f</span>
                 <span className="glass grid h-10 w-10 place-items-center rounded-full text-white/70">ig</span>
