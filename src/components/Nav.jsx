@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { useRoute } from '../lib/router.js';
+import { useStore, currentUser } from '../lib/store.js';
 import { Logo, Glass, Btn } from './ui.jsx';
 
 /* desktop pill — mirrors the live site's top-level menu */
@@ -74,6 +75,8 @@ function NavItem({ l, name }){
 
 export function TopNav(){
   const { name } = useRoute();
+  useStore();
+  const user = currentUser();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(()=>{
@@ -98,8 +101,10 @@ export function TopNav(){
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
-          <a href="#login" className="glass glass-soft hidden h-11 w-11 place-items-center rounded-full text-white/80 transition hover:bg-white/10 md:grid">
-            <span style={{width:19,height:19}}>{I.user({})}</span>
+          <a href={user?'#dashboard':'#login'} title={user?user.name:'log in'}
+             className="glass glass-soft hidden h-11 w-11 place-items-center rounded-full text-white/80 transition hover:bg-white/10 md:grid">
+            {user ? <span className="text-[14px] font-semibold accent-text uppercase">{(user.name||'?').trim().charAt(0)}</span>
+                  : <span style={{width:19,height:19}}>{I.user({})}</span>}
           </a>
           <a href="#booking" className="hidden md:block">
             <Btn kind="primary" size="md" iconEnd={I.arrow({})}>pitch hire</Btn>

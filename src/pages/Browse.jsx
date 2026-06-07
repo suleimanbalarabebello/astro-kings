@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, TAKEN, store } from '../lib/data.js';
+import { PITCHES, SLOTS, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
+import { useStore } from '../lib/store.js';
+import { canStart } from '../lib/booking.js';
 import { Glass, Tag, Placeholder, PageHead } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
+
+/* Browse uses short day chips; the engine keys on dated labels ('Fri 06'). */
+const DAY_LABEL = { Today:'Thu 05', Fri:'Fri 06', Sat:'Sat 07', Sun:'Sun 08', Mon:'Mon 09' };
 
 export function Chip({ active, onClick, children }){
   return (
@@ -17,10 +22,12 @@ export function Chip({ active, onClick, children }){
 }
 
 export function Browse(){
+  useStore();
   const [fmt,setFmt] = useState('all');
   const [day,setDay] = useState(store.day || 'Fri');
   const [time,setTime] = useState('evening');
   const list = fmt==='all' ? PITCHES : PITCHES.filter(p=>p.size===fmt);
+  const dayLabel = DAY_LABEL[day] || 'Fri 06';
 
   return (
     <div>
@@ -86,7 +93,7 @@ export function Browse(){
                   {/* mini slot strip */}
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     {SLOTS.slice(2,8).map(s=>{
-                      const taken = TAKEN.has(s);
+                      const taken = !canStart(p.id, dayLabel, s, 1);
                       return (
                         <button key={s} disabled={taken}
                           onClick={()=>{ store.venue=p.id; store.time=s; store.day=day; go('booking',{p:p.id,t:s}); }}

@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, TAKEN, store } from '../lib/data.js';
+import { PITCHES, SLOTS, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
+import { useStore } from '../lib/store.js';
+import { canStart } from '../lib/booking.js';
 import { Glass, Btn, Tag, Placeholder } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 export function Venue({ params }){
+  useStore();
   const id = params.p || store.venue || 'classic';
   const p = PITCHES.find(x=>x.id===id) || PITCHES[0];
   const [time,setTime] = useState(store.time || '19:00');
@@ -82,7 +85,7 @@ export function Venue({ params }){
                 <div className="mt-5 text-[12px] uppercase tracking-wide text-white/40">pick a slot · Fri 06 Jun</div>
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   {SLOTS.slice(2,8).map(s=>{
-                    const taken = TAKEN.has(s);
+                    const taken = !canStart(p.id, 'Fri 06', s, 1);
                     return (
                       <button key={s} disabled={taken} onClick={()=>setTime(s)}
                         className={`tnum rounded-xl py-2.5 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/80 hover:bg-white/12'}`}>
