@@ -1,64 +1,152 @@
-/* GetAGame.jsx — subs bench: join casual games / find a game when you have no team */
+/* GetAGame.jsx — subs bench: register to be invited to games that need a sub.
+   Mirrors the live Astro Kings "Get a Game" page (hero → register → location). */
 
+import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { Glass, Btn, Field, PageHead } from '../components/ui.jsx';
-import { Section } from './Home.jsx';
+import { CONTACT } from '../lib/data.js';
+import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
 
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
+
+function Check({ on, onClick, children }){
+  return (
+    <button type="button" onClick={onClick} className="flex items-center gap-2.5 text-[14px] text-white/80">
+      <span className={`grid h-5 w-5 place-items-center rounded-md transition ${on?'accent-bg text-[#0b0b0b]':'border border-white/25'}`}>
+        {on ? <span style={{width:13,height:13}}>{I.check({})}</span> : null}
+      </span>
+      {children}
+    </button>
+  );
+}
+
 export function GetAGame(){
-  const steps = [
-    { n:'01', t:'register your interest', d:'Tell us which days you can play — Monday through Sunday.' },
-    { n:'02', t:'join the whatsapp group', d:'We add you to the Subs Bench group for your area.' },
-    { n:'03', t:'get the call-up', d:'When a game is short, we ping the group. First to reply plays.' },
-    { n:'04', t:'turn up & play', d:'Be the super sub at Nottingham’s best 5-a-side centre.' },
-  ];
-  const forWho = [
-    { ic:I.pin,  t:'new to the area', d:'Meet people and get straight into regular football.' },
-    { ic:I.bolt, t:'after extra games', d:'Top up your week with casual, no-commitment matches.' },
-    { ic:I.user, t:'building fitness', d:'Stay active with friendly games at your own pace.' },
-  ];
+  const [f,setF] = useState({ name:'', email:'', phone:'', age:'' });
+  const [days,setDays] = useState([]);
+  const [confirm,setConfirm] = useState(false);
+  const [err,setErr] = useState('');
+  const [done,setDone] = useState(false);
+  const set = (k)=>(e)=>{ setF(s=>({...s,[k]:e.target.value})); setErr(''); };
+  const toggleDay = (d)=> setDays(s=> s.includes(d)?s.filter(x=>x!==d):[...s,d]);
+
+  function submit(){
+    if (!f.name.trim() || !f.email.trim() || !f.phone.trim()) { setErr('Please add your name, email and contact number.'); return; }
+    if (!confirm) { setErr('Please confirm you’re happy to join the Subs Bench WhatsApp group.'); return; }
+    setDone(true);
+  }
+
   return (
     <div>
-      <PageHead eyebrow="get a game · subs bench" title="be the super sub"
-        sub="Players drop out at the last minute all the time. Rather than everyone missing out, join the Subs Bench and get invited to games that need an extra body — no team required.">
-        <a href="#getagame"><Btn kind="primary" iconEnd={I.arrow({})}>join the subs bench</Btn></a>
-      </PageHead>
-
-      <Section eyebrow="how it works" title="four steps to a game">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((s,i)=>(
-            <Glass key={i} className="rounded-3xl p-6 fade-up" style={{animationDelay:(i*.05)+'s'}}>
-              <div className="tnum text-3xl font-semibold accent-text">{s.n}</div>
-              <div className="mt-4 text-[17px] font-medium lowercase">{s.t}</div>
-              <p className="mt-2 text-[14px] leading-relaxed text-white/55">{s.d}</p>
-            </Glass>
-          ))}
+      {/* ---------- hero ---------- */}
+      <section className="relative">
+        <div className="mx-auto max-w-5xl px-6 pt-40 pb-24 text-center md:pt-48 md:pb-28">
+          <h1 className="hero-title text-5xl font-semibold leading-[1.05] lowercase md:text-7xl">
+            join the subs bench<br/>to be invited to play
+          </h1>
         </div>
-      </Section>
-
-      <section className="mx-auto mt-24 max-w-6xl px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {forWho.map((w,i)=>(
-              <Glass key={i} className="rounded-3xl p-6 fade-up" style={{animationDelay:(i*.05)+'s'}}>
-                <span className="glass grid h-12 w-12 place-items-center rounded-2xl accent-text"><span style={{width:22,height:22}}>{w.ic({})}</span></span>
-                <div className="mt-4 text-[16px] font-medium lowercase">{w.t}</div>
-                <p className="mt-2 text-[13.5px] leading-relaxed text-white/55">{w.d}</p>
-              </Glass>
-            ))}
+        {/* coral banner divider with the downward notch, mirroring the live site */}
+        <div className="relative accent-bg py-5">
+          <div className="mx-auto max-w-6xl px-6 text-center text-[13px] font-medium uppercase tracking-[.2em] text-[#0b0b0b]/80">
+            all standards welcome · no team needed
           </div>
-          <Glass strong className="rounded-[30px] p-8">
-            <h3 className="text-2xl font-medium lowercase">register here</h3>
-            <p className="mt-2 text-[14px] text-white/55">Get invites to football games that need a sub.</p>
-            <div className="mt-6 space-y-4">
-              <Field label="your name" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="First & last" /></Field>
-              <Field label="mobile (for whatsapp)" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="07…" /></Field>
-            </div>
-            <div className="mt-5"><Btn kind="primary" size="lg" className="w-full" iconEnd={I.arrow({})}>join the bench</Btn></div>
-            <p className="mt-4 text-[12px] text-white/40">No commitment — play as often or as little as you like.</p>
+          <div className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[18px] border-x-transparent border-t-[16px]" style={{borderTopColor:'var(--accent)'}}></div>
+        </div>
+      </section>
+
+      {/* ---------- register ---------- */}
+      <section className="mx-auto mt-20 max-w-6xl px-6">
+        <div className="grid gap-10 lg:grid-cols-[1fr_440px]">
+          {/* concept copy */}
+          <div className="max-w-xl">
+            <h2 className="hero-title text-3xl font-semibold lowercase md:text-4xl">register here to get invites to football games</h2>
+            <p className="mt-5 text-[15px] leading-relaxed text-white/60">
+              If you’re always ready to play and looking for a bit more football during the week, register here to get
+              notifications and invites to matches where our regular bookings are a couple of players short.
+            </p>
+
+            <h3 className="mt-9 text-[19px] font-medium lowercase">the subs bench concept</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+              Sometimes players drop out at the last minute or can’t make their usual games. So rather than everybody
+              missing out, you can be the super sub by joining their game. All standards are welcome — just register your
+              interest using the form, let us know the days you’re available, and you’ll get an invite to join our Subs
+              Bench WhatsApp group.
+            </p>
+
+            <h3 className="mt-9 text-[19px] font-medium lowercase">who’s on the bench?</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+              There’s lots of reasons somebody would want to be on the bench. They might be new to the area, want a bit of
+              extra exercise, or just fancy a run out any given day. Plus it’s a great way to make friends and have a bit of fun.
+            </p>
+
+            <p className="mt-8 text-[16px] font-semibold text-white">
+              And you’ll be playing at Astro Kings, Nottingham’s best 5-a-side football centre!
+            </p>
+          </div>
+
+          {/* form */}
+          <Glass strong className="h-fit rounded-[30px] p-7 lg:sticky lg:top-28">
+            {done ? (
+              <div className="py-8 text-center">
+                <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
+                <h3 className="hero-title mt-5 text-2xl font-semibold lowercase">you’re on the bench</h3>
+                <p className="mx-auto mt-3 max-w-xs text-[14px] text-white/60">Thanks {f.name.split(' ')[0]}! We’ll add you to the Subs Bench WhatsApp group and ping you when a game needs a sub.</p>
+                <Btn kind="outline" className="mt-6" onClick={()=>{ setDone(false); setF({name:'',email:'',phone:'',age:''}); setDays([]); setConfirm(false); }}>register someone else</Btn>
+              </div>
+            ) : (
+              <>
+                <div className="text-[13px] font-medium uppercase tracking-wide text-white/70">register your details</div>
+
+                {/* mock verification chip (mirrors the Cloudflare box) */}
+                <div className="mt-4 flex items-center gap-2.5 rounded-2xl glass glass-soft px-4 py-3 text-[13px]">
+                  <span className="grid h-5 w-5 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:13,height:13}}>{I.check({})}</span></span>
+                  <span className="text-white/70">verified — you’re human</span>
+                  <span className="ml-auto text-[11px] uppercase tracking-wide text-white/35">secure</span>
+                </div>
+
+                {err ? <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">{err}</div> : null}
+
+                <div className="mt-4 space-y-3.5">
+                  <Field label="name" icon={I.user({})}><input value={f.name} onChange={set('name')} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="First & last" /></Field>
+                  <Field label="email" icon={I.user({})}><input type="email" value={f.email} onChange={set('email')} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@email.com" /></Field>
+                  <Field label="contact number" icon={I.user({})}><input value={f.phone} onChange={set('phone')} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="07…" /></Field>
+                  <Field label="age" icon={I.user({})}><input value={f.age} onChange={set('age')} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="18" /></Field>
+                </div>
+
+                <div className="mt-5">
+                  <div className="text-[12px] uppercase tracking-wide text-white/45">which days can you play?</div>
+                  <div className="mt-3 grid grid-cols-2 gap-2.5">
+                    {DAYS.map(d=><Check key={d} on={days.includes(d)} onClick={()=>toggleDay(d)}>{d}</Check>)}
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <Check on={confirm} onClick={()=>{setConfirm(c=>!c);setErr('');}}>
+                    <span className="text-[13px] leading-snug text-white/70">I confirm I’m happy to be added to the Subs Bench WhatsApp group to find out when games are available.</span>
+                  </Check>
+                </div>
+
+                <Btn kind="primary" size="lg" className="mt-6 w-full" iconEnd={I.arrow({})} onClick={submit}>get on the bench</Btn>
+              </>
+            )}
           </Glass>
         </div>
       </section>
+
+      {/* ---------- location ---------- */}
+      <section className="mx-auto mt-24 max-w-3xl px-6 text-center">
+        <h2 className="hero-title text-3xl font-semibold lowercase md:text-4xl">our location</h2>
+        <p className="mt-5 text-[15px] leading-relaxed text-white/60">
+          Astro Kings 5-a-side football centre is located next to the Harvey Hadden Sports Village in Nottingham, NG8.
+          The ground is easily accessible from the M1 Junction 26 — it’s just 4 minutes from the motorway to the pitches.
+        </p>
+        <p className="mt-3 text-[15px] text-white/60">Contact us on <span className="accent-text">{CONTACT.phone}</span> for more information.</p>
+      </section>
+      <div className="mx-auto mt-10 max-w-6xl px-6">
+        <Placeholder label="map · Harvey Hadden, NG8" className="aspect-[21/9] w-full rounded-[30px]">
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 accent-text"><span style={{width:34,height:34,display:'block'}}>{I.pin({})}</span></span>
+        </Placeholder>
+      </div>
+
       <Footer />
     </div>
   );
