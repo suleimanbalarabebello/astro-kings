@@ -4,9 +4,23 @@ import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { go } from '../lib/router.js';
 import { Logo, Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
+import { signUp, logIn, deriveStudent } from '../lib/booking.js';
 
 export function Auth(){
   const [mode,setMode] = useState('login');
+  const [name,setName] = useState('');
+  const [email,setEmail] = useState('');
+  const [pw,setPw] = useState('');
+  const [err,setErr] = useState('');
+  const isStudent = deriveStudent(email);
+
+  function submit(){
+    if (!email.trim() || !pw.trim()) { setErr('Enter your email and password.'); return; }
+    if (mode==='signup' && !name.trim()) { setErr('Enter your name.'); return; }
+    mode==='signup' ? signUp({ name, email }) : logIn(email.trim());
+    go('dashboard');
+  }
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* visual side */}
@@ -32,18 +46,20 @@ export function Auth(){
             </div>
 
             {mode==='signup' ? (
-              <Field label="full name" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="First & last" /></Field>
+              <Field label="full name" icon={I.user({})}><input value={name} onChange={e=>{setName(e.target.value);setErr('');}} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="First & last" /></Field>
             ) : null}
             <div className={mode==='signup'?'mt-4':''}>
-              <Field label="email" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@email.com" /></Field>
+              <Field label="email" icon={I.user({})}><input type="email" value={email} onChange={e=>{setEmail(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&submit()} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@uni.ac.uk" /></Field>
             </div>
+            {isStudent ? <div className="mt-2 flex items-center gap-1.5 text-[12px] accent-text"><span style={{width:14,height:14}}>{I.check({})}</span> student email recognised — deposit booking unlocked</div> : null}
             <div className="mt-4">
-              <Field label="password" icon={I.lock({})}><input type="password" className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="••••••••" /></Field>
+              <Field label="password" icon={I.lock({})}><input type="password" value={pw} onChange={e=>{setPw(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&submit()} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="••••••••" /></Field>
             </div>
 
+            {err ? <div className="mt-3 text-[12px] text-red-300">{err}</div> : null}
             {mode==='login' ? <div className="mt-3 text-right text-[12px] text-white/45 hover:text-white"><a href="#login">forgot password?</a></div> : null}
 
-            <Btn kind="primary" size="lg" className="mt-5 w-full" iconEnd={I.arrow({})} onClick={()=>go('dashboard')}>{mode==='login'?'log in':'create account'}</Btn>
+            <Btn kind="primary" size="lg" className="mt-5 w-full" iconEnd={I.arrow({})} onClick={submit}>{mode==='login'?'log in':'create account'}</Btn>
 
             <div className="my-5 flex items-center gap-3 text-[12px] text-white/35"><span className="h-px flex-1 bg-white/10"></span>or<span className="h-px flex-1 bg-white/10"></span></div>
             <div className="grid grid-cols-2 gap-2.5">
