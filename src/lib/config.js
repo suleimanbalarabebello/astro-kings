@@ -14,6 +14,11 @@ export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from e
    AND verify the token server-side at /siteverify. */
 export const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
 
+/* Stripe publishable TEST key (pk_test_…). Leave blank to use the built-in
+   simulated card field. Paste the owner's test key to activate real Stripe
+   Elements. Taking actual payments still needs a backend PaymentIntent. */
+export const STRIPE_PUBLISHABLE_KEY = '';
+
 /* Simulated Stripe test cards (we have no backend; this mirrors Stripe's test-mode behaviour). */
 export const TEST_CARDS = {
   '4242424242424242': { ok: true },

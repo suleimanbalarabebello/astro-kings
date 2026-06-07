@@ -13,6 +13,7 @@ import {
 } from '../lib/booking.js';
 import { HOLD_MINUTES, MAX_HOURS } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field, Placeholder } from '../components/ui.jsx';
+import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
 import { Chip } from './Browse.jsx';
 
 function Stepper({ step }){
@@ -84,6 +85,7 @@ export function Booking({ params }){
   const [email,setEmail] = useState((currentUser()?.email) || '');
   const [payMode,setPayMode] = useState('deposit');
   const [card,setCard] = useState('');
+  const [cardComplete,setCardComplete] = useState(false);
   const [err,setErr]   = useState('');
   const [reservation,setReservation] = useState(null);
   const [left,setLeft] = useState(HOLD_MINUTES*60);
@@ -130,7 +132,9 @@ export function Booking({ params }){
 
   function pay(){
     setErr('');
-    const res = payReservation(reservation.id, { mode: payMode, card });
+    if (stripeEnabled && !cardComplete){ setErr('Enter your card details.'); return; }
+    const effectiveCard = stripeEnabled ? '4242424242424242' : card;   // charge is simulated (no backend)
+    const res = payReservation(reservation.id, { mode: payMode, card: effectiveCard });
     if (!res.ok){ setErr(res.error); if (/expired/.test(res.error)){ setReservation(null); setStep(0); } return; }
     setRef(res.booking.id);
     store.venue = p.id;
@@ -238,12 +242,21 @@ export function Booking({ params }){
                   </button>
                 </div>
               </div>
-              <Field label="card number" icon={I.lock({})}><input value={card} onChange={e=>setCard(e.target.value)} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="4242 4242 4242 4242" /></Field>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="expiry" icon={I.cal({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="06 / 28" /></Field>
-                <Field label="cvc" icon={I.lock({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="•••" /></Field>
-              </div>
-              <div className="flex items-center gap-2 text-[12px] text-white/45"><span style={{width:14,height:14}}>{I.lock({})}</span> test mode · try 4242… to succeed, 4000…0002 to decline · free cancellation up to 24h before</div>
+              {stripeEnabled ? (
+                <div>
+                  <div className="mb-2 block text-[12px] uppercase tracking-wide text-white/45">card details</div>
+                  <StripeCard onChange={(complete)=>{ setCardComplete(complete); setErr(''); }} />
+                </div>
+              ) : (
+                <>
+                  <Field label="card number" icon={I.lock({})}><input value={card} onChange={e=>setCard(e.target.value)} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="4242 4242 4242 4242" /></Field>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="expiry" icon={I.cal({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="06 / 28" /></Field>
+                    <Field label="cvc" icon={I.lock({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="•••" /></Field>
+                  </div>
+                </>
+              )}
+              <div className="flex items-center gap-2 text-[12px] text-white/45"><span style={{width:14,height:14}}>{I.lock({})}</span> test mode · Stripe test card 4242 4242 4242 4242 · free cancellation up to 24h before</div>
             </div>
           )}
 
