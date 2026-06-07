@@ -8,6 +8,12 @@ export const MAX_HOURS         = 3;      // longest bookable run (consecutive 1h
 
 export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from email domain
 
+/* Cloudflare Turnstile site key. This is Cloudflare's official ALWAYS-PASSES test
+   key — it renders a real, working widget on any domain with no account needed.
+   For production: replace with the owner's real site key (challenges.cloudflare.com)
+   AND verify the token server-side at /siteverify. */
+export const TURNSTILE_SITE_KEY = '1x00000000000000000000AA';
+
 /* Simulated Stripe test cards (we have no backend; this mirrors Stripe's test-mode behaviour). */
 export const TEST_CARDS = {
   '4242424242424242': { ok: true },

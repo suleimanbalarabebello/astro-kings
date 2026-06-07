@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
+import { Turnstile } from '../components/Turnstile.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
@@ -24,6 +25,7 @@ export function GetAGame(){
   const [f,setF] = useState({ name:'', email:'', phone:'', age:'' });
   const [days,setDays] = useState([]);
   const [confirm,setConfirm] = useState(false);
+  const [token,setToken] = useState('');
   const [err,setErr] = useState('');
   const [done,setDone] = useState(false);
   const set = (k)=>(e)=>{ setF(s=>({...s,[k]:e.target.value})); setErr(''); };
@@ -31,8 +33,9 @@ export function GetAGame(){
 
   function submit(){
     if (!f.name.trim() || !f.email.trim() || !f.phone.trim()) { setErr('Please add your name, email and contact number.'); return; }
+    if (!token) { setErr('Please complete the captcha to verify you’re human.'); return; }
     if (!confirm) { setErr('Please confirm you’re happy to join the Subs Bench WhatsApp group.'); return; }
-    setDone(true);
+    setDone(true);   // production: POST the form + Turnstile token to the backend for /siteverify
   }
 
   return (
@@ -96,11 +99,9 @@ export function GetAGame(){
               <>
                 <div className="text-[13px] font-medium uppercase tracking-wide text-white/70">register your details</div>
 
-                {/* mock verification chip (mirrors the Cloudflare box) */}
-                <div className="mt-4 flex items-center gap-2.5 rounded-2xl glass glass-soft px-4 py-3 text-[13px]">
-                  <span className="grid h-5 w-5 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:13,height:13}}>{I.check({})}</span></span>
-                  <span className="text-white/70">verified — you’re human</span>
-                  <span className="ml-auto text-[11px] uppercase tracking-wide text-white/35">secure</span>
+                {/* real Cloudflare Turnstile captcha */}
+                <div className="mt-4">
+                  <Turnstile onVerify={(t)=>{setToken(t);setErr('');}} onExpire={()=>setToken('')} />
                 </div>
 
                 {err ? <div className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">{err}</div> : null}
