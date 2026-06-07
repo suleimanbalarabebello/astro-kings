@@ -6,6 +6,7 @@ import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
 import { Turnstile } from '../components/Turnstile.jsx';
+import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
@@ -143,9 +144,9 @@ export function GetAGame(){
         <p className="mt-3 text-[15px] text-white/60">Contact us on <span className="accent-text">{CONTACT.phone}</span> for more information.</p>
       </section>
       <div className="mx-auto mt-10 max-w-6xl px-6">
-        <Placeholder label="map · Harvey Hadden, NG8" className="aspect-[21/9] w-full rounded-[30px]">
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 accent-text"><span style={{width:34,height:34,display:'block'}}>{I.pin({})}</span></span>
-        </Placeholder>
+        <div className="aspect-[21/9] w-full overflow-hidden rounded-[30px] glass">
+          <Map className="h-full w-full" />
+        </div>
       </div>
 
       <Footer />

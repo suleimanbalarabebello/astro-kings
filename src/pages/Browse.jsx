@@ -7,6 +7,7 @@ import { go } from '../lib/router.js';
 import { useStore } from '../lib/store.js';
 import { canStart } from '../lib/booking.js';
 import { Glass, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 /* Browse uses short day chips; the engine keys on dated labels ('Fri 06'). */
@@ -63,9 +64,9 @@ export function Browse(){
             </div>
           </Glass>
 
-          <Placeholder label="map · NG8 4PB" className="aspect-square w-full rounded-3xl">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 accent-text"><span style={{width:30,height:30,display:'block'}}>{I.pin({})}</span></span>
-          </Placeholder>
+          <div className="aspect-square w-full overflow-hidden rounded-3xl glass">
+            <Map className="h-full w-full" />
+          </div>
         </aside>
 
         {/* results */}
