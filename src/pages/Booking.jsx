@@ -1,9 +1,17 @@
-/* Booking.jsx — multi-step booking flow (slot → details → payment → done) */
+/* Booking.jsx — multi-step booking flow (slot → details → payment → done)
+   Now backed by the booking engine: real availability, multi-hour duration,
+   a 15-minute pending-deposit hold, and pay-in-full or 20%-deposit checkout. */
 
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, TAKEN, store } from '../lib/data.js';
+import { PITCHES, SLOTS, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
+import { useStore, currentUser } from '../lib/store.js';
+import {
+  freeStarts, quote, endTimeOf, startReservation, payReservation,
+  releaseExpiredHolds, signUp, deriveStudent,
+} from '../lib/booking.js';
+import { HOLD_MINUTES, MAX_HOURS } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field, Placeholder } from '../components/ui.jsx';
 import { Chip } from './Browse.jsx';
 
@@ -26,24 +34,29 @@ function Stepper({ step }){
   );
 }
 
-function addHour(t){ const [h,m]=t.split(':').map(Number); return String(h+1).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
-
-function Summary({ p, time, addons, total }){
+function Summary({ p, day, time, hours, q, payMode }){
   return (
     <Glass strong className="rounded-[28px] p-6 lg:sticky lg:top-28">
       <div className="text-[12px] uppercase tracking-wide text-white/40">your booking</div>
       <Placeholder label={p.size+' · 4g'} className="mt-4 aspect-[16/9] w-full rounded-2xl" />
       <div className="mt-4 text-[18px] font-medium">{p.name}</div>
       <div className="mt-3 space-y-2 text-[14px] text-white/70">
-        <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="text-white/40" style={{width:15,height:15}}>{I.cal({})}</span>Fri 06 Jun</span><span>{time}–{addHour(time)}</span></div>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="text-white/40" style={{width:15,height:15}}>{I.cal({})}</span>{day}</span><span>{time}–{endTimeOf(time,hours)}</span></div>
         <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="text-white/40" style={{width:15,height:15}}>{I.pin({})}</span>Wigman Rd</span><span>{p.size}</span></div>
       </div>
       <div className="mt-4 border-t border-white/10 pt-4 space-y-2 text-[14px]">
-        <div className="flex justify-between text-white/65"><span>Pitch · 1 hour</span><span className="tnum">£{p.price}</span></div>
-        {addons.map(a=><div key={a.t} className="flex justify-between text-white/65"><span>{a.t}</span><span className="tnum">£{a.p}</span></div>)}
-        <div className="mt-2 flex justify-between border-t border-white/10 pt-3 text-[16px] font-semibold"><span>Total</span><span className="tnum accent-text">£{total}</span></div>
+        <div className="flex justify-between text-white/65"><span>Pitch · {hours} hour{hours>1?'s':''}</span><span className="tnum">£{q.pitchTotal}</span></div>
+        {q.addonsTotal>0 ? <div className="flex justify-between text-white/65"><span>Add-ons</span><span className="tnum">£{q.addonsTotal}</span></div> : null}
+        <div className="mt-2 flex justify-between border-t border-white/10 pt-3 text-[16px] font-semibold"><span>Total</span><span className="tnum accent-text">£{q.total}</span></div>
+        {payMode==='deposit' ? (
+          <div className="mt-2 rounded-2xl glass glass-soft p-3 text-[13px]">
+            <div className="flex justify-between"><span className="text-white/60">Pay now (20% deposit)</span><span className="tnum accent-text">£{q.depositDue}</span></div>
+            <div className="mt-1 flex justify-between"><span className="text-white/60">On arrival</span><span className="tnum">£{q.balanceDue}</span></div>
+          </div>
+        ) : (
+          <div className="mt-2 flex justify-between text-[13px] text-white/60"><span>Pay now (in full)</span><span className="tnum accent-text">£{q.total}</span></div>
+        )}
       </div>
-      <div className="mt-4 flex items-center gap-2 text-[12px] text-white/45"><span className="accent-text" style={{width:14,height:14}}>{I.check({})}</span> split payment available with your team</div>
     </Glass>
   );
 }
@@ -54,20 +67,78 @@ const ADDONS = [
   { t:'Referee', p:18 },
   { t:'Post-match café table', p:0 },
 ];
+const DURATIONS = Array.from({length:MAX_HOURS}, (_,i)=>i+1);
+const DAYS = ['Thu 05','Fri 06','Sat 07','Sun 08','Mon 09'];
 
 export function Booking({ params }){
+  useStore();                                  // re-render on availability changes
   const id = params.p || store.venue || 'classic';
   const p = PITCHES.find(x=>x.id===id) || PITCHES[0];
+
   const [step,setStep] = useState(0);
   const [time,setTime] = useState(params.t || store.time || '19:00');
-  const [day,setDay] = useState('Fri 06');
-  const [sel,setSel] = useState([]);
-  const addons = ADDONS.filter(a=>sel.includes(a.t)&&a.p>0).map(a=>({t:a.t,p:a.p}));
-  const total = p.price + addons.reduce((s,a)=>s+a.p,0);
-  const next = ()=> setStep(s=>Math.min(3,s+1));
-  const back = ()=> setStep(s=>Math.max(0,s-1));
+  const [day,setDay]   = useState(store.day && DAYS.find(d=>d.startsWith(store.day)) || 'Fri 06');
+  const [hours,setHours] = useState(1);
+  const [sel,setSel]   = useState([]);
+  const [team,setTeam] = useState('');
+  const [email,setEmail] = useState((currentUser()?.email) || '');
+  const [payMode,setPayMode] = useState('deposit');
+  const [card,setCard] = useState('');
+  const [err,setErr]   = useState('');
+  const [reservation,setReservation] = useState(null);
+  const [left,setLeft] = useState(HOLD_MINUTES*60);
+  const [ref,setRef]   = useState('');
 
-  const days = ['Thu 05','Fri 06','Sat 07','Sun 08','Mon 09'];
+  const addons = ADDONS.filter(a=>sel.includes(a.t)&&a.p>0).map(a=>({t:a.t,p:a.p}));
+  const q = quote(p, hours, addons);
+  const starts = freeStarts(p.id, day, SLOTS, hours);
+  const isStudent = deriveStudent(email);
+
+  // selected start may stop being valid when day/hours/pitch change
+  useEffect(()=>{ if (!starts.includes(time) && starts.length) setTime(starts[0]); }, [day, hours, p.id]); // eslint-disable-line
+
+  // countdown while a hold is live on the payment step
+  useEffect(()=>{
+    if (step!==2 || !reservation) return;
+    const tick = ()=>{
+      const secs = Math.max(0, Math.round((reservation.holdExpiresAt - Date.now())/1000));
+      setLeft(secs);
+      if (secs===0){ releaseExpiredHolds(); setErr('Your 15-minute hold expired — please pick your slot again.'); setReservation(null); setStep(0); }
+    };
+    tick();
+    const iv = setInterval(tick, 1000);
+    return ()=> clearInterval(iv);
+  }, [step, reservation]);
+
+  const back = ()=> { setErr(''); setStep(s=>Math.max(0,s-1)); };
+
+  function toDetails(){
+    if (!starts.includes(time)) { setErr('That slot just went — pick another.'); return; }
+    setErr(''); setStep(1);
+  }
+
+  function toPayment(){
+    setErr('');
+    // ensure there's a user to attach the booking to
+    if (!currentUser()) signUp({ name: team || 'Captain', email });
+    const res = startReservation({ pitchId:p.id, day, startTime:time, hours, addons, userId: currentUser().id });
+    if (!res.ok){ setErr(res.error); return; }
+    setReservation(res.booking);
+    setLeft(HOLD_MINUTES*60);
+    setStep(2);
+  }
+
+  function pay(){
+    setErr('');
+    const res = payReservation(reservation.id, { mode: payMode, card });
+    if (!res.ok){ setErr(res.error); if (/expired/.test(res.error)){ setReservation(null); setStep(0); } return; }
+    setRef(res.booking.id);
+    store.venue = p.id;
+    setStep(3);
+  }
+
+  const mins = String(Math.floor(left/60)).padStart(2,'0');
+  const secs = String(left%60).padStart(2,'0');
 
   return (
     <div className="mx-auto max-w-6xl px-6 pt-28 pb-10 md:pt-32">
@@ -79,35 +150,43 @@ export function Booking({ params }){
         <Stepper step={step} />
       </div>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_360px]">
+      {err ? <div className="mt-6 rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">{err}</div> : null}
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="min-h-[420px]">
           {step===0 && (
             <div className="pop space-y-7">
               <div>
                 <div className="text-[12px] uppercase tracking-wide text-white/40">1 · choose a day</div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {days.map(d=><Chip key={d} active={day===d} onClick={()=>setDay(d)}>{d}</Chip>)}
+                  {DAYS.map(d=><Chip key={d} active={day===d} onClick={()=>setDay(d)}>{d}</Chip>)}
                 </div>
               </div>
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">2 · choose a kick-off</div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">2 · how long?</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
+                </div>
+              </div>
+              <div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">3 · choose a kick-off</div>
                 <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
                   {SLOTS.map(s=>{
-                    const taken = TAKEN.has(s);
+                    const free = starts.includes(s);
                     const off = Number(s.split(':')[0])<18;
                     return (
-                      <button key={s} disabled={taken} onClick={()=>setTime(s)}
-                        className={`relative tnum rounded-2xl py-3.5 text-[14px] transition ${taken?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
+                      <button key={s} disabled={!free} onClick={()=>setTime(s)}
+                        className={`relative tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
                         {s}
-                        {off && !taken ? <span className={`absolute -top-1.5 right-2 text-[9px] ${time===s?'text-[#0b0b0b]':'accent-text'}`}>−20%</span> : null}
+                        {off && free ? <span className={`absolute -top-1.5 right-2 text-[9px] ${time===s?'text-[#0b0b0b]':'accent-text'}`}>−20%</span> : null}
                       </button>
                     );
                   })}
                 </div>
-                <div className="mt-3 text-[12px] text-white/40">Before 6pm slots are off-peak. Greyed slots are taken.</div>
+                <div className="mt-3 text-[12px] text-white/40">Greyed slots can’t fit a {hours}-hour booking. Ends {endTimeOf(time,hours)}.</div>
               </div>
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">3 · switch pitch (optional)</div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">4 · switch pitch (optional)</div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {PITCHES.map(x=><Chip key={x.id} active={x.id===p.id} onClick={()=>{ store.venue=x.id; go('booking',{p:x.id,t:time}); }}>{x.name} · £{x.price}</Chip>)}
                 </div>
@@ -118,9 +197,10 @@ export function Booking({ params }){
           {step===1 && (
             <div className="pop space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="team / booking name" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="e.g. Sunday Allstars" /></Field>
-                <Field label="mobile" icon={I.user({})}><input className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="07…" /></Field>
+                <Field label="team / booking name" icon={I.user({})}><input value={team} onChange={e=>setTeam(e.target.value)} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="e.g. Sunday Allstars" /></Field>
+                <Field label="email" icon={I.user({})}><input type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="you@uni.ac.uk" /></Field>
               </div>
+              {isStudent ? <div className="flex items-center gap-1.5 text-[12px] accent-text"><span style={{width:14,height:14}}>{I.check({})}</span> student email recognised (.ac.uk)</div> : null}
               <div>
                 <div className="text-[12px] uppercase tracking-wide text-white/40">add-ons</div>
                 <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
@@ -138,25 +218,32 @@ export function Booking({ params }){
                   })}
                 </div>
               </div>
-              <Glass className="flex items-center gap-3 rounded-2xl p-4 text-[13px] text-white/65">
-                <span className="accent-text" style={{width:18,height:18}}>{I.bolt({})}</span>
-                Want to split the cost? Invite teammates after booking and everyone pays their share — no more chasing.
-              </Glass>
             </div>
           )}
 
           {step===2 && (
             <div className="pop space-y-6">
-              <div className="flex gap-2.5">
-                <button className="accent-ring flex-1 rounded-2xl bg-white/5 p-4 text-left"><div className="text-[13px]">Card</div><div className="mt-1 text-[12px] text-white/45">Visa · Mastercard · Apple Pay</div></button>
-                <button className="glass glass-soft flex-1 rounded-2xl p-4 text-left hover:bg-white/8"><div className="text-[13px]">Pay at venue</div><div className="mt-1 text-[12px] text-white/45">£10 deposit now</div></button>
+              <div className="flex items-center justify-between rounded-2xl glass glass-soft px-4 py-3 text-[13px]">
+                <span className="text-white/60">slot held for you</span>
+                <span className={`tnum font-semibold ${left<60?'text-red-300':'accent-text'}`}>{mins}:{secs}</span>
               </div>
-              <Field label="card number" icon={I.lock({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="4242 4242 4242 4242" /></Field>
+              <div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">how would you like to pay?</div>
+                <div className="mt-3 flex gap-2.5">
+                  <button onClick={()=>setPayMode('deposit')} className={`flex-1 rounded-2xl p-4 text-left transition ${payMode==='deposit'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
+                    <div className="text-[13px]">20% deposit</div><div className="mt-1 text-[12px] text-white/45">£{q.depositDue} now · £{q.balanceDue} on arrival</div>
+                  </button>
+                  <button onClick={()=>setPayMode('full')} className={`flex-1 rounded-2xl p-4 text-left transition ${payMode==='full'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
+                    <div className="text-[13px]">Pay in full</div><div className="mt-1 text-[12px] text-white/45">£{q.total} now · nothing on arrival</div>
+                  </button>
+                </div>
+              </div>
+              <Field label="card number" icon={I.lock({})}><input value={card} onChange={e=>setCard(e.target.value)} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="4242 4242 4242 4242" /></Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="expiry" icon={I.cal({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="06 / 28" /></Field>
                 <Field label="cvc" icon={I.lock({})}><input className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="•••" /></Field>
               </div>
-              <div className="flex items-center gap-2 text-[12px] text-white/45"><span style={{width:14,height:14}}>{I.lock({})}</span> payments encrypted · free cancellation up to 24h before kick-off</div>
+              <div className="flex items-center gap-2 text-[12px] text-white/45"><span style={{width:14,height:14}}>{I.lock({})}</span> test mode · try 4242… to succeed, 4000…0002 to decline · free cancellation up to 24h before</div>
             </div>
           )}
 
@@ -167,8 +254,8 @@ export function Booking({ params }){
                 <div className="relative">
                   <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
                   <h2 className="hero-title mt-6 text-3xl md:text-4xl font-semibold lowercase">you're booked in</h2>
-                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {day} · {time}–{addHour(time)}. We've texted your confirmation and the floodlights will be on.</p>
-                  <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">AK-7F3K2</span></div>
+                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {day} · {time}–{endTimeOf(time,hours)}. {payMode==='deposit'?`£${q.depositDue} paid — £${q.balanceDue} due on arrival.`:`£${q.total} paid in full.`}</p>
+                  <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">
                     <a href="#dashboard"><Btn kind="primary" iconEnd={I.arrow({})}>view my bookings</Btn></a>
                     <a href="#home"><Btn kind="outline">back home</Btn></a>
@@ -183,14 +270,14 @@ export function Booking({ params }){
               <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
                 <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
               </button>
-              <Btn kind="primary" size="lg" onClick={next} iconEnd={I.arrow({})}>
-                {step===0?'continue':step===1?'go to payment':'pay £'+total}
+              <Btn kind="primary" size="lg" onClick={step===0?toDetails:step===1?toPayment:pay} iconEnd={I.arrow({})}>
+                {step===0?'continue':step===1?'go to payment':payMode==='deposit'?'pay £'+q.depositDue+' deposit':'pay £'+q.total}
               </Btn>
             </div>
           )}
         </div>
 
-        <aside><Summary p={p} time={time} addons={addons} total={total} /></aside>
+        <aside><Summary p={p} day={day} time={time} hours={hours} q={q} payMode={payMode} /></aside>
       </div>
     </div>
   );
