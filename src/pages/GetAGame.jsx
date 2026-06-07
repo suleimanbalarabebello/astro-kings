@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { CONTACT } from '../lib/data.js';
+import { CONTACT, GETAGAME_VIDEO } from '../lib/data.js';
 import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
 import { Turnstile } from '../components/Turnstile.jsx';
 import { Map } from '../components/Map.jsx';
@@ -42,14 +42,20 @@ export function GetAGame(){
   return (
     <div>
       {/* ---------- hero ---------- */}
-      <section className="relative">
-        <div className="mx-auto max-w-5xl px-6 pt-40 pb-24 text-center md:pt-48 md:pb-28">
+      <section className="relative overflow-hidden">
+        {/* video background */}
+        <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
+          <source src={GETAGAME_VIDEO} type="video/mp4" />
+        </video>
+        <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.55), rgba(4,7,10,.82))'}}></div>
+
+        <div className="relative z-10 mx-auto max-w-5xl px-6 pt-40 pb-24 text-center md:pt-48 md:pb-28">
           <h1 className="hero-title text-5xl font-semibold leading-[1.05] lowercase md:text-7xl">
             join the subs bench<br/>to be invited to play
           </h1>
         </div>
         {/* coral banner divider with the downward notch, mirroring the live site */}
-        <div className="relative accent-bg py-5">
+        <div className="relative z-10 accent-bg py-5">
           <div className="mx-auto max-w-6xl px-6 text-center text-[13px] font-medium uppercase tracking-[.2em] text-[#0b0b0b]/80">
             all standards welcome · no team needed
           </div>
