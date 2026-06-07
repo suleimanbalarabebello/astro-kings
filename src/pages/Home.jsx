@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, HERO_VIDEO, store } from '../lib/data.js';
+import { PITCHES, HERO_VIDEO, HERO_POSTER, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Eyebrow, Field, Placeholder, Stat } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
@@ -44,7 +44,7 @@ function HeroVideo({ className='', dim=false, rounded='rounded-[34px]' }){
   },[]);
   return (
     <div className={`ph overflow-hidden ${rounded} ${className}`}>
-      <video ref={ref} className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="auto">
+      <video ref={ref} className="absolute inset-0 h-full w-full object-cover" poster={HERO_POSTER} autoPlay loop muted playsInline preload="metadata">
         <source src={HERO_VIDEO} type="video/mp4" />
       </video>
       <div className="pointer-events-none absolute inset-0" style={{background: dim ? 'linear-gradient(180deg, rgba(4,7,10,.50), rgba(4,7,10,.80))' : 'linear-gradient(180deg, rgba(4,7,10,.22), rgba(4,7,10,.42))'}}></div>
