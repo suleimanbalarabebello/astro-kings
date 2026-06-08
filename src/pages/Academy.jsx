@@ -1,7 +1,8 @@
 /* Academy.jsx — Kings Football Academy: coaching & holiday camps */
 
 import { I } from '../lib/icons.jsx';
-import { Glass, Btn, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { ACADEMY_VIDEO } from '../lib/data.js';
+import { Glass, Btn, Tag, Placeholder, Eyebrow } from '../components/ui.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -22,10 +23,21 @@ export function Academy(){
   ];
   return (
     <div>
-      <PageHead eyebrow="kings football academy" title="coaching & camps"
-        sub="Weekend and holiday football coaching for kids — loads of football fun with games, skills, challenges, matches and tournaments, led by qualified Academy coaches.">
-        <a href="#juniors"><Btn kind="primary" iconEnd={I.arrow({})}>junior memberships</Btn></a>
-      </PageHead>
+      {/* video hero */}
+      <section className="relative h-[58vh] min-h-[400px] w-full overflow-hidden">
+        <video className="absolute inset-0 h-full w-full object-cover" poster="/academy-poster.jpg" autoPlay loop muted playsInline preload="metadata">
+          <source src={ACADEMY_VIDEO} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.42) 0%, rgba(4,7,10,.32) 38%, rgba(4,7,10,.94) 100%)'}}></div>
+        <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-center px-6 text-center">
+          <div className="pop text-center">
+            <Eyebrow>kings football academy</Eyebrow>
+            <h1 className="hero-title mt-4 text-5xl font-semibold leading-[1.04] lowercase md:text-7xl">coaching &amp; camps</h1>
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/70">Weekend and holiday football coaching for kids — games, skills, challenges, matches and tournaments, led by qualified Academy coaches.</p>
+            <a href="#juniors" className="mt-6 inline-block"><Btn kind="primary" iconEnd={I.arrow({})}>junior memberships</Btn></a>
+          </div>
+        </div>
+      </section>
 
       <Section eyebrow="holiday camps" title="loads of football fun"
         action={<a href="#about" className="hidden md:block"><Btn kind="outline" size="sm" iconEnd={I.arrow({})}>book a camp</Btn></a>}>
