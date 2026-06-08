@@ -8,13 +8,13 @@ import { Btn, PageHead } from '../components/ui.jsx';
 import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
-/* Skill-clip cards link out to YouTube. Owner: swap href for real video embeds. */
-const SEARCH = 'https://www.youtube.com/results?search_query=soccer+am+skill+skool';
+/* Real Soccer AM Skill Skool videos (verified YouTube IDs). */
+const FEATURED = { id:'qUhpH7nYs7M', title:'Classic Skill Skool: Raheem Sterling' };
 const CLIPS = [
-  { title:'Classic Skill Skool: Marcus', channel:'Soccer AM' },
-  { title:'Skill Skool — Liverpool',      channel:'Soccer AM' },
-  { title:'Classic Skill Skool: Bristol', channel:'Soccer AM' },
-  { title:'Notts County Skills School',   channel:'Benjammie18' },
+  { id:'cHd-0jtTMLI', title:'Classic Skill Skool: Jordan Henderson' },
+  { id:'f53lbejukgI', title:'Classic Skill Skool: Danny Ings' },
+  { id:'oELAOfyDtNo', title:'Classic Skill Skool: Britt Assombalonga' },
+  { id:'CHUKOOwNil8', title:'Classic Skill Skool: Man City v Falcão' },
 ];
 
 const SOCIALS = [
@@ -30,25 +30,20 @@ const FACILITIES = [
   { ic:I.shower, t:'changing facilities',   d:'Hot showers and secure changing facilities before and after the game.' },
 ];
 
-function VideoCard({ title, channel, big=false }){
+function Tube({ id, title }){
   return (
-    <a href={SEARCH} target="_blank" rel="noreferrer"
-       className={`group relative block overflow-hidden rounded-2xl glass ${big?'aspect-video':'aspect-video'}`}>
-      <div className="absolute inset-0" style={{background:'linear-gradient(135deg, #2a2f36, #14171c)'}}></div>
-      {/* title bar */}
-      <div className="absolute inset-x-0 top-0 z-10 flex items-start gap-2 p-3">
-        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15 text-[10px] font-bold">AK</span>
-        <div className="leading-tight">
-          <div className="text-[13px] font-semibold text-white line-clamp-1">{title}</div>
-          <div className="text-[11px] text-white/55">{channel}</div>
-        </div>
-      </div>
-      {/* play button */}
-      <span className="absolute left-1/2 top-1/2 z-10 grid h-12 w-[68px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-xl bg-[#f00] transition group-hover:scale-105">
-        <span className="ml-0.5 h-0 w-0 border-y-[9px] border-l-[15px] border-y-transparent border-l-white"></span>
-      </span>
-      <span className="absolute bottom-3 right-3 z-10 text-[11px] text-white/70">Watch on YouTube</span>
-    </a>
+    <div className="overflow-hidden rounded-2xl glass">
+      <iframe
+        className="aspect-video w-full"
+        src={`https://www.youtube-nocookie.com/embed/${id}`}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+        style={{ border: 0 }}
+      />
+    </div>
   );
 }
 
@@ -80,7 +75,8 @@ export function SkillsWin(){
             </p>
           </div>
           <div>
-            <VideoCard title="Classic Skill Skool: Raheem Sterling" channel="Soccer AM" big />
+            <Tube id={FEATURED.id} title={FEATURED.title} />
+            <div className="mt-2 text-[13px] text-white/55">{FEATURED.title} · Soccer AM</div>
           </div>
         </div>
       </section>
@@ -88,7 +84,12 @@ export function SkillsWin(){
       {/* video row */}
       <section className="mx-auto mt-10 max-w-6xl px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {CLIPS.map((c,i)=><VideoCard key={i} title={c.title} channel={c.channel} />)}
+          {CLIPS.map((c)=>(
+            <div key={c.id}>
+              <Tube id={c.id} title={c.title} />
+              <div className="mt-2 text-[12px] text-white/55 line-clamp-1">{c.title}</div>
+            </div>
+          ))}
         </div>
       </section>
 
