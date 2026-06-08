@@ -1,6 +1,6 @@
 /* data.js — domain data, slots, contact + shared booking store */
 
-export const ROUTES = ['home', 'browse', 'venue', 'booking', 'dashboard', 'pricing', 'leagues', 'about', 'login', 'getagame', 'juniors', 'payandplay', 'parties', 'academy', 'clubs', 'events', 'manvfat', 'kingsclub'];
+export const ROUTES = ['home', 'browse', 'venue', 'booking', 'dashboard', 'pricing', 'leagues', 'about', 'login', 'getagame', 'juniors', 'payandplay', 'skills', 'parties', 'academy', 'clubs', 'events', 'manvfat', 'kingsclub'];
 
 export const HERO_VIDEO = '/hero.mp4';
 export const HERO_POSTER = '/hero-poster.jpg';   // still frame shown while the video loads

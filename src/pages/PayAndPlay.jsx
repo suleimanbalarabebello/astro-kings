@@ -86,7 +86,7 @@ export function PayAndPlay(){
           <Glass strong className="rounded-[28px] p-8 text-center accent-ring">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:26,height:26}}>{I.star({})}</span></span>
             <div className="mt-4 text-[20px] font-semibold leading-snug">Post your skills<br/>and Win!</div>
-            <a href="#getagame" className="mt-6 block"><Btn kind="primary" size="lg" className="w-full" iconEnd={I.arrow({})}>get involved</Btn></a>
+            <a href="#skills" className="mt-6 block"><Btn kind="primary" size="lg" className="w-full" iconEnd={I.arrow({})}>get involved</Btn></a>
           </Glass>
         </div>
       </section>
