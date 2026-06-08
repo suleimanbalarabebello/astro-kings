@@ -13,6 +13,7 @@ import { About } from './pages/About.jsx';
 import { Auth } from './pages/Auth.jsx';
 import { GetAGame } from './pages/GetAGame.jsx';
 import { Juniors } from './pages/Juniors.jsx';
+import { PayAndPlay } from './pages/PayAndPlay.jsx';
 import { Parties } from './pages/Parties.jsx';
 import { Academy } from './pages/Academy.jsx';
 import { Clubs } from './pages/Clubs.jsx';
@@ -32,6 +33,7 @@ const PAGES = {
   login: () => <Auth />,
   getagame: () => <GetAGame />,
   juniors: () => <Juniors />,
+  payandplay: () => <PayAndPlay />,
   parties: () => <Parties />,
   academy: () => <Academy />,
   clubs: () => <Clubs />,

@@ -12,9 +12,9 @@ export const NAV_LINKS = [
   { id:'browse',   label:'find a pitch' },
   { id:'getagame', label:'get a game' },
   { id:'juniors',  label:'juniors', children:[
-      { id:'kingsclub', label:'u18s kings club' },
-      { id:'academy',   label:'holiday camps' },
-      { id:'juniors',   label:'pay and play' },
+      { id:'kingsclub',  label:'u18s kings club' },
+      { id:'academy',    label:'holiday camps' },
+      { id:'payandplay', label:'pay and play' },
   ] },
   { id:'events',   label:'events', children:[
       { id:'events',  label:'corporate events' },
@@ -31,6 +31,7 @@ export const ALL_LINKS = [
   { id:'leagues',  label:'leagues' },
   { id:'getagame', label:'get a game' },
   { id:'juniors',  label:'juniors' },
+  { id:'payandplay', label:'pay and play' },
   { id:'parties',  label:'kids parties' },
   { id:'academy',  label:'academy' },
   { id:'events',   label:'events' },
