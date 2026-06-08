@@ -2,7 +2,7 @@
    Mirrors the live page: image hero → membership + prose → daily prices → facilities. */
 
 import { I } from '../lib/icons.jsx';
-import { HERO_VIDEO, HERO_POSTER } from '../lib/data.js';
+import { KINGSCLUB_VIDEO } from '../lib/data.js';
 import { Glass, Btn, Eyebrow } from '../components/ui.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
@@ -24,8 +24,8 @@ export function KingsClub(){
     <div>
       {/* ---------- image hero ---------- */}
       <section className="relative h-[64vh] min-h-[440px] w-full overflow-hidden">
-        <video className="absolute inset-0 h-full w-full object-cover" poster={HERO_POSTER} autoPlay loop muted playsInline preload="metadata">
-          <source src={HERO_VIDEO} type="video/mp4" />
+        <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
+          <source src={KINGSCLUB_VIDEO} type="video/mp4" />
         </video>
         <div className="absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.40) 0%, rgba(4,7,10,.30) 38%, rgba(4,7,10,.94) 100%)'}}></div>
         <div className="relative z-10 mx-auto flex h-full max-w-6xl items-center justify-center px-6 text-center">

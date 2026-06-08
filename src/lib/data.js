@@ -5,6 +5,7 @@ export const ROUTES = ['home', 'browse', 'venue', 'booking', 'dashboard', 'prici
 export const HERO_VIDEO = '/hero.mp4';
 export const HERO_POSTER = '/hero-poster.jpg';   // still frame shown while the video loads
 export const GETAGAME_VIDEO = '/getagame.mp4';   // background for the Get a Game hero
+export const KINGSCLUB_VIDEO = '/kingsclub.mp4'; // background for the Kings Club hero
 
 export const PITCHES = [
   { id:'classic', name:'Classic 5-a-side', price:60, unit:'/hr', size:'5v5', goals:'12ft × 4ft goals', tag:'Most booked', desc:'Rebound boards · 4G surface', spec:['Rebound boards','12ft × 4ft goals','4G rubber-crumb'] },
