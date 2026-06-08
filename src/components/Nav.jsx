@@ -58,7 +58,7 @@ function NavItem({ l, name }){
       </a>
       {/* pt-2 keeps the hover bridge contiguous so the menu doesn't flicker */}
       <div className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 translate-y-1 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-        <Glass strong className="min-w-[220px] overflow-hidden rounded-2xl p-1.5">
+        <Glass strong className="glass-menu min-w-[220px] overflow-hidden rounded-2xl p-1.5">
           {l.children.map(c=>(
             <a key={c.id} href={'#'+c.id}
                className={`nav-drop-item flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13.5px] transition-colors ${name===c.id?'accent-text':'text-white/80'} hover:bg-white/8`}>
@@ -88,7 +88,7 @@ export function TopNav(){
 
   return (
     <nav className="fixed inset-x-0 top-0 z-40 px-4 pt-4 md:px-7 md:pt-6">
-      <div className={`mx-auto flex max-w-7xl items-center justify-between gap-3 transition-all duration-300 ${scrolled?'scale-[.99]':''}`}>
+      <div className={`relative z-50 mx-auto flex max-w-7xl items-center justify-between gap-3 transition-all duration-300 ${scrolled?'scale-[.99]':''}`}>
         {/* left — brand pill */}
         <a href="#home" className="glass glass-soft group flex items-center gap-2.5 rounded-full py-2.5 pl-3 pr-5 transition hover:bg-white/10">
           <Logo h={26} className="transition group-hover:scale-105" />
@@ -117,19 +117,23 @@ export function TopNav(){
 
       {/* mobile sheet */}
       {open ? (
-        <div className="pop mx-auto mt-3 max-w-7xl lg:hidden">
-          <Glass strong className="overflow-hidden rounded-3xl p-2">
-            {ALL_LINKS.concat([{id:'login',label:'log in'},{id:'dashboard',label:'my bookings'}]).map(l=>(
-              <a key={l.id} href={'#'+l.id}
-                 className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'} hover:bg-white/6`}>
-                {l.label}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
+        <>
+          {/* dimming backdrop — tap to close */}
+          <button aria-label="close menu" onClick={()=>setOpen(false)} className="menu-scrim fixed inset-0 z-30 lg:hidden" />
+          <div className="pop relative z-40 mx-auto mt-3 max-w-7xl lg:hidden">
+            <Glass strong className="glass-menu max-h-[calc(100dvh-7rem)] overflow-y-auto overflow-x-hidden rounded-3xl p-2">
+              {ALL_LINKS.concat([{id:'login',label:'log in'},{id:'dashboard',label:'my bookings'}]).map(l=>(
+                <a key={l.id} href={'#'+l.id}
+                   className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
+                  {l.label}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
+                </a>
+              ))}
+              <a href="#booking" className="mt-1 block px-1 pb-1">
+                <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>
               </a>
-            ))}
-            <a href="#booking" className="mt-1 block px-1 pb-1">
-              <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>
-            </a>
-          </Glass>
-        </div>
+            </Glass>
+          </div>
+        </>
       ) : null}
     </nav>
   );

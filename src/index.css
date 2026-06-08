@@ -83,6 +83,19 @@ html[data-grain="off"] .ak-grain{ display:none; }
 .glass-soft{ box-shadow:inset 0 1px 0 var(--glass-hi), 0 10px 30px -16px rgba(0,0,0,.7); }
 .glass > *{ position:relative; z-index:1; }
 
+/* Menu surfaces (nav dropdowns + mobile sheet): opaque dark tint so the items
+   stay readable over the hero video / bright areas instead of the see-through glass.
+   Defined after .glass-strong so its background wins when both classes are present. */
+.glass-menu{
+  background:rgba(11,15,20,.93);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+          backdrop-filter:blur(22px) saturate(160%);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 26px 64px -22px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.10);
+}
+/* dimming backdrop behind the open mobile menu */
+.menu-scrim{ background:rgba(3,5,8,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+
 .accent-bg{ background:var(--accent); }
 .accent-text{ color:var(--accent); }
 .accent-ring{ box-shadow:0 0 0 1px var(--accent), 0 10px 30px -10px color-mix(in oklab, var(--accent), transparent 55%); }
