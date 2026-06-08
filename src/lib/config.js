@@ -5,6 +5,9 @@ export const HOLD_MINUTES      = 15;     // a pending reservation holds the slot
 export const CANCEL_WINDOW_HRS = 24;     // >24h before start → refund as credit; inside → forfeit
 export const NO_SHOW_LIMIT     = 2;      // future "require full prepayment" threshold — DEFINED, NOT ENFORCED yet
 export const MAX_HOURS         = 3;      // longest bookable run (consecutive 1h slots)
+export const PAYPLAY_PRICE      = 4.5;    // U18 daily pay & play, per person
+export const JOIN_SESSION_PRICE = 6;      // drop-in to join an ongoing session (a bit above pay & play)
+export const LOW_ATTENDANCE     = 0.6;    // a session is "short on players" below this fill ratio
 
 export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from email domain
 
