@@ -1,7 +1,8 @@
 /* Juniors.jsx — football for U18s: hub + memberships, coaching, camps, parties */
 
 import { I } from '../lib/icons.jsx';
-import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
+import { JUNIORS_VIDEO } from '../lib/data.js';
+import { Glass, Btn, Tag, Eyebrow } from '../components/ui.jsx';
 import { Section, FeatureTiles } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -18,10 +19,21 @@ export function Juniors(){
   ];
   return (
     <div>
-      <PageHead eyebrow="football for u18s" title="u18’s football at astro kings"
-        sub="We’re the best place in Nottingham for junior parties and coaching.">
-        <a href="#parties"><Btn kind="primary" iconEnd={I.arrow({})}>kids parties</Btn></a>
-      </PageHead>
+      {/* video hero */}
+      <section className="relative h-[58vh] min-h-[400px] w-full overflow-hidden">
+        <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
+          <source src={JUNIORS_VIDEO} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.42) 0%, rgba(4,7,10,.32) 38%, rgba(4,7,10,.94) 100%)'}}></div>
+        <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-center px-6 text-center">
+          <div className="pop text-center">
+            <Eyebrow>football for u18s</Eyebrow>
+            <h1 className="hero-title mt-4 text-5xl font-semibold leading-[1.04] lowercase md:text-6xl">u18’s football at astro kings</h1>
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/70">We’re the best place in Nottingham for junior parties and coaching.</p>
+            <a href="#parties" className="mt-6 inline-block"><Btn kind="primary" iconEnd={I.arrow({})}>kids parties</Btn></a>
+          </div>
+        </div>
+      </section>
 
       {/* play football at astro kings — intro */}
       <section className="mx-auto mt-16 max-w-3xl px-6 text-center fade-up">
