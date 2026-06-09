@@ -8,8 +8,10 @@ import {
   cancelBooking, extendBooking, signUp, sessionList, joinSession,
 } from './booking.js';
 import { DEPOSIT_PERCENT, JOIN_SESSION_PRICE } from './config.js';
+import { todayKey } from './dates.js';
 
 const classic = PITCHES.find(p => p.id === 'classic');   // £60/hr
+const DAY = '2099-06-15';   // a clean far-future day (never seeded)
 
 beforeEach(() => { resetState(); signUp({ name: 'Test', email: 'a@b.com' }); });
 
@@ -39,47 +41,47 @@ describe('deposit calculation (20%, deducted from total)', () => {
 
 describe('availability (atomic holds + consecutive slots)', () => {
   it('a free slot can be reserved, then is no longer free', () => {
-    expect(canStart('classic', 'Mon 09', '19:00', 1)).toBe(true);
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    expect(canStart('classic', DAY, '19:00', 1)).toBe(true);
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     expect(r.ok).toBe(true);
-    expect(canStart('classic', 'Mon 09', '19:00', 1)).toBe(false);
+    expect(canStart('classic', DAY, '19:00', 1)).toBe(false);
   });
 
   it('two reservations cannot grab the same slot', () => {
-    const a = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '20:00', hours: 1, userId: currentUser().id });
-    const b = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '20:00', hours: 1, userId: currentUser().id });
+    const a = startReservation({ pitchId: 'classic', day: DAY, startTime: '20:00', hours: 1, userId: currentUser().id });
+    const b = startReservation({ pitchId: 'classic', day: DAY, startTime: '20:00', hours: 1, userId: currentUser().id });
     expect(a.ok).toBe(true);
     expect(b.ok).toBe(false);
   });
 
   it('a multi-hour booking blocks every overlapping slot', () => {
-    startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 2, userId: currentUser().id });
-    expect(canStart('classic', 'Mon 09', '20:00', 1)).toBe(false);   // 20:00 is inside the 2h run
-    expect(canStart('classic', 'Mon 09', '19:30', 1)).toBe(false);
-    expect(canStart('classic', 'Mon 09', '21:00', 1)).toBe(true);    // after it ends → still free
+    startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 2, userId: currentUser().id });
+    expect(canStart('classic', DAY, '20:00', 1)).toBe(false);   // 20:00 is inside the 2h run
+    expect(canStart('classic', DAY, '19:30', 1)).toBe(false);
+    expect(canStart('classic', DAY, '21:00', 1)).toBe(true);    // after it ends → still free
   });
 
   it('a booking that would run past closing (22:00) is rejected', () => {
-    expect(canStart('classic', 'Mon 09', '21:00', 2)).toBe(false);   // 21:00 + 2h = 23:00
+    expect(canStart('classic', DAY, '21:00', 2)).toBe(false);   // 21:00 + 2h = 23:00
   });
 
   it('seeded slots show as taken', () => {
-    expect(canStart('classic', 'Fri 06', '18:00', 1)).toBe(false);
-    expect(canStart('classic', 'Fri 06', '17:30', 1)).toBe(false);   // overlaps the 18:00 cell
+    expect(canStart('classic', todayKey(), '18:00', 1)).toBe(false);
+    expect(canStart('classic', todayKey(), '17:30', 1)).toBe(false);   // overlaps the 18:00 cell
   });
 
   it('an expired hold auto-releases the slot', () => {
-    startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
-    expect(canStart('classic', 'Mon 09', '19:00', 1)).toBe(false);
+    startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
+    expect(canStart('classic', DAY, '19:00', 1)).toBe(false);
     update((s) => { for (const h of Object.values(s.holds)) h.expiresAt = Date.now() - 1000; });
     releaseExpiredHolds();
-    expect(canStart('classic', 'Mon 09', '19:00', 1)).toBe(true);
+    expect(canStart('classic', DAY, '19:00', 1)).toBe(true);
   });
 });
 
 describe('payment confirms the reservation', () => {
   it('paying a deposit confirms the booking and records the balance', () => {
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     const paid = payReservation(r.booking.id, { mode: 'deposit', card: '4242424242424242' });
     expect(paid.ok).toBe(true);
     expect(paid.booking.status).toBe('confirmed');
@@ -88,14 +90,14 @@ describe('payment confirms the reservation', () => {
   });
 
   it('paying in full leaves nothing on arrival', () => {
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     const paid = payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
     expect(paid.booking.amountPaid).toBe(60);
     expect(paid.booking.balanceDue).toBe(0);
   });
 
   it('a declined card does not confirm the booking', () => {
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     const paid = payReservation(r.booking.id, { mode: 'deposit', card: '4000000000000002' });
     expect(paid.ok).toBe(false);
     expect(getState().bookings[r.booking.id].status).toBe('pending_deposit');
@@ -104,7 +106,7 @@ describe('payment confirms the reservation', () => {
 
 describe('cancellation and extend', () => {
   it('venue cancellation refunds to account credit', () => {
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
     const c = cancelBooking(r.booking.id, { byVenue: true });
     expect(c.refundCredit).toBe(60);
@@ -112,7 +114,7 @@ describe('cancellation and extend', () => {
   });
 
   it('extend adds consecutive hours and re-prices', () => {
-    const r = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
     const e = extendBooking(r.booking.id, 1);
     expect(e.ok).toBe(true);
@@ -145,9 +147,9 @@ describe('cancellation and extend', () => {
   });
 
   it('extend is blocked when the next slot is taken', () => {
-    const a = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '19:00', hours: 1, userId: currentUser().id });
+    const a = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     payReservation(a.booking.id, { mode: 'full', card: '4242424242424242' });
-    const b = startReservation({ pitchId: 'classic', day: 'Mon 09', startTime: '20:00', hours: 1, userId: currentUser().id });
+    const b = startReservation({ pitchId: 'classic', day: DAY, startTime: '20:00', hours: 1, userId: currentUser().id });
     payReservation(b.booking.id, { mode: 'full', card: '4242424242424242' });
     const e = extendBooking(a.booking.id, 1);
     expect(e.ok).toBe(false);

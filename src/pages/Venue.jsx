@@ -2,18 +2,23 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, PITCH_PHOTO, store } from '../lib/data.js';
+import { PITCHES, slotsInBand, PITCH_PHOTO, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { useStore } from '../lib/store.js';
 import { canStart } from '../lib/booking.js';
+import { todayKey, keyLabel } from '../lib/dates.js';
 import { Glass, Btn, Tag } from '../components/ui.jsx';
+import { Calendar } from '../components/Calendar.jsx';
 import { Footer } from '../components/Nav.jsx';
+
+const isKey = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 
 export function Venue({ params }){
   useStore();
   const id = params.p || store.venue || 'classic';
   const p = PITCHES.find(x=>x.id===id) || PITCHES[0];
   const [time,setTime] = useState(store.time || '19:00');
+  const [dayKey,setDayKey] = useState(isKey(store.day) ? store.day : todayKey());
 
   return (
     <div>
@@ -90,10 +95,12 @@ export function Venue({ params }){
                   <div><div className="tnum text-4xl font-semibold">£{p.price}</div><div className="text-[13px] text-white/45">{p.unit} · off-peak −20%</div></div>
                   <Tag>{p.size}</Tag>
                 </div>
-                <div className="mt-5 text-[12px] uppercase tracking-wide text-white/40">pick a slot · Fri 06 Jun</div>
+                <div className="mt-5 text-[12px] uppercase tracking-wide text-white/40">pick a date</div>
+                <div className="mt-3"><Calendar value={dayKey} onChange={setDayKey} /></div>
+                <div className="mt-4 text-[12px] uppercase tracking-wide text-white/40">evening slots · {keyLabel(dayKey)}</div>
                 <div className="mt-3 grid grid-cols-3 gap-2">
-                  {SLOTS.slice(2,8).map(s=>{
-                    const taken = !canStart(p.id, 'Fri 06', s, 1);
+                  {slotsInBand('evening').map(s=>{
+                    const taken = !canStart(p.id, dayKey, s, 1);
                     return (
                       <button key={s} disabled={taken} onClick={()=>setTime(s)}
                         className={`tnum rounded-xl py-2.5 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/80 hover:bg-white/12'}`}>
@@ -102,7 +109,7 @@ export function Venue({ params }){
                     );
                   })}
                 </div>
-                <Btn kind="primary" size="lg" className="mt-5 w-full" iconEnd={I.arrow({})} onClick={()=>{ store.venue=p.id; store.time=time; go('booking',{p:p.id,t:time}); }}>book {time}</Btn>
+                <Btn kind="primary" size="lg" className="mt-5 w-full" iconEnd={I.arrow({})} onClick={()=>{ store.venue=p.id; store.time=time; store.day=dayKey; go('booking',{p:p.id,t:time}); }}>book {time}</Btn>
                 <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-white/45"><span style={{width:14,height:14}}>{I.lock({})}</span> free cancellation up to 24h before</div>
               </Glass>
             </div>

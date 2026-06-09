@@ -17,8 +17,22 @@ export const PITCHES = [
   { id:'mini',    name:'Mini Soccer',      price:90, unit:'/hr', size:'7v7', goals:'12ft × 6ft goals', tag:'FA approved', desc:'For juniors · FA approved', spec:['FA approved','12ft × 6ft goals','Junior friendly'] },
 ];
 
-export const SLOTS = ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30'];
-export const TAKEN = new Set(['18:00','19:30','20:30']);
+/* full operating day, 30-min slots from 08:00 to 21:30 (venue closes 22:00) */
+export const SLOTS = (() => {
+  const out = [];
+  for (let h = 8; h < 22; h++) out.push(`${String(h).padStart(2,'0')}:00`, `${String(h).padStart(2,'0')}:30`);
+  return out;
+})();
+
+export const TIME_BANDS = {
+  morning:   { label:'08–12', from:8,  to:12 },
+  afternoon: { label:'12–17', from:12, to:17 },
+  evening:   { label:'17–22', from:17, to:22 },
+};
+export const slotsInBand = (band) => {
+  const b = TIME_BANDS[band]; if (!b) return SLOTS;
+  return SLOTS.filter((s) => { const h = +s.split(':')[0]; return h >= b.from && h < b.to; });
+};
 
 export const CONTACT = {
   phone:'0115 888 0442',
@@ -28,4 +42,4 @@ export const CONTACT = {
 };
 
 /* lightweight cross-page handoff (which pitch/slot the user picked) */
-export const store = { venue:'classic', day:'Fri', date:'06 Jun', time:'19:00', players:'5v5' };
+export const store = { venue:'classic', day:'', time:'19:00', players:'5v5' };

@@ -7,6 +7,7 @@
 
 import { getState, update, nextId } from './store.js';
 import { PITCHES } from './data.js';
+import { fromKey } from './dates.js';
 import {
   DEPOSIT_PERCENT, HOLD_MINUTES, CANCEL_WINDOW_HRS, NO_SHOW_LIMIT,
   STUDENT_DOMAIN_RE, TEST_CARDS, JOIN_SESSION_PRICE, LOW_ATTENDANCE,
@@ -30,10 +31,12 @@ export function cellsFor(pitchId, day, start, hours){
   return keys;
 }
 
-/* parse a 'Fri 06' day label into a ms timestamp (prototype base: June 2026) */
-function startAtOf(day, start){
-  const dd = Number((day.match(/\d+/) || ['6'])[0]);
-  return new Date(2026, 5, dd, ...start.split(':').map(Number)).getTime();
+/* combine an ISO day-key + 'HH:MM' into a ms timestamp */
+function startAtOf(dayKey, start){
+  const d = fromKey(dayKey);
+  const [h, m] = start.split(':').map(Number);
+  d.setHours(h, m, 0, 0);
+  return d.getTime();
 }
 
 /* ---------------------------------------------------------------- availability */

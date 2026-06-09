@@ -4,17 +4,21 @@
 
 import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, store } from '../lib/data.js';
+import { PITCHES, slotsInBand, TIME_BANDS, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { useStore, currentUser } from '../lib/store.js';
 import {
   freeStarts, quote, endTimeOf, startReservation, payReservation,
   releaseExpiredHolds, signUp, deriveStudent,
 } from '../lib/booking.js';
+import { todayKey, keyLabel } from '../lib/dates.js';
 import { HOLD_MINUTES, MAX_HOURS } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field, Placeholder } from '../components/ui.jsx';
+import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
 import { Chip } from './Browse.jsx';
+
+const isKey = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 
 function Stepper({ step }){
   const steps = ['slot','details','payment','done'];
@@ -69,7 +73,6 @@ const ADDONS = [
   { t:'Post-match café table', p:0 },
 ];
 const DURATIONS = Array.from({length:MAX_HOURS}, (_,i)=>i+1);
-const DAYS = ['Thu 05','Fri 06','Sat 07','Sun 08','Mon 09'];
 
 export function Booking({ params }){
   useStore();                                  // re-render on availability changes
@@ -78,7 +81,8 @@ export function Booking({ params }){
 
   const [step,setStep] = useState(0);
   const [time,setTime] = useState(params.t || store.time || '19:00');
-  const [day,setDay]   = useState(store.day && DAYS.find(d=>d.startsWith(store.day)) || 'Fri 06');
+  const [dayKey,setDayKey] = useState(isKey(store.day) ? store.day : todayKey());
+  const [band,setBand] = useState('evening');
   const [hours,setHours] = useState(1);
   const [sel,setSel]   = useState([]);
   const [team,setTeam] = useState('');
@@ -93,11 +97,13 @@ export function Booking({ params }){
 
   const addons = ADDONS.filter(a=>sel.includes(a.t)&&a.p>0).map(a=>({t:a.t,p:a.p}));
   const q = quote(p, hours, addons);
-  const starts = freeStarts(p.id, day, SLOTS, hours);
+  const dayLabel = keyLabel(dayKey);
+  const bandSlots = slotsInBand(band);
+  const starts = freeStarts(p.id, dayKey, bandSlots, hours);
   const isStudent = deriveStudent(email);
 
-  // selected start may stop being valid when day/hours/pitch change
-  useEffect(()=>{ if (!starts.includes(time) && starts.length) setTime(starts[0]); }, [day, hours, p.id]); // eslint-disable-line
+  // selected start may stop being valid when day/band/hours/pitch change
+  useEffect(()=>{ if (!starts.includes(time) && starts.length) setTime(starts[0]); }, [dayKey, band, hours, p.id]); // eslint-disable-line
 
   // countdown while a hold is live on the payment step
   useEffect(()=>{
@@ -123,7 +129,7 @@ export function Booking({ params }){
     setErr('');
     // ensure there's a user to attach the booking to
     if (!currentUser()) signUp({ name: team || 'Captain', email });
-    const res = startReservation({ pitchId:p.id, day, startTime:time, hours, addons, userId: currentUser().id });
+    const res = startReservation({ pitchId:p.id, day:dayKey, startTime:time, hours, addons, userId: currentUser().id });
     if (!res.ok){ setErr(res.error); return; }
     setReservation(res.booking);
     setLeft(HOLD_MINUTES*60);
@@ -160,22 +166,30 @@ export function Booking({ params }){
         <div className="min-h-[420px]">
           {step===0 && (
             <div className="pop space-y-7">
-              <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">1 · choose a day</div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {DAYS.map(d=><Chip key={d} active={day===d} onClick={()=>setDay(d)}>{d}</Chip>)}
+              <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
+                <div>
+                  <div className="text-[12px] uppercase tracking-wide text-white/40">1 · pick a date</div>
+                  <div className="mt-3 max-w-[300px]"><Calendar value={dayKey} onChange={setDayKey} /></div>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <div className="text-[12px] uppercase tracking-wide text-white/40">2 · how long?</div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[12px] uppercase tracking-wide text-white/40">3 · time of day</div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {Object.entries(TIME_BANDS).map(([k,b])=><Chip key={k} active={band===k} onClick={()=>setBand(k)}>{b.label}</Chip>)}
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">2 · how long?</div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
-                </div>
-              </div>
-              <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">3 · choose a kick-off</div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">4 · choose a kick-off · {dayLabel}</div>
                 <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
-                  {SLOTS.map(s=>{
+                  {bandSlots.map(s=>{
                     const free = starts.includes(s);
                     const off = Number(s.split(':')[0])<18;
                     return (
@@ -190,9 +204,9 @@ export function Booking({ params }){
                 <div className="mt-3 text-[12px] text-white/40">Greyed slots can’t fit a {hours}-hour booking. Ends {endTimeOf(time,hours)}.</div>
               </div>
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">4 · switch pitch (optional)</div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">5 · switch pitch (optional)</div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {PITCHES.map(x=><Chip key={x.id} active={x.id===p.id} onClick={()=>{ store.venue=x.id; go('booking',{p:x.id,t:time}); }}>{x.name} · £{x.price}</Chip>)}
+                  {PITCHES.map(x=><Chip key={x.id} active={x.id===p.id} onClick={()=>{ store.venue=x.id; store.day=dayKey; go('booking',{p:x.id,t:time}); }}>{x.name} · £{x.price}</Chip>)}
                 </div>
               </div>
             </div>
@@ -267,7 +281,7 @@ export function Booking({ params }){
                 <div className="relative">
                   <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
                   <h2 className="hero-title mt-6 text-3xl md:text-4xl font-semibold lowercase">you're booked in</h2>
-                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {day} · {time}–{endTimeOf(time,hours)}. {payMode==='deposit'?`£${q.depositDue} paid — £${q.balanceDue} due on arrival.`:`£${q.total} paid in full.`}</p>
+                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. {payMode==='deposit'?`£${q.depositDue} paid — £${q.balanceDue} due on arrival.`:`£${q.total} paid in full.`}</p>
                   <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">
                     <a href="#dashboard"><Btn kind="primary" iconEnd={I.arrow({})}>view my bookings</Btn></a>
@@ -290,7 +304,7 @@ export function Booking({ params }){
           )}
         </div>
 
-        <aside><Summary p={p} day={day} time={time} hours={hours} q={q} payMode={payMode} /></aside>
+        <aside><Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} /></aside>
       </div>
     </div>
   );

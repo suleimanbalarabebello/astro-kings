@@ -6,6 +6,7 @@ import { I } from '../lib/icons.jsx';
 import { CONTACT, GETAGAME_VIDEO, PITCHES } from '../lib/data.js';
 import { useStore } from '../lib/store.js';
 import { sessionList, joinSession } from '../lib/booking.js';
+import { keyLabel } from '../lib/dates.js';
 import { JOIN_SESSION_PRICE } from '../lib/config.js';
 import { Glass, Btn, Field, Eyebrow, Placeholder } from '../components/ui.jsx';
 import { Turnstile } from '../components/Turnstile.jsx';
@@ -24,7 +25,7 @@ function SessionCard({ s, onMsg }){
   return (
     <Glass strong className="flex flex-col rounded-3xl p-5">
       <div className="flex items-center justify-between">
-        <div className="text-[12px] uppercase tracking-wide text-white/45">{s.day} · {s.time}</div>
+        <div className="text-[12px] uppercase tracking-wide text-white/45">{keyLabel(s.day)} · {s.time}</div>
         {s.isFull ? <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] uppercase tracking-wide text-white/50">full</span>
           : s.isLow ? <span className="rounded-full accent-bg px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0b0b0b]">needs players</span> : null}
       </div>

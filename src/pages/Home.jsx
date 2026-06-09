@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { I } from '../lib/icons.jsx';
 import { PITCHES, HERO_VIDEO, HERO_POSTER, store } from '../lib/data.js';
+import { nextByLabel } from '../lib/dates.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Eyebrow, Field, Placeholder, Stat } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
@@ -27,7 +28,7 @@ function QuickBook({ compact=false }){
             {['5v5','7v7','9v9'].map(d=><option key={d}>{d}</option>)}
           </select>
         </Field>
-        <Btn kind="primary" className="h-12" icon={I.search({})} onClick={()=>{ store.day=day; store.players=size; go('browse'); }}>search</Btn>
+        <Btn kind="primary" className="h-12" icon={I.search({})} onClick={()=>{ store.day=nextByLabel(day); store.players=size; go('browse'); }}>search</Btn>
       </div>
     </Glass>
   );
