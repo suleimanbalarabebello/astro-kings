@@ -79,6 +79,7 @@ export function TopNav(){
   useStore();
   const user = currentUser();
   const [open, setOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   useEffect(()=>{
     const on = ()=> setScrolled(window.scrollY > 12);
@@ -123,12 +124,36 @@ export function TopNav(){
           <button aria-label="close menu" onClick={()=>setOpen(false)} className="menu-scrim fixed inset-0 z-30 lg:hidden" />
           <div className="pop relative z-40 mx-auto mt-3 max-w-7xl lg:hidden">
             <Glass strong className="glass-menu max-h-[calc(100dvh-7rem)] overflow-y-auto overflow-x-hidden rounded-3xl p-2">
-              {ALL_LINKS.concat([{id:'login',label:'log in'},{id:'dashboard',label:'my bookings'}]).map(l=>(
+              {/* mirror the desktop nav: 6 items, juniors & events expand */}
+              {NAV_LINKS.map(l=> l.children ? (
+                <div key={l.id}>
+                  <button onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
+                    className={`flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-[15px] ${openGroup===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
+                    {l.label}<span className={`text-white/40 transition ${openGroup===l.id?'rotate-180':''}`} style={{width:16,height:16}}>{I.chevd({})}</span>
+                  </button>
+                  {openGroup===l.id ? (
+                    <div className="mb-1 ml-4 border-l border-white/10 pl-2">
+                      {l.children.map(c=>(
+                        <a key={c.id} href={'#'+c.id}
+                           className={`flex items-center justify-between rounded-xl px-4 py-3 text-[14px] ${name===c.id?'accent-text':'text-white/70'} hover:bg-white/10`}>
+                          {c.label}<span className="text-white/25" style={{width:16,height:16}}>{I.chev({})}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
                 <a key={l.id} href={'#'+l.id}
                    className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
                   {l.label}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
                 </a>
               ))}
+
+              <div className="my-1.5 h-px bg-white/10" />
+              <a href={user?'#dashboard':'#login'}
+                 className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name==='login'||name==='dashboard'?'accent-text':'text-white/85'} hover:bg-white/10`}>
+                {user?'my bookings':'log in'}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
+              </a>
               <a href="#booking" className="mt-1 block px-1 pb-1">
                 <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>
               </a>
