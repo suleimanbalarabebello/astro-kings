@@ -39,6 +39,9 @@ export const CONTACT = {
   email:'play@astro-kings.com',
   addr:'Wigman Rd, Nottingham NG8 4PB',
   strap:"Nottingham's best 5-a-side football centre",
+  maps:'https://maps.google.com/?q=Astro+Kings+Wigman+Rd+Nottingham+NG8+4PB',
+  facebook:'https://www.facebook.com/astrokings/?locale=en_GB',
+  instagram:'https://www.instagram.com/astrokingsuk/',
 };
 
 /* lightweight cross-page handoff (which pitch/slot the user picked) */

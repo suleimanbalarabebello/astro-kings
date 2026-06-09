@@ -210,8 +210,8 @@ export function Footer(){
               {/* newsletter signup */}
               <Newsletter />
               <div className="mt-6 flex items-center gap-2.5">
-                <span className="glass grid h-10 w-10 place-items-center rounded-full text-white/70">f</span>
-                <span className="glass grid h-10 w-10 place-items-center rounded-full text-white/70">ig</span>
+                <a href={CONTACT.facebook} target="_blank" rel="noreferrer" aria-label="Astro Kings on Facebook" className="glass grid h-10 w-10 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white">f</a>
+                <a href={CONTACT.instagram} target="_blank" rel="noreferrer" aria-label="Astro Kings on Instagram" className="glass grid h-10 w-10 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white">ig</a>
               </div>
             </div>
             <div>
@@ -230,10 +230,10 @@ export function Footer(){
             <div>
               <div className="text-[11px] uppercase tracking-[.2em] text-white/40">visit us</div>
               <ul className="mt-4 space-y-3 text-[14px] text-white/65">
-                <li className="flex items-start gap-2.5"><span className="mt-0.5 text-white/40" style={{width:17,height:17}}>{I.pin({})}</span>{CONTACT.addr}</li>
+                <li className="flex items-start gap-2.5"><span className="mt-0.5 text-white/40" style={{width:17,height:17}}>{I.pin({})}</span><a href={CONTACT.maps} target="_blank" rel="noreferrer" className="hover:text-white">{CONTACT.addr}</a></li>
                 <li className="flex items-center gap-2.5"><span className="text-white/40" style={{width:17,height:17}}>{I.clock({})}</span>Mon–Fri 08–22 · Sat–Sun 08–20</li>
-                <li className="flex items-center gap-2.5"><span className="accent-text">●</span>{CONTACT.phone}</li>
-                <li className="flex items-center gap-2.5"><span className="accent-text">●</span>{CONTACT.email}</li>
+                <li className="flex items-center gap-2.5"><span className="accent-text">●</span><a href={'tel:'+CONTACT.phone.replace(/\s/g,'')} className="hover:text-white">{CONTACT.phone}</a></li>
+                <li className="flex items-center gap-2.5"><span className="accent-text">●</span><a href={'mailto:'+CONTACT.email} className="hover:text-white">{CONTACT.email}</a></li>
               </ul>
             </div>
           </div>
