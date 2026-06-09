@@ -7,9 +7,9 @@ import { Section, FeatureTiles } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 const JUNIOR_TILES = [
-  { t:'coaching',        d:'weekends & holiday kids football coaching', to:'academy' },
-  { t:'u18s pay & play', d:'play for just £3.50 every day',             to:'browse' },
-  { t:'birthday parties',d:'from just £4 per child',                    to:'parties' },
+  { t:'coaching',        d:'weekends & holiday kids football coaching', to:'academy',    img:'/coaching.jpg' },
+  { t:'u18s pay & play', d:'play for just £3.50 every day',             to:'payandplay', img:'/payandplay-tile.jpg' },
+  { t:'birthday parties',d:'from just £4 per child',                    to:'parties',    img:'/party.jpg' },
 ];
 
 export function Juniors(){
