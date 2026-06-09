@@ -21,13 +21,14 @@ function ExtendModal({ booking, onClose, onDone }){
   const [card,setCard] = useState('');
   const [cardComplete,setCardComplete] = useState(false);
   const [err,setErr] = useState('');
+  const [success,setSuccess] = useState(null);
   function pay(){
     if (!q.ok) return;
     if (stripeEnabled && !cardComplete){ setErr('Enter your card details.'); return; }
     if (!stripeEnabled && card.replace(/\s/g,'').length < 12){ setErr('Enter your card details.'); return; }
     const r = extendBooking(booking.id, 1, { card: stripeEnabled ? '4242424242424242' : card });
     if (!r.ok){ setErr(r.error); return; }
-    onDone(`Extended to ${r.booking.endTime} · £${r.charged} paid`);
+    setSuccess({ endTime: r.booking.endTime, charged: r.charged });
   }
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center p-4">
@@ -37,8 +38,19 @@ function ExtendModal({ booking, onClose, onDone }){
           <div className="text-[12px] uppercase tracking-wide text-white/45">extend booking</div>
           <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-white/50 hover:bg-white/10"><span style={{width:16,height:16}}>{I.x({})}</span></button>
         </div>
-        {!q.ok ? (
-          <div className="mt-4 rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">{q.error}</div>
+
+        {success ? (
+          <div className="py-4 text-center">
+            <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
+            <div className="hero-title mt-4 text-2xl font-semibold lowercase">payment successful</div>
+            <p className="mx-auto mt-2 max-w-xs text-[14px] text-white/65">1 hour added — your booking now runs to <span className="text-white">{success.endTime}</span>. <span className="tnum">£{success.charged}</span> paid.</p>
+            <Btn kind="primary" className="mt-6 w-full" onClick={()=>onDone(`1 hour added — your booking now ends at ${success.endTime}`)}>done</Btn>
+          </div>
+        ) : !q.ok ? (
+          <>
+            <div className={`mt-4 rounded-2xl border px-4 py-3 text-[13px] ${q.maxed?'border-amber-400/30 bg-amber-500/10 text-amber-200':'border-red-400/30 bg-red-500/10 text-red-200'}`}>{q.error}</div>
+            <Btn kind="glass" className="mt-5 w-full" onClick={onClose}>close</Btn>
+          </>
         ) : (
           <>
             <div className="mt-3 text-[18px] font-medium">{pitchName(booking.pitchId)} · +1 hour</div>

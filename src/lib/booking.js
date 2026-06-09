@@ -11,7 +11,7 @@ import { fromKey } from './dates.js';
 import {
   DEPOSIT_PERCENT, HOLD_MINUTES, CANCEL_WINDOW_HRS, NO_SHOW_LIMIT,
   STUDENT_DOMAIN_RE, TEST_CARDS, JOIN_SESSION_PRICE, LOW_ATTENDANCE,
-  NO_SHOW_PREPAY_AT, NO_SHOW_FEE_AT, NO_SHOW_FEE,
+  NO_SHOW_PREPAY_AT, NO_SHOW_FEE_AT, NO_SHOW_FEE, MAX_HOURS,
 } from './config.js';
 
 const pitchPrice = (pitchId) => (PITCHES.find((x) => x.id === pitchId) || PITCHES[0]).price;
@@ -269,6 +269,7 @@ export function waitlistCount(pitchId, day, startTime, hours = 1){
 export function extendQuote(bookingId, addHours){
   const b = getState().bookings[bookingId];
   if (!b || b.status !== 'confirmed') return { ok: false, error: 'Only confirmed bookings can be extended.' };
+  if (b.hours + addHours > MAX_HOURS) return { ok: false, maxed: true, error: `You’ve reached the maximum of ${MAX_HOURS} hours — no more time can be added.` };
   const fits = canStart(b.pitchId, b.day, b.endTime, addHours, bookingId)
     && (toMin(b.endTime) + addHours * 60) <= CLOSE_MIN;
   if (!fits) return { ok: false, error: 'The next slot is already taken — can’t extend this booking.' };
@@ -284,6 +285,7 @@ export function extendBooking(bookingId, addHours, { card } = {}){
   const s = getState();
   const b = s.bookings[bookingId];
   if (!b || b.status !== 'confirmed') return { ok: false, error: 'Only confirmed bookings can be extended.' };
+  if (b.hours + addHours > MAX_HOURS) return { ok: false, maxed: true, error: `You’ve reached the maximum of ${MAX_HOURS} hours — no more time can be added.` };
 
   // are the slots right after the current end free?
   const ok = canStart(b.pitchId, b.day, b.endTime, addHours, bookingId)

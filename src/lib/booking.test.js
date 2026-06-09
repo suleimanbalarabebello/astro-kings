@@ -182,6 +182,14 @@ describe('cancellation and extend', () => {
     expect(getState().bookings[r.booking.id].attendanceConfirmed).toBe(true);
   });
 
+  it('cannot extend beyond the 3-hour maximum', () => {
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '18:00', hours: 3, userId: currentUser().id });
+    payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
+    const e = extendBooking(r.booking.id, 1);
+    expect(e.ok).toBe(false);
+    expect(e.maxed).toBe(true);
+  });
+
   it('extend is blocked when the next slot is taken', () => {
     const a = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
     payReservation(a.booking.id, { mode: 'full', card: '4242424242424242' });
