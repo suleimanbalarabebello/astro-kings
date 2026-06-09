@@ -135,7 +135,7 @@ export function TopNav(){
               {/* mirror the desktop nav: 6 items, juniors & events expand */}
               {NAV_LINKS.map(l=> l.children ? (
                 <div key={l.id}>
-                  <button onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
+                  <button type="button" onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
                     className={`flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-[15px] ${openGroup===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
                     {l.label}<span className={`text-white/40 transition ${openGroup===l.id?'rotate-180':''}`} style={{width:16,height:16}}>{I.chevd({})}</span>
                   </button>
