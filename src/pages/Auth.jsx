@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { go } from '../lib/router.js';
-import { Logo, Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
+import { PITCH_PHOTO } from '../lib/data.js';
+import { Logo, Glass, Btn, Field } from '../components/ui.jsx';
 import { signUp, logIn, deriveStudent } from '../lib/booking.js';
 
 export function Auth(){
@@ -25,7 +26,9 @@ export function Auth(){
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* visual side */}
       <div className="relative hidden items-end p-10 lg:flex">
-        <Placeholder label="floodlit pitch · night" className="absolute inset-6 rounded-[34px]" />
+        <div className="absolute inset-6 overflow-hidden rounded-[34px]">
+          <img src={PITCH_PHOTO} alt="Astro Kings floodlit pitch" className="h-full w-full object-cover" />
+        </div>
         <div className="pointer-events-none absolute inset-6 rounded-[34px]" style={{background:'linear-gradient(to top, rgba(4,7,10,.9), transparent 55%)'}}></div>
         <div className="relative z-10 p-6">
           <Logo h={44} />

@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { go } from '../lib/router.js';
-import { Glass, Btn, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
-import { PITCHES } from '../lib/data.js';
+import { PITCHES, PITCH_PHOTO } from '../lib/data.js';
 import { useStore, currentUser } from '../lib/store.js';
 import { bookingsFor, extendBooking, cancelBooking, endTimeOf } from '../lib/booking.js';
 
@@ -19,7 +19,9 @@ function BookingCard({ b, onMsg }){
   const live = b.status==='confirmed' || b.status==='pending_deposit';
   return (
     <Glass strong className="grid gap-4 rounded-3xl p-4 sm:grid-cols-[120px_1fr]">
-      <Placeholder label="pitch" className="aspect-video rounded-2xl sm:aspect-auto" />
+      <div className="relative aspect-video overflow-hidden rounded-2xl sm:aspect-auto sm:min-h-[90px]">
+        <img src={PITCH_PHOTO} alt={pitchName(b.pitchId)} className="absolute inset-0 h-full w-full object-cover" />
+      </div>
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <div>

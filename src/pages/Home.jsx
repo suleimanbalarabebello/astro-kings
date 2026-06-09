@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, HERO_VIDEO, HERO_POSTER, store } from '../lib/data.js';
+import { PITCHES, HERO_VIDEO, HERO_POSTER, PITCH_PHOTO, store } from '../lib/data.js';
 import { nextByLabel } from '../lib/dates.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Eyebrow, Field, Placeholder, Stat } from '../components/ui.jsx';
@@ -126,9 +126,10 @@ export function Hero({ variant='stacked' }){
 function PitchCard({ p, i }){
   return (
     <Glass className="group flex flex-col overflow-hidden rounded-3xl p-3 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.05)+'s'}}>
-      <Placeholder label={p.size+' · 4g'} className="aspect-[16/10] w-full rounded-2xl">
-        {p.tag ? <span className="absolute right-3 top-3"><Tag accent>{p.tag}</Tag></span> : null}
-      </Placeholder>
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
+        <img src={PITCH_PHOTO} alt={p.name} className="absolute inset-0 h-full w-full object-cover" />
+        {p.tag ? <span className="absolute right-3 top-3 z-10"><Tag accent>{p.tag}</Tag></span> : null}
+      </div>
       <div className="flex flex-1 flex-col px-2 pb-1 pt-4">
         <div className="flex items-start justify-between gap-3">
           <div>

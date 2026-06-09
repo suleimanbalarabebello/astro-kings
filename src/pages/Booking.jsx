@@ -4,7 +4,7 @@
 
 import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, slotsInBand, TIME_BANDS, store } from '../lib/data.js';
+import { PITCHES, slotsInBand, TIME_BANDS, PITCH_PHOTO, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { useStore, currentUser } from '../lib/store.js';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
 import { HOLD_MINUTES, MAX_HOURS } from '../lib/config.js';
-import { Glass, Btn, Eyebrow, Field, Placeholder } from '../components/ui.jsx';
+import { Glass, Btn, Eyebrow, Field } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
 import { Chip } from './Browse.jsx';
@@ -41,9 +41,12 @@ function Stepper({ step }){
 
 function Summary({ p, day, time, hours, q, payMode }){
   return (
-    <Glass strong className="rounded-[28px] p-6 lg:sticky lg:top-28">
+    <Glass strong className="rounded-[28px] p-6">
       <div className="text-[12px] uppercase tracking-wide text-white/40">your booking</div>
-      <Placeholder label={p.size+' · 4g'} className="mt-4 aspect-[16/9] w-full rounded-2xl" />
+      <div className="relative mt-4 aspect-[16/9] w-full overflow-hidden rounded-2xl">
+        <img src={PITCH_PHOTO} alt={p.name} className="absolute inset-0 h-full w-full object-cover" />
+        <span className="absolute bottom-2 left-3 text-[11px] uppercase tracking-wide text-white/70">{p.size} · 4g</span>
+      </div>
       <div className="mt-4 text-[18px] font-medium">{p.name}</div>
       <div className="mt-3 space-y-2 text-[14px] text-white/70">
         <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="text-white/40" style={{width:15,height:15}}>{I.cal({})}</span>{day}</span><span>{time}–{endTimeOf(time,hours)}</span></div>
@@ -191,12 +194,10 @@ export function Booking({ params }){
                 <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
                   {bandSlots.map(s=>{
                     const free = starts.includes(s);
-                    const off = Number(s.split(':')[0])<18;
                     return (
                       <button key={s} disabled={!free} onClick={()=>setTime(s)}
-                        className={`relative tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
+                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
                         {s}
-                        {off && free ? <span className={`absolute -top-1.5 right-2 text-[9px] ${time===s?'text-[#0b0b0b]':'accent-text'}`}>−20%</span> : null}
                       </button>
                     );
                   })}
@@ -292,19 +293,23 @@ export function Booking({ params }){
             </div>
           )}
 
-          {step<3 && (
-            <div className="mt-9 flex items-center justify-between">
-              <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
-                <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
-              </button>
-              <Btn kind="primary" size="lg" onClick={step===0?toDetails:step===1?toPayment:pay} iconEnd={I.arrow({})}>
-                {step===0?'continue':step===1?'go to payment':payMode==='deposit'?'pay £'+q.depositDue+' deposit':'pay £'+q.total}
-              </Btn>
-            </div>
-          )}
         </div>
 
-        <aside><Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} /></aside>
+        <aside>
+          <div className="space-y-4 lg:sticky lg:top-28">
+            <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} />
+            {step<3 && (
+              <div className="flex items-center justify-between gap-3">
+                <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
+                  <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
+                </button>
+                <Btn kind="primary" size="lg" onClick={step===0?toDetails:step===1?toPayment:pay} iconEnd={I.arrow({})}>
+                  {step===0?'continue':step===1?'go to payment':payMode==='deposit'?'pay £'+q.depositDue+' deposit':'pay £'+q.total}
+                </Btn>
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
     </div>
   );

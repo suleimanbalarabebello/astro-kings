@@ -1,7 +1,7 @@
 /* About.jsx — about, events & contact */
 
 import { I } from '../lib/icons.jsx';
-import { CONTACT } from '../lib/data.js';
+import { CONTACT, PITCH_PHOTO } from '../lib/data.js';
 import { Glass, Btn, Field, Placeholder, PageHead } from '../components/ui.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
@@ -19,7 +19,9 @@ export function About(){
         sub="Since 2016 on Wigman Rd — four floodlit 4G pitches, hot showers, lockers and a café. Built for casual kickabouts, leagues, juniors and big events alike." />
 
       <div className="mx-auto mt-10 max-w-6xl px-6">
-        <Placeholder label="venue · floodlit centre exterior" className="aspect-[21/9] w-full rounded-[34px] fade-up" />
+        <div className="relative aspect-[21/9] w-full overflow-hidden rounded-[34px] fade-up">
+          <img src={PITCH_PHOTO} alt="Astro Kings floodlit centre" className="absolute inset-0 h-full w-full object-cover" />
+        </div>
       </div>
 
       {/* events */}
