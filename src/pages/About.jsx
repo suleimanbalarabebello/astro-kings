@@ -2,16 +2,17 @@
 
 import { I } from '../lib/icons.jsx';
 import { CONTACT, PITCH_PHOTO } from '../lib/data.js';
-import { Glass, Btn, Field, Placeholder, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Field, PageHead } from '../components/ui.jsx';
+import { Map } from '../components/Map.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 export function About(){
   const events = [
-    { t:'corporate events', d:'Tournaments, team building & away days.', ic:I.trophy },
-    { t:'birthday parties', d:'From just £4 per child — fully hosted.', ic:I.ball },
-    { t:'man v fat', d:'Play football, lose weight, win the league.', ic:I.shield },
+    { t:'corporate events', d:'Tournaments, team building & away days.', ic:I.trophy, img:'/corporate.jpg' },
+    { t:'birthday parties', d:'From just £4 per child — fully hosted.', ic:I.ball, img:'/party.jpg' },
+    { t:'man v fat', d:'Play football, lose weight, win the league.', ic:I.shield, img:'/manvfat-tile.jpg' },
   ];
   return (
     <div>
@@ -29,7 +30,9 @@ export function About(){
         <div className="grid gap-4 md:grid-cols-3">
           {events.map((e,i)=>(
             <Glass key={i} className="overflow-hidden rounded-3xl">
-              <Placeholder label="event photo" className="aspect-[16/10] w-full" />
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
+                <img src={e.img} alt={e.t} className="absolute inset-0 h-full w-full object-cover" />
+              </div>
               <div className="p-6">
                 <span className="glass grid h-12 w-12 place-items-center rounded-2xl accent-text"><span style={{width:22,height:22}}>{e.ic({})}</span></span>
                 <div className="mt-4 text-[18px] font-medium lowercase">{e.t}</div>
@@ -67,9 +70,9 @@ export function About(){
                 <div className="flex justify-between"><span>Sat – Sun</span><span className="tnum text-white/60">08:00 – 20:00</span></div>
               </div>
             </Glass>
-            <Placeholder label="map · wigman rd, NG8 4PB" className="aspect-square w-full rounded-3xl">
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 accent-text"><span style={{width:30,height:30,display:'block'}}>{I.pin({})}</span></span>
-            </Placeholder>
+            <div className="aspect-square w-full overflow-hidden rounded-3xl glass">
+              <Map className="h-full w-full" />
+            </div>
           </aside>
         </div>
       </section>
