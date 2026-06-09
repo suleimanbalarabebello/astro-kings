@@ -225,7 +225,7 @@ const WHATSON_TILES = [
   { t:'coaching',         d:'home of kings football academy',     to:'academy', img:'/coaching.jpg' },
   { t:'corporate events', d:'tournaments, team building & more',  to:'events', img:'/corporate.jpg' },
   { t:'man v fat',        d:'play football, lose weight, win',    to:'manvfat', img:'/manvfat-tile.jpg' },
-  { t:'u18s pay & play',  d:'play for just £3.50 every day',      to:'juniors' },
+  { t:'u18s pay & play',  d:'play for just £3.50 every day',      to:'payandplay', img:'/payandplay-tile.jpg' },
 ];
 
 export function Home(){
