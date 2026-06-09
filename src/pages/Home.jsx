@@ -31,7 +31,7 @@ function QuickBook({ compact=false }){
           {calOpen ? (
             <>
               <button aria-label="close calendar" onClick={()=>setCalOpen(false)} className="fixed inset-0 z-40 cursor-default" />
-              <div className="absolute bottom-full left-0 z-50 mb-2 w-[300px] max-w-[86vw]">
+              <div className="absolute bottom-full right-0 z-50 mb-2 w-[300px] max-w-[86vw] md:left-0 md:right-auto">
                 <Calendar value={dayKey} onChange={(k)=>{ setDayKey(k); setCalOpen(false); }} />
               </div>
             </>
