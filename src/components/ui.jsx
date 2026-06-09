@@ -1,6 +1,41 @@
 /* ui.jsx — design primitives (glass, buttons, fields, headings…) */
 
+import { useState, useEffect, useRef } from 'react';
 import logoWhite from '../assets/astro-kings-logo-white.png';
+
+/* CountUp — animates a numeric value up to its target when scrolled into view.
+   Keeps any prefix/suffix (£, %, lbs); non-numeric values (e.g. "FA") render as-is. */
+export function CountUp({ value, duration = 1400, className = '' }){
+  const ref = useRef(null);
+  const m = String(value).match(/^(\D*)(\d[\d,]*\.?\d*)(.*)$/);
+  const [display, setDisplay] = useState(m ? m[1] + '0' + m[3] : value);
+
+  useEffect(() => {
+    if (!m) { setDisplay(value); return; }
+    const prefix = m[1], suffix = m[3];
+    const target = parseFloat(m[2].replace(/,/g, ''));
+    const decimals = (m[2].split('.')[1] || '').length;
+    let raf, start = null, started = false;
+
+    const run = (ts) => {
+      if (start == null) start = ts;
+      const p = Math.min(1, (ts - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);                  // easeOutCubic
+      setDisplay(prefix + (target * eased).toFixed(decimals) + suffix);
+      if (p < 1) raf = requestAnimationFrame(run);
+      else setDisplay(prefix + target.toFixed(decimals) + suffix);
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !started) { started = true; raf = requestAnimationFrame(run); io.disconnect(); }
+    }, { threshold: 0.35 });
+    if (ref.current) io.observe(ref.current);
+
+    return () => { if (raf) cancelAnimationFrame(raf); io.disconnect(); };
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return <span ref={ref} className={className}>{display}</span>;
+}
 
 /* ---------------------------------------------------------------- logo */
 export function Logo({ className='', h=30 }){

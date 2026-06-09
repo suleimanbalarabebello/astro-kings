@@ -2,7 +2,7 @@
 
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
-import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Tag, PageHead, CountUp } from '../components/ui.jsx';
 import { Map } from '../components/Map.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
@@ -21,7 +21,7 @@ export function ManVFat(){
       <div className="mx-auto mt-10 max-w-6xl px-6">
         <Glass strong className="grid gap-4 rounded-[30px] p-7 sm:grid-cols-4 fade-up">
           {[['14','week league'],['95%','of players lose weight'],['70lbs','lost by some players'],['FA','officially endorsed']].map(([v,l],i)=>(
-            <div key={i}><div className="tnum text-4xl font-semibold accent-text">{v}</div><div className="mt-1 text-[13px] text-white/55">{l}</div></div>
+            <div key={i}><div className="tnum text-4xl font-semibold accent-text"><CountUp value={v} /></div><div className="mt-1 text-[13px] text-white/55">{l}</div></div>
           ))}
         </Glass>
       </div>
