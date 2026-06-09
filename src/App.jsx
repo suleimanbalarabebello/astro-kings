@@ -1,5 +1,6 @@
 /* App.jsx — stadium-night stage, hash router + page switch */
 
+import { useEffect } from 'react';
 import { useRoute } from './lib/router.js';
 import { TopNav } from './components/Nav.jsx';
 import { Home } from './pages/Home.jsx';
@@ -48,6 +49,9 @@ export default function App(){
   const { name, params } = useRoute();
   const render = PAGES[name] || PAGES.home;
   const showChrome = name !== 'login';
+
+  // start every page at the top (hash links don't reset scroll on their own)
+  useEffect(() => { window.scrollTo(0, 0); }, [name, params]);
 
   return (
     <div className="ak-stage">

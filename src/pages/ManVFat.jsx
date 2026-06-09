@@ -2,7 +2,8 @@
 
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
-import { Glass, Btn, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
+import { Map } from '../components/Map.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -48,9 +49,8 @@ export function ManVFat(){
               <p className="mt-4 text-[14px] leading-relaxed text-white/50">Players can join up at <a href={SIGNUP} target="_blank" rel="noreferrer" className="accent-text hover:underline">manvfatfootball.org/nottingham</a>, call Ryan James on 07715 439 165 or email football@manvfat.com.</p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 fade-up">
-              <Placeholder label="man v fat · matchday" className="aspect-[4/3] w-full rounded-3xl" />
-              <Placeholder label="man v fat · the team" className="aspect-[4/3] w-full rounded-3xl" />
+            <div className="relative aspect-[2/1] w-full overflow-hidden rounded-3xl fade-up">
+              <img src="/manvfat-tile.jpg" alt="Man v Fat matchday at Astro Kings" className="absolute inset-0 h-full w-full object-cover" />
             </div>
           </div>
 
@@ -86,9 +86,9 @@ export function ManVFat(){
             </div>
             <div className="mt-6 flex items-center gap-2.5 text-[14px] text-white/75"><span className="accent-text" style={{width:16,height:16}}>{I.pin({})}</span>{CONTACT.addr}<span className="text-white/30">·</span><span className="accent-text">{CONTACT.phone}</span></div>
           </Glass>
-          <Placeholder label="map · wigman rd, NG8 4PB" className="aspect-square w-full rounded-3xl">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 accent-text"><span style={{width:30,height:30,display:'block'}}>{I.pin({})}</span></span>
-          </Placeholder>
+          <div className="aspect-square w-full overflow-hidden rounded-3xl glass">
+            <Map className="h-full w-full" />
+          </div>
         </div>
       </Section>
       <Footer />
