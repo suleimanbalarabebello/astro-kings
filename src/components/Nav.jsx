@@ -92,8 +92,8 @@ export function TopNav(){
     <nav className="fixed inset-x-0 top-0 z-40 px-4 pt-4 md:px-7 md:pt-6">
       <div className={`relative z-50 mx-auto flex max-w-7xl items-center justify-between gap-3 transition-all duration-300 ${scrolled?'scale-[.99]':''}`}>
         {/* left — brand pill */}
-        <a href="#home" className="glass glass-soft group flex items-center gap-2.5 rounded-full py-2.5 pl-3 pr-5 transition hover:bg-white/10">
-          <Logo h={26} className="transition group-hover:scale-105" />
+        <a href="#home" className="group flex items-center">
+          <Logo h={38} className="transition group-hover:scale-105" />
         </a>
 
         {/* center — links pill */}
