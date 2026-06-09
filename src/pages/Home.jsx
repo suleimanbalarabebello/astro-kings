@@ -196,6 +196,7 @@ export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/
         <a key={i} href={'#'+t.to}
            className={`ph group relative block ${aspect} overflow-hidden rounded-[28px] fade-up`}
            style={{animationDelay:(i*.06)+'s'}}>
+          {t.img ? <img src={t.img} alt={t.t} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /> : null}
           <div className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-90"
                style={{background:'linear-gradient(to top, rgba(4,7,10,.88), rgba(4,7,10,.18) 55%, rgba(4,7,10,.04))'}}></div>
           <div className="absolute inset-x-0 bottom-0 p-5 text-center md:p-6">
@@ -214,7 +215,7 @@ export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/
 /* "Football" hero grid — the four headline offerings */
 const FOOTBALL_TILES = [
   { t:'book a pitch',     d:'book a brand-new 4g pitch',                   to:'browse' },
-  { t:'birthday parties', d:'football parties from just £4 per child',     to:'parties' },
+  { t:'birthday parties', d:'football parties from just £4 per child',     to:'parties', img:'/party.jpg' },
   { t:'subs bench',       d:"on your own? we'll find you a game to join",  to:'getagame' },
   { t:'u18s kings club',  d:'pitch access for just £14.99 per month',      to:'juniors' },
 ];
