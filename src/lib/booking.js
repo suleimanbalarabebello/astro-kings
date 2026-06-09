@@ -265,6 +265,21 @@ export function waitlistCount(pitchId, day, startTime, hours = 1){
 }
 
 /* ---------------------------------------------------------------- extend */
+/* Price + availability for extending — no charge, no commit (drives the pay modal). */
+export function extendQuote(bookingId, addHours){
+  const b = getState().bookings[bookingId];
+  if (!b || b.status !== 'confirmed') return { ok: false, error: 'Only confirmed bookings can be extended.' };
+  const fits = canStart(b.pitchId, b.day, b.endTime, addHours, bookingId)
+    && (toMin(b.endTime) + addHours * 60) <= CLOSE_MIN;
+  if (!fits) return { ok: false, error: 'The next slot is already taken — can’t extend this booking.' };
+  const addedCost = pitchPrice(b.pitchId) * addHours;
+  const chargeNow = b.paymentMode === 'full' ? addedCost : Math.round(addedCost * DEPOSIT_PERCENT);
+  return {
+    ok: true, addHours, addedCost, chargeNow, paymentMode: b.paymentMode,
+    fromEnd: b.endTime, newEndTime: endTimeOf(b.startTime, b.hours + addHours),
+  };
+}
+
 export function extendBooking(bookingId, addHours, { card } = {}){
   const s = getState();
   const b = s.bookings[bookingId];

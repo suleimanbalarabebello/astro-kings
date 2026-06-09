@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { go } from '../lib/router.js';
-import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Tag, Field, PageHead } from '../components/ui.jsx';
+import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
 import { Footer } from '../components/Nav.jsx';
 import { PITCHES, PITCH_PHOTO } from '../lib/data.js';
 import { useStore, currentUser } from '../lib/store.js';
-import { bookingsFor, extendBooking, cancelBooking, confirmAttendance, endTimeOf } from '../lib/booking.js';
+import { bookingsFor, extendBooking, extendQuote, cancelBooking, confirmAttendance, endTimeOf } from '../lib/booking.js';
 
 const STATUS_LABEL = {
   pending_deposit:'awaiting deposit', confirmed:'confirmed',
@@ -15,7 +16,58 @@ const STATUS_LABEL = {
 };
 const pitchName = (id) => (PITCHES.find(p=>p.id===id)||{}).name || id;
 
-function BookingCard({ b, onMsg }){
+function ExtendModal({ booking, onClose, onDone }){
+  const q = extendQuote(booking.id, 1);
+  const [card,setCard] = useState('');
+  const [cardComplete,setCardComplete] = useState(false);
+  const [err,setErr] = useState('');
+  function pay(){
+    if (!q.ok) return;
+    if (stripeEnabled && !cardComplete){ setErr('Enter your card details.'); return; }
+    if (!stripeEnabled && card.replace(/\s/g,'').length < 12){ setErr('Enter your card details.'); return; }
+    const r = extendBooking(booking.id, 1, { card: stripeEnabled ? '4242424242424242' : card });
+    if (!r.ok){ setErr(r.error); return; }
+    onDone(`Extended to ${r.booking.endTime} · £${r.charged} paid`);
+  }
+  return (
+    <div className="fixed inset-0 z-[60] grid place-items-center p-4">
+      <button aria-label="close" onClick={onClose} className="menu-scrim absolute inset-0" />
+      <Glass strong className="glass-menu pop relative w-full max-w-md rounded-[28px] p-6">
+        <div className="flex items-center justify-between">
+          <div className="text-[12px] uppercase tracking-wide text-white/45">extend booking</div>
+          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-white/50 hover:bg-white/10"><span style={{width:16,height:16}}>{I.x({})}</span></button>
+        </div>
+        {!q.ok ? (
+          <div className="mt-4 rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">{q.error}</div>
+        ) : (
+          <>
+            <div className="mt-3 text-[18px] font-medium">{pitchName(booking.pitchId)} · +1 hour</div>
+            <div className="mt-1 text-[13px] text-white/55">extends to {q.newEndTime} · added £{q.addedCost}</div>
+            <div className="mt-4 rounded-2xl glass glass-soft p-3 text-[13px]">
+              <div className="flex justify-between"><span className="text-white/60">Pay now {q.paymentMode==='full'?'(in full)':'(20% deposit)'}</span><span className="tnum accent-text">£{q.chargeNow}</span></div>
+              {q.paymentMode!=='full' && (q.addedCost-q.chargeNow)>0 ? <div className="mt-1 flex justify-between"><span className="text-white/60">On arrival</span><span className="tnum">£{q.addedCost - q.chargeNow}</span></div> : null}
+            </div>
+            <div className="mt-4">
+              {stripeEnabled ? (
+                <StripeCard onChange={(c)=>{ setCardComplete(c); setErr(''); }} />
+              ) : (
+                <Field label="card number" icon={I.lock({})}><input value={card} onChange={e=>{setCard(e.target.value);setErr('');}} className="w-full bg-transparent text-[14px] tnum outline-none placeholder:text-white/35" placeholder="4242 4242 4242 4242" /></Field>
+              )}
+            </div>
+            {err ? <div className="mt-3 text-[13px] text-red-300">{err}</div> : null}
+            <div className="mt-5 flex gap-2">
+              <Btn kind="glass" className="flex-1" onClick={onClose}>cancel</Btn>
+              <Btn kind="primary" className="flex-1" onClick={pay}>pay £{q.chargeNow}</Btn>
+            </div>
+            <div className="mt-2 text-center text-[11px] text-white/40">test mode · use 4242 4242 4242 4242</div>
+          </>
+        )}
+      </Glass>
+    </div>
+  );
+}
+
+function BookingCard({ b, onMsg, onExtend }){
   const live = b.status==='confirmed' || b.status==='pending_deposit';
   return (
     <Glass strong className="grid gap-4 rounded-3xl p-4 sm:grid-cols-[120px_1fr]">
@@ -55,7 +107,7 @@ function BookingCard({ b, onMsg }){
               <Btn kind="primary" size="sm" onClick={()=>{ confirmAttendance(b.id); onMsg('Thanks — attendance confirmed. See you on the pitch!'); }}>confirm attendance</Btn>
             ) : null}
             {b.status==='confirmed' ? (
-              <Btn kind="glass" size="sm" onClick={()=>{ const r=extendBooking(b.id,1); onMsg(r.ok?`Extended to ${endTimeOf(b.startTime,b.hours+1)} · +£${r.charged} charged`:r.error); }}>extend +1h</Btn>
+              <Btn kind="glass" size="sm" onClick={()=>onExtend(b)}>extend +1h</Btn>
             ) : null}
             <Btn kind="glass" size="sm" onClick={()=>{ const r=cancelBooking(b.id); onMsg(r.ok?((r.waitlistOffered?`Cancelled · offered to ${r.waitlistOffered} on the waitlist · `:'Cancelled · ')+(r.refundCredit?`£${r.refundCredit} added to credit`:'deposit forfeited (within 24h)')):r.error); }}>cancel</Btn>
             <span className="ml-auto self-center tnum text-[12px] text-white/40">ref {b.id}</span>
@@ -70,6 +122,7 @@ export function Dashboard(){
   useStore();
   const user = currentUser();
   const [msg,setMsg] = useState('');
+  const [extending,setExtending] = useState(null);
 
   if (!user){
     return (
@@ -106,7 +159,7 @@ export function Dashboard(){
           <div>
             <div className="mb-3 text-[12px] uppercase tracking-wide text-white/45">upcoming</div>
             {upcoming.length ? (
-              <div className="space-y-3">{upcoming.map(b=><BookingCard key={b.id} b={b} onMsg={setMsg} />)}</div>
+              <div className="space-y-3">{upcoming.map(b=><BookingCard key={b.id} b={b} onMsg={setMsg} onExtend={setExtending} />)}</div>
             ) : (
               <Glass className="rounded-3xl p-8 text-center text-[14px] text-white/55">No upcoming games yet. <a href="#booking" className="accent-text">Book a pitch →</a></Glass>
             )}
@@ -151,6 +204,7 @@ export function Dashboard(){
         </aside>
       </div>
       <Footer />
+      {extending ? <ExtendModal booking={extending} onClose={()=>setExtending(null)} onDone={(m)=>{ setMsg(m); setExtending(null); }} /> : null}
     </div>
   );
 }
