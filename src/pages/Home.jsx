@@ -3,32 +3,48 @@
 import { useState, useEffect, useRef } from 'react';
 import { I } from '../lib/icons.jsx';
 import { PITCHES, HERO_VIDEO, HERO_POSTER, PITCH_PHOTO, store } from '../lib/data.js';
-import { nextByLabel } from '../lib/dates.js';
+import { todayKey, keyLabel } from '../lib/dates.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Eyebrow, Field, Placeholder, Stat } from '../components/ui.jsx';
+import { Calendar } from '../components/Calendar.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 function QuickBook({ compact=false }){
-  const days = ['Today','Fri','Sat','Sun','Mon'];
-  const [day,setDay] = useState('Fri');
+  const [dayKey,setDayKey] = useState(todayKey());
   const [size,setSize] = useState('5v5');
+  const [calOpen,setCalOpen] = useState(false);
   return (
     <Glass strong className={`rounded-3xl p-3 ${compact?'':'md:p-4'}`}>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-[1.2fr_1fr_1fr_auto]">
         <Field icon={I.pin({})}>
           <span className="text-[14px]">Astro Kings · Nottingham</span>
         </Field>
-        <Field icon={I.cal({})}>
-          <select value={day} onChange={e=>setDay(e.target.value)} className="w-full bg-transparent text-[14px] outline-none [&>option]:text-black">
-            {days.map(d=><option key={d}>{d}</option>)}
-          </select>
-        </Field>
+
+        {/* date → liquid-glass calendar popover */}
+        <div className="relative">
+          <button type="button" onClick={()=>setCalOpen(o=>!o)}
+            className="glass glass-soft flex h-12 w-full items-center gap-2.5 rounded-2xl px-4 text-left text-white/85">
+            <span className="text-white/45" style={{width:18,height:18}}>{I.cal({})}</span>
+            <span className="flex-1 truncate text-[14px]">{keyLabel(dayKey)}</span>
+            <span className={`text-white/40 transition ${calOpen?'rotate-180':''}`} style={{width:13,height:13}}>{I.chevd({})}</span>
+          </button>
+          {calOpen ? (
+            <>
+              <button aria-label="close calendar" onClick={()=>setCalOpen(false)} className="fixed inset-0 z-40 cursor-default" />
+              <div className="absolute bottom-full left-0 z-50 mb-2 w-[300px] max-w-[86vw]">
+                <Calendar value={dayKey} onChange={(k)=>{ setDayKey(k); setCalOpen(false); }} />
+              </div>
+            </>
+          ) : null}
+        </div>
+
         <Field icon={I.ball({})}>
           <select value={size} onChange={e=>setSize(e.target.value)} className="w-full bg-transparent text-[14px] outline-none [&>option]:text-black">
             {['5v5','7v7','9v9'].map(d=><option key={d}>{d}</option>)}
           </select>
         </Field>
-        <Btn kind="primary" className="h-12" icon={I.search({})} onClick={()=>{ store.day=nextByLabel(day); store.players=size; go('browse'); }}>search</Btn>
+
+        <Btn kind="primary" className="h-12" icon={I.search({})} onClick={()=>{ store.day=dayKey; store.players=size; go('browse'); }}>search</Btn>
       </div>
     </Glass>
   );
