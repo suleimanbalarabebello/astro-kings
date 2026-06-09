@@ -33,7 +33,7 @@ export function Calendar({ value, onChange, className='' }){
   const shiftYear  = (n) => setView(new Date(year+n, month, 1));
 
   return (
-    <Glass strong className={`rounded-3xl p-4 ${className}`}>
+    <Glass strong className={`glass-menu rounded-3xl p-4 ${className}`}>
       <div className="flex items-center justify-between gap-1">
         <NavBtn onClick={()=>shiftYear(-1)} label="previous year">«</NavBtn>
         <NavBtn onClick={()=>shiftMonth(-1)} label="previous month">‹</NavBtn>
