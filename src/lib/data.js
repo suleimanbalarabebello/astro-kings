@@ -4,6 +4,7 @@ export const ROUTES = ['home', 'browse', 'venue', 'booking', 'dashboard', 'prici
 
 export const HERO_VIDEO = '/hero.mp4';
 export const HERO_POSTER = '/hero-poster.jpg';   // still frame shown while the video loads
+export const PITCH_PHOTO = '/pitch.jpg';         // floodlit pitches photo used on Browse pitch cards
 export const GETAGAME_VIDEO = '/getagame.mp4';   // background for the Get a Game hero
 export const KINGSCLUB_VIDEO = '/kingsclub.mp4'; // background for the Kings Club hero
 export const JUNIORS_VIDEO = '/juniors.mp4';     // background for the Juniors (pay & play) hero

@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, store } from '../lib/data.js';
+import { PITCHES, SLOTS, PITCH_PHOTO, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { useStore } from '../lib/store.js';
 import { canStart } from '../lib/booking.js';
-import { Glass, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { Glass, Tag, PageHead } from '../components/ui.jsx';
 import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -78,9 +78,10 @@ export function Browse(){
           <div className="space-y-4">
             {list.map((p,i)=>(
               <Glass key={p.id} className="grid gap-5 rounded-3xl p-4 md:grid-cols-[200px_1fr] fade-up" style={{animationDelay:(i*.05)+'s'}}>
-                <Placeholder label={p.size} className="aspect-[16/10] rounded-2xl md:aspect-auto">
-                  {p.tag ? <span className="absolute left-3 top-3"><Tag accent>{p.tag}</Tag></span> : null}
-                </Placeholder>
+                <div className="relative aspect-[16/10] overflow-hidden rounded-2xl md:aspect-auto md:min-h-[150px]">
+                  <img src={PITCH_PHOTO} alt={p.name} className="absolute inset-0 h-full w-full object-cover" />
+                  {p.tag ? <span className="absolute left-3 top-3 z-10"><Tag accent>{p.tag}</Tag></span> : null}
+                </div>
                 <div className="flex flex-col">
                   <div className="flex items-start justify-between gap-4">
                     <div>

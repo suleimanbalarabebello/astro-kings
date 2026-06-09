@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, SLOTS, store } from '../lib/data.js';
+import { PITCHES, SLOTS, PITCH_PHOTO, store } from '../lib/data.js';
 import { go } from '../lib/router.js';
 import { useStore } from '../lib/store.js';
 import { canStart } from '../lib/booking.js';
-import { Glass, Btn, Tag, Placeholder } from '../components/ui.jsx';
+import { Glass, Btn, Tag } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 export function Venue({ params }){
@@ -24,10 +24,18 @@ export function Venue({ params }){
 
         {/* gallery */}
         <div className="grid gap-3 md:grid-cols-[2fr_1fr] fade-up">
-          <Placeholder label="pitch photo · wide" className="aspect-[16/10] w-full rounded-[30px]" />
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[30px]">
+            <img src={PITCH_PHOTO} alt={p.name} className="absolute inset-0 h-full w-full object-cover" />
+          </div>
           <div className="grid grid-rows-2 gap-3">
-            <Placeholder label="surface · 4g" className="rounded-3xl" />
-            <Placeholder label="floodlights" className="rounded-3xl" />
+            <div className="relative aspect-[16/10] overflow-hidden rounded-3xl md:aspect-auto">
+              <img src={PITCH_PHOTO} alt={p.name+' surface'} className="absolute inset-0 h-full w-full object-cover" />
+              <span className="absolute bottom-3 left-3 text-[11px] uppercase tracking-wide text-white/70">surface · 4g</span>
+            </div>
+            <div className="relative aspect-[16/10] overflow-hidden rounded-3xl md:aspect-auto">
+              <img src={PITCH_PHOTO} alt={p.name+' floodlights'} className="absolute inset-0 h-full w-full object-cover" />
+              <span className="absolute bottom-3 left-3 text-[11px] uppercase tracking-wide text-white/70">floodlights</span>
+            </div>
           </div>
         </div>
 
