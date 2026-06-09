@@ -224,7 +224,7 @@ const FOOTBALL_TILES = [
 const WHATSON_TILES = [
   { t:'coaching',         d:'home of kings football academy',     to:'academy' },
   { t:'corporate events', d:'tournaments, team building & more',  to:'events' },
-  { t:'man v fat',        d:'play football, lose weight, win',    to:'manvfat' },
+  { t:'man v fat',        d:'play football, lose weight, win',    to:'manvfat', img:'/manvfat-tile.jpg' },
   { t:'u18s pay & play',  d:'play for just £3.50 every day',      to:'juniors' },
 ];
 
