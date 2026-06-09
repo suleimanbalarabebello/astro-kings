@@ -6,8 +6,9 @@ import { PITCHES } from './data.js';
 import {
   quote, canStart, startReservation, payReservation, releaseExpiredHolds,
   cancelBooking, extendBooking, signUp, sessionList, joinSession,
+  prepayPolicy, joinWaitlist, confirmAttendance, markNoShow,
 } from './booking.js';
-import { DEPOSIT_PERCENT, JOIN_SESSION_PRICE } from './config.js';
+import { DEPOSIT_PERCENT, JOIN_SESSION_PRICE, NO_SHOW_FEE } from './config.js';
 import { todayKey } from './dates.js';
 
 const classic = PITCHES.find(p => p.id === 'classic');   // £60/hr
@@ -144,6 +145,41 @@ describe('cancellation and extend', () => {
     const r = joinSession('s4');
     expect(r.ok).toBe(false);
     expect(r.error).toMatch(/full/i);
+  });
+
+  it('escalating prepayment: deposit → full → full+fee with no-show history', () => {
+    expect(prepayPolicy({ noShowCount: 0 }).requireFull).toBe(false);
+    expect(prepayPolicy({ noShowCount: 1 }).requireFull).toBe(true);
+    expect(prepayPolicy({ noShowCount: 1 }).fee).toBe(0);
+    expect(prepayPolicy({ noShowCount: 2 }).fee).toBe(NO_SHOW_FEE);
+  });
+
+  it('a repeat offender’s no-show fee is folded into the total', () => {
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id, fee: NO_SHOW_FEE });
+    expect(r.booking.total).toBe(60 + NO_SHOW_FEE);
+    expect(r.booking.noShowFee).toBe(NO_SHOW_FEE);
+  });
+
+  it('markNoShow forfeits the slot and increments the user’s no-show count', () => {
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '20:00', hours: 1, userId: currentUser().id });
+    payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
+    markNoShow(r.booking.id);
+    expect(getState().bookings[r.booking.id].status).toBe('no_show');
+    expect(currentUser().noShowCount).toBe(1);
+  });
+
+  it('cancelling a waitlisted slot reports it was offered to the queue', () => {
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
+    payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
+    joinWaitlist({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: 'other' });
+    expect(cancelBooking(r.booking.id, { byVenue: true }).waitlistOffered).toBe(1);
+  });
+
+  it('confirmAttendance flags the booking', () => {
+    const r = startReservation({ pitchId: 'classic', day: DAY, startTime: '19:00', hours: 1, userId: currentUser().id });
+    payReservation(r.booking.id, { mode: 'full', card: '4242424242424242' });
+    confirmAttendance(r.booking.id);
+    expect(getState().bookings[r.booking.id].attendanceConfirmed).toBe(true);
   });
 
   it('extend is blocked when the next slot is taken', () => {

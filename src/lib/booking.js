@@ -11,6 +11,7 @@ import { fromKey } from './dates.js';
 import {
   DEPOSIT_PERCENT, HOLD_MINUTES, CANCEL_WINDOW_HRS, NO_SHOW_LIMIT,
   STUDENT_DOMAIN_RE, TEST_CARDS, JOIN_SESSION_PRICE, LOW_ATTENDANCE,
+  NO_SHOW_PREPAY_AT, NO_SHOW_FEE_AT, NO_SHOW_FEE,
 } from './config.js';
 
 const pitchPrice = (pitchId) => (PITCHES.find((x) => x.id === pitchId) || PITCHES[0]).price;
@@ -74,8 +75,17 @@ export function quote(pitch, hours, addons = []){
 /* ---------------------------------------------------------------- students / users */
 export const deriveStudent      = (email) => STUDENT_DOMAIN_RE.test((email || '').trim());
 export const effectiveIsStudent = (u) => !u ? false : (u.isStudentOverride ?? u.isStudentDerived);
-/* future rule — DEFINED, NOT ENFORCED: after NO_SHOW_LIMIT no-shows require full prepayment */
-export const requiresFullPrepayment = (u) => !!u && u.noShowCount >= NO_SHOW_LIMIT;
+/* Escalating no-show defence based on a user's no-show history:
+   0 no-shows → normal (deposit allowed); >=1 → full prepayment; >=2 → full + a no-show fee. */
+export function prepayPolicy(user){
+  const n = (user && user.noShowCount) || 0;
+  return {
+    noShowCount: n,
+    requireFull: n >= NO_SHOW_PREPAY_AT,
+    fee: n >= NO_SHOW_FEE_AT ? NO_SHOW_FEE : 0,
+  };
+}
+export const requiresFullPrepayment = (u) => prepayPolicy(u).requireFull;
 
 export function signUp({ name, email }){
   const id = nextId('u');
@@ -120,12 +130,17 @@ export function releaseExpiredHolds(){
 }
 
 /* Atomically hold the slot(s) and create a pending_deposit booking. */
-export function startReservation({ pitchId, day, startTime, hours, addons = [], userId }){
+export function startReservation({ pitchId, day, startTime, hours, addons = [], userId, fee = 0 }){
   releaseExpiredHolds();
   if (!canStart(pitchId, day, startTime, hours)) {
     return { ok: false, error: 'Those slots are no longer free. Pick another time or duration.' };
   }
   const q = quote({ price: pitchPrice(pitchId), id: pitchId }, hours, addons);
+  if (fee) {                                   // repeat no-show surcharge folded into the total
+    q.total += fee;
+    q.depositDue = Math.round(q.total * DEPOSIT_PERCENT);
+    q.balanceDue = q.total - q.depositDue;
+  }
   const id = nextId('AK-');
   const booking = update((s) => {
     const expiresAt = Date.now() + HOLD_MINUTES * 60 * 1000;
@@ -134,9 +149,10 @@ export function startReservation({ pitchId, day, startTime, hours, addons = [], 
       id, userId: userId || s.currentUserId, pitchId, day,
       startTime, hours, endTime: endTimeOf(startTime, hours),
       startAt: startAtOf(day, startTime),
-      addons, ...q,
+      addons, noShowFee: fee, ...q,
       amountPaid: 0, paymentMode: null,
       status: 'pending_deposit', holdExpiresAt: expiresAt,
+      attendanceConfirmed: false,
       createdAt: Date.now(),
     };
     return s.bookings[id];
@@ -193,6 +209,9 @@ export function cancelBooking(bookingId, { byVenue = false } = {}){
   else if (hoursUntil > CANCEL_WINDOW_HRS){ refundCredit = b.amountPaid; outcome = 'refunded_credit'; }  // >24h → credit
   else { refundCredit = 0; outcome = 'forfeited'; }                               // <24h → forfeit
 
+  const startKey = cellsFor(b.pitchId, b.day, b.startTime, b.hours)[0];
+  const waitlistOffered = (getState().waitlist[startKey] || []).length;          // freed slot → offered to the queue
+
   update((st) => {
     const bk = st.bookings[bookingId];
     cellsFor(bk.pitchId, bk.day, bk.startTime, bk.hours).forEach((k) => {
@@ -202,19 +221,47 @@ export function cancelBooking(bookingId, { byVenue = false } = {}){
     bk.status = 'cancelled';
     bk.cancelOutcome = outcome;
     if (refundCredit && bk.userId && st.users[bk.userId]) st.users[bk.userId].accountCredit += refundCredit;
+    if (st.waitlist[startKey]) delete st.waitlist[startKey];                      // queue notified, slot back on sale
   });
-  return { ok: true, refundCredit, outcome };
+  return { ok: true, refundCredit, outcome, waitlistOffered };
 }
 
 export function markNoShow(bookingId){
-  return update((s) => {
+  const s0 = getState();
+  const b0 = s0.bookings[bookingId];
+  const startKey = b0 ? cellsFor(b0.pitchId, b0.day, b0.startTime, b0.hours)[0] : null;
+  const waitlistOffered = startKey ? (s0.waitlist[startKey] || []).length : 0;
+  const res = update((s) => {
     const b = s.bookings[bookingId];
     if (!b) return { ok: false };
     b.status = 'no_show';                       // deposit forfeited (no refund)
     if (b.userId && s.users[b.userId]) s.users[b.userId].noShowCount += 1;
     cellsFor(b.pitchId, b.day, b.startTime, b.hours).forEach((k) => { if (s.booked[k] === bookingId) delete s.booked[k]; });
+    if (startKey && s.waitlist[startKey]) delete s.waitlist[startKey];            // freed slot offered to the queue
     return { ok: true };
   });
+  return { ...res, waitlistOffered };
+}
+
+/* ---------------------------------------------------------------- confirm-or-release + waitlist */
+/* Customer confirms they'll attend (so the slot isn't released). */
+export function confirmAttendance(bookingId){
+  return update((s) => { const b = s.bookings[bookingId]; if (b) b.attendanceConfirmed = true; return { ok: !!b }; });
+}
+
+/* Join the waitlist for a slot that's currently taken/held. */
+export function joinWaitlist({ pitchId, day, startTime, hours = 1, userId }){
+  const startKey = cellsFor(pitchId, day, startTime, hours)[0];
+  return update((s) => {
+    const uid = userId || s.currentUserId || 'guest';
+    if (!s.waitlist[startKey]) s.waitlist[startKey] = [];
+    if (!s.waitlist[startKey].includes(uid)) s.waitlist[startKey].push(uid);
+    return { ok: true, position: s.waitlist[startKey].length };
+  });
+}
+export function waitlistCount(pitchId, day, startTime, hours = 1){
+  const startKey = cellsFor(pitchId, day, startTime, hours)[0];
+  return (getState().waitlist[startKey] || []).length;
 }
 
 /* ---------------------------------------------------------------- extend */

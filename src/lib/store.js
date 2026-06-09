@@ -37,6 +37,7 @@ function seed(){
     holds: {},        // slotKey -> { bookingId, expiresAt }
     sessions: seedSessions(),  // id -> ongoing session
     myJoins: {},      // sessionId -> true (sessions this browser has joined)
+    waitlist: {},     // slotKey -> [userId] waiting if it frees up
     seq: 1000,        // monotonic id source
   };
 }
@@ -48,6 +49,7 @@ function load(){
       const s = JSON.parse(raw);
       if (!s.sessions) s.sessions = seedSessions();   // migrate older saved state
       if (!s.myJoins) s.myJoins = {};
+      if (!s.waitlist) s.waitlist = {};
       return s;
     }
   } catch (e) { /* no storage (tests / private mode) — fall through to seed */ }

@@ -9,10 +9,10 @@ import { go } from '../lib/router.js';
 import { useStore, currentUser } from '../lib/store.js';
 import {
   freeStarts, quote, endTimeOf, startReservation, payReservation,
-  releaseExpiredHolds, signUp, deriveStudent,
+  releaseExpiredHolds, signUp, deriveStudent, prepayPolicy, joinWaitlist,
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
-import { HOLD_MINUTES, MAX_HOURS } from '../lib/config.js';
+import { HOLD_MINUTES, MAX_HOURS, DEPOSIT_PERCENT, CANCEL_WINDOW_HRS } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
@@ -39,7 +39,7 @@ function Stepper({ step }){
   );
 }
 
-function Summary({ p, day, time, hours, q, payMode }){
+function Summary({ p, day, time, hours, q, payMode, fee=0 }){
   return (
     <Glass strong className="rounded-[28px] p-6">
       <div className="text-[12px] uppercase tracking-wide text-white/40">your booking</div>
@@ -55,6 +55,7 @@ function Summary({ p, day, time, hours, q, payMode }){
       <div className="mt-4 border-t border-white/10 pt-4 space-y-2 text-[14px]">
         <div className="flex justify-between text-white/65"><span>Pitch · {hours} hour{hours>1?'s':''}</span><span className="tnum">£{q.pitchTotal}</span></div>
         {q.addonsTotal>0 ? <div className="flex justify-between text-white/65"><span>Add-ons</span><span className="tnum">£{q.addonsTotal}</span></div> : null}
+        {fee>0 ? <div className="flex justify-between text-white/65"><span>No-show fee</span><span className="tnum">£{fee}</span></div> : null}
         <div className="mt-2 flex justify-between border-t border-white/10 pt-3 text-[16px] font-semibold"><span>Total</span><span className="tnum accent-text">£{q.total}</span></div>
         {payMode==='deposit' ? (
           <div className="mt-2 rounded-2xl glass glass-soft p-3 text-[13px]">
@@ -97,9 +98,15 @@ export function Booking({ params }){
   const [reservation,setReservation] = useState(null);
   const [left,setLeft] = useState(HOLD_MINUTES*60);
   const [ref,setRef]   = useState('');
+  const [msg,setMsg]   = useState('');
 
   const addons = ADDONS.filter(a=>sel.includes(a.t)&&a.p>0).map(a=>({t:a.t,p:a.p}));
-  const q = quote(p, hours, addons);
+  const user = currentUser();
+  const policy = prepayPolicy(user);            // escalating no-show defence
+  const fee = policy.fee;                       // repeat no-show surcharge
+  const baseQ = quote(p, hours, addons);
+  const total = baseQ.total + fee;
+  const q = { ...baseQ, total, depositDue: Math.round(total*DEPOSIT_PERCENT), balanceDue: total - Math.round(total*DEPOSIT_PERCENT) };
   const dayLabel = keyLabel(dayKey);
   const bandSlots = slotsInBand(band);
   const starts = freeStarts(p.id, dayKey, bandSlots, hours);
@@ -121,6 +128,9 @@ export function Booking({ params }){
     return ()=> clearInterval(iv);
   }, [step, reservation]);
 
+  // repeat no-show offenders must pay in full — lock the option
+  useEffect(()=>{ if (policy.requireFull && payMode!=='full') setPayMode('full'); }, [policy.requireFull]); // eslint-disable-line
+
   const back = ()=> { setErr(''); setStep(s=>Math.max(0,s-1)); };
 
   function toDetails(){
@@ -132,7 +142,7 @@ export function Booking({ params }){
     setErr('');
     // ensure there's a user to attach the booking to
     if (!currentUser()) signUp({ name: team || 'Captain', email });
-    const res = startReservation({ pitchId:p.id, day:dayKey, startTime:time, hours, addons, userId: currentUser().id });
+    const res = startReservation({ pitchId:p.id, day:dayKey, startTime:time, hours, addons, userId: currentUser().id, fee });
     if (!res.ok){ setErr(res.error); return; }
     setReservation(res.booking);
     setLeft(HOLD_MINUTES*60);
@@ -164,6 +174,7 @@ export function Booking({ params }){
       </div>
 
       {err ? <div className="mt-6 rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">{err}</div> : null}
+      {msg ? <div className="mt-4 rounded-2xl glass glass-soft px-4 py-3 text-[13px] accent-text">{msg}</div> : null}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="min-h-[420px]">
@@ -194,15 +205,22 @@ export function Booking({ params }){
                 <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
                   {bandSlots.map(s=>{
                     const free = starts.includes(s);
+                    if (!free) return (
+                      <button key={s} title="join the waitlist"
+                        onClick={()=>{ const r=joinWaitlist({pitchId:p.id,day:dayKey,startTime:s,hours,userId:currentUser()?.id}); setMsg(`You're #${r.position} on the waitlist for ${s} on ${dayLabel} — we'll offer it the moment it frees up.`); }}
+                        className="glass glass-soft tnum rounded-2xl py-3.5 text-[13px] text-white/30 line-through transition hover:text-white/70">
+                        {s}
+                      </button>
+                    );
                     return (
-                      <button key={s} disabled={!free} onClick={()=>setTime(s)}
-                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
+                      <button key={s} onClick={()=>setTime(s)}
+                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
                         {s}
                       </button>
                     );
                   })}
                 </div>
-                <div className="mt-3 text-[12px] text-white/40">Greyed slots can’t fit a {hours}-hour booking. Ends {endTimeOf(time,hours)}.</div>
+                <div className="mt-3 text-[12px] text-white/40">Taken slots are crossed out — tap one to join its waitlist. Ends {endTimeOf(time,hours)}.</div>
               </div>
               <div>
                 <div className="text-[12px] uppercase tracking-wide text-white/40">5 · switch pitch (optional)</div>
@@ -249,13 +267,29 @@ export function Booking({ params }){
               <div>
                 <div className="text-[12px] uppercase tracking-wide text-white/40">how would you like to pay?</div>
                 <div className="mt-3 flex gap-2.5">
-                  <button onClick={()=>setPayMode('deposit')} className={`flex-1 rounded-2xl p-4 text-left transition ${payMode==='deposit'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
+                  <button disabled={policy.requireFull} onClick={()=>setPayMode('deposit')}
+                    className={`flex-1 rounded-2xl p-4 text-left transition ${policy.requireFull?'cursor-not-allowed opacity-40 glass glass-soft':payMode==='deposit'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
                     <div className="text-[13px]">20% deposit</div><div className="mt-1 text-[12px] text-white/45">£{q.depositDue} now · £{q.balanceDue} on arrival</div>
                   </button>
                   <button onClick={()=>setPayMode('full')} className={`flex-1 rounded-2xl p-4 text-left transition ${payMode==='full'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
                     <div className="text-[13px]">Pay in full</div><div className="mt-1 text-[12px] text-white/45">£{q.total} now · nothing on arrival</div>
                   </button>
                 </div>
+                {policy.requireFull ? (
+                  <div className="mt-3 rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-[12.5px] text-amber-200">
+                    Full prepayment required — our records show {policy.noShowCount} previous no-show{policy.noShowCount>1?'s':''}.{fee?` A £${fee} no-show fee has been added.`:''}
+                  </div>
+                ) : null}
+              </div>
+
+              {/* no-show / cancellation policy — visible before paying */}
+              <div className="rounded-2xl glass glass-soft p-4 text-[12.5px] leading-relaxed text-white/60">
+                <div className="mb-1.5 text-[11px] uppercase tracking-wide text-white/40">cancellation policy</div>
+                <ul className="space-y-1">
+                  <li>· Cancel more than {CANCEL_WINDOW_HRS}h before kick-off → refunded as account credit.</li>
+                  <li>· Cancel within {CANCEL_WINDOW_HRS}h, or no-show → deposit forfeited.</li>
+                  <li>· Repeat no-shows → full prepayment required, then a no-show fee.</li>
+                </ul>
               </div>
               {stripeEnabled ? (
                 <div>
@@ -297,7 +331,7 @@ export function Booking({ params }){
 
         <aside>
           <div className="space-y-4 lg:sticky lg:top-28">
-            <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} />
+            <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} fee={fee} />
             {step<3 && (
               <div className="flex items-center justify-between gap-3">
                 <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>

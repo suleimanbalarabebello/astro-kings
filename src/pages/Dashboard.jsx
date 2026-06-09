@@ -7,7 +7,7 @@ import { Glass, Btn, Tag, PageHead } from '../components/ui.jsx';
 import { Footer } from '../components/Nav.jsx';
 import { PITCHES, PITCH_PHOTO } from '../lib/data.js';
 import { useStore, currentUser } from '../lib/store.js';
-import { bookingsFor, extendBooking, cancelBooking, endTimeOf } from '../lib/booking.js';
+import { bookingsFor, extendBooking, cancelBooking, confirmAttendance, endTimeOf } from '../lib/booking.js';
 
 const STATUS_LABEL = {
   pending_deposit:'awaiting deposit', confirmed:'confirmed',
@@ -40,12 +40,24 @@ function BookingCard({ b, onMsg }){
           {b.cancelOutcome==='venue_cancelled' ? <span className="accent-text">venue cancelled · refunded</span> : null}
         </div>
 
+        {b.status==='confirmed' && !b.attendanceConfirmed ? (
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-200">
+            <span style={{width:14,height:14}}>{I.clock({})}</span> Confirm you’re coming, or your slot may be released.
+          </div>
+        ) : null}
+        {b.status==='confirmed' && b.attendanceConfirmed ? (
+          <div className="mt-3 flex items-center gap-1.5 text-[12px] accent-text"><span style={{width:14,height:14}}>{I.check({})}</span> attendance confirmed</div>
+        ) : null}
+
         {live ? (
           <div className="mt-4 flex flex-wrap gap-2">
+            {b.status==='confirmed' && !b.attendanceConfirmed ? (
+              <Btn kind="primary" size="sm" onClick={()=>{ confirmAttendance(b.id); onMsg('Thanks — attendance confirmed. See you on the pitch!'); }}>confirm attendance</Btn>
+            ) : null}
             {b.status==='confirmed' ? (
               <Btn kind="glass" size="sm" onClick={()=>{ const r=extendBooking(b.id,1); onMsg(r.ok?`Extended to ${endTimeOf(b.startTime,b.hours+1)} · +£${r.charged} charged`:r.error); }}>extend +1h</Btn>
             ) : null}
-            <Btn kind="glass" size="sm" onClick={()=>{ const r=cancelBooking(b.id); onMsg(r.ok?(r.refundCredit?`Cancelled · £${r.refundCredit} added to credit`:'Cancelled · deposit forfeited (within 24h)'):r.error); }}>cancel</Btn>
+            <Btn kind="glass" size="sm" onClick={()=>{ const r=cancelBooking(b.id); onMsg(r.ok?((r.waitlistOffered?`Cancelled · offered to ${r.waitlistOffered} on the waitlist · `:'Cancelled · ')+(r.refundCredit?`£${r.refundCredit} added to credit`:'deposit forfeited (within 24h)')):r.error); }}>cancel</Btn>
             <span className="ml-auto self-center tnum text-[12px] text-white/40">ref {b.id}</span>
           </div>
         ) : <div className="mt-3 tnum text-[12px] text-white/35">ref {b.id}</div>}

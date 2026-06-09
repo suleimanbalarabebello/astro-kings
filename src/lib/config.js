@@ -3,8 +3,14 @@
 export const DEPOSIT_PERCENT   = 0.20;   // deposit = 20% of total, DEDUCTED from it (not added on top)
 export const HOLD_MINUTES      = 15;     // a pending reservation holds the slot(s) this long
 export const CANCEL_WINDOW_HRS = 24;     // >24h before start → refund as credit; inside → forfeit
-export const NO_SHOW_LIMIT     = 2;      // future "require full prepayment" threshold — DEFINED, NOT ENFORCED yet
+export const NO_SHOW_LIMIT     = 2;      // legacy threshold (kept for compatibility)
 export const MAX_HOURS         = 3;      // longest bookable run (consecutive 1h slots)
+
+/* Escalating no-show defence */
+export const NO_SHOW_PREPAY_AT = 1;      // after this many no-shows → full prepayment required (no deposit)
+export const NO_SHOW_FEE_AT    = 2;      // after this many no-shows → also add a no-show fee
+export const NO_SHOW_FEE       = 10;     // £ surcharge added for repeat offenders
+export const CONFIRM_WINDOW_HRS = 2;     // must confirm attendance at least this long before kick-off
 export const PAYPLAY_PRICE      = 4.5;    // U18 daily pay & play, per person
 export const JOIN_SESSION_PRICE = 6;      // drop-in to join an ongoing session (a bit above pay & play)
 export const LOW_ATTENDANCE     = 0.6;    // a session is "short on players" below this fill ratio
