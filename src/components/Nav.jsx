@@ -46,7 +46,7 @@ function NavItem({ l, name }){
   if (!l.children) {
     return (
       <a href={'#'+l.id}
-         className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${name===l.id?'text-[#0b0b0b] accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
+         className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${name===l.id?'text-white accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
         {l.label}
       </a>
     );
@@ -54,7 +54,7 @@ function NavItem({ l, name }){
   return (
     <div className="group relative">
       <a href={'#'+l.id}
-         className={`flex items-center gap-1 rounded-full px-4 py-2 text-[13.5px] transition-colors ${active?'text-[#0b0b0b] accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
+         className={`flex items-center gap-1 rounded-full px-4 py-2 text-[13.5px] transition-colors ${active?'text-white accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
         {l.label}<span className="opacity-60 transition group-hover:rotate-180" style={{width:13,height:13}}>{I.chevd({})}</span>
       </a>
       {/* pt-2 keeps the hover bridge contiguous so the menu doesn't flicker */}

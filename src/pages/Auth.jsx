@@ -44,7 +44,7 @@ export function Auth(){
           <Glass strong className="mt-6 rounded-[30px] p-7">
             <div className="glass glass-soft mb-6 flex gap-1 rounded-full p-1.5">
               {[['login','log in'],['signup','sign up']].map(([k,l])=>(
-                <button key={k} onClick={()=>setMode(k)} className={`flex-1 rounded-full py-2 text-[13px] transition ${mode===k?'accent-bg text-[#0b0b0b]':'text-white/65 hover:text-white'}`}>{l}</button>
+                <button key={k} onClick={()=>setMode(k)} className={`flex-1 rounded-full py-2 text-[13px] transition ${mode===k?'accent-bg text-white':'text-white/65 hover:text-white'}`}>{l}</button>
               ))}
             </div>
 

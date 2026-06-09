@@ -27,7 +27,7 @@ function Stepper({ step }){
       {steps.map((s,i)=>(
         <Fragment key={s}>
           <div className={`flex items-center gap-2 ${i<=step?'text-white':'text-white/35'}`}>
-            <span className={`grid h-7 w-7 place-items-center rounded-full text-[12px] tnum ${i<step?'accent-bg text-[#0b0b0b]':i===step?'border border-white/50':'border border-white/15'}`}>
+            <span className={`grid h-7 w-7 place-items-center rounded-full text-[12px] tnum ${i<step?'accent-bg text-white':i===step?'border border-white/50':'border border-white/15'}`}>
               {i<step ? <span style={{width:14,height:14}}>{I.check({})}</span> : i+1}
             </span>
             <span className="hidden text-[13px] lowercase sm:block">{s}</span>
@@ -196,7 +196,7 @@ export function Booking({ params }){
                     const free = starts.includes(s);
                     return (
                       <button key={s} disabled={!free} onClick={()=>setTime(s)}
-                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
+                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${!free?'cursor-not-allowed text-white/25 line-through':time===s?'text-white accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
                         {s}
                       </button>
                     );
@@ -230,7 +230,7 @@ export function Booking({ params }){
                         className={`flex items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition ${on?'accent-ring border-transparent bg-white/5':'glass glass-soft border-transparent hover:bg-white/8'}`}>
                         <span className="text-[14px]">{a.t}</span>
                         <span className="flex items-center gap-3"><span className="tnum text-[13px] text-white/55">{a.p?('£'+a.p):'free'}</span>
-                          <span className={`grid h-5 w-5 place-items-center rounded-md ${on?'accent-bg text-[#0b0b0b]':'border border-white/25'}`}>{on?<span style={{width:13,height:13}}>{I.check({})}</span>:null}</span>
+                          <span className={`grid h-5 w-5 place-items-center rounded-md ${on?'accent-bg text-white':'border border-white/25'}`}>{on?<span style={{width:13,height:13}}>{I.check({})}</span>:null}</span>
                         </span>
                       </button>
                     );
@@ -280,7 +280,7 @@ export function Booking({ params }){
               <Glass strong className="relative overflow-hidden rounded-[30px] p-8 text-center md:p-12">
                 <div className="pointer-events-none absolute -inset-16 opacity-60" style={{background:'radial-gradient(40% 60% at 50% 0%, color-mix(in oklab, var(--accent), transparent 65%), transparent)'}}></div>
                 <div className="relative">
-                  <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
+                  <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-white"><span style={{width:30,height:30}}>{I.check({})}</span></span>
                   <h2 className="hero-title mt-6 text-3xl md:text-4xl font-semibold lowercase">you're booked in</h2>
                   <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. {payMode==='deposit'?`£${q.depositDue} paid — £${q.balanceDue} due on arrival.`:`£${q.total} paid in full.`}</p>
                   <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>

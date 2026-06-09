@@ -20,7 +20,7 @@ export function Pricing(){
         sub="All pitches include changing facilities, hot showers, secure lockers and the café. 4G surface, LED floodlights & rebound boards." >
         <Glass strong className="flex gap-1 rounded-full p-1.5">
           {[['hire','pitch hire'],['membership','memberships']].map(([k,l])=>(
-            <button key={k} onClick={()=>setTab(k)} className={`rounded-full px-5 py-2 text-[13px] transition ${tab===k?'accent-bg text-[#0b0b0b]':'text-white/70 hover:text-white'}`}>{l}</button>
+            <button key={k} onClick={()=>setTab(k)} className={`rounded-full px-5 py-2 text-[13px] transition ${tab===k?'accent-bg text-white':'text-white/70 hover:text-white'}`}>{l}</button>
           ))}
         </Glass>
       </PageHead>

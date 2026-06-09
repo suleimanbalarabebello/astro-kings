@@ -27,7 +27,7 @@ function SessionCard({ s, onMsg }){
       <div className="flex items-center justify-between">
         <div className="text-[12px] uppercase tracking-wide text-white/45">{keyLabel(s.day)} · {s.time}</div>
         {s.isFull ? <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] uppercase tracking-wide text-white/50">full</span>
-          : s.isLow ? <span className="rounded-full accent-bg px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0b0b0b]">needs players</span> : null}
+          : s.isLow ? <span className="rounded-full accent-bg px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">needs players</span> : null}
       </div>
       <div className="mt-2 text-[16px] font-medium">{p.name}</div>
       <div className="text-[12px] text-white/50">{s.level}</div>
@@ -61,7 +61,7 @@ function JoinSessions(){
             pay &amp; play, but you get a guaranteed game when a team needs an extra body.
           </p>
         </div>
-        {needing ? <span className="shrink-0 rounded-full accent-bg px-3 py-1 text-[12px] font-semibold text-[#0b0b0b]">{needing} session{needing===1?'':'s'} need players</span> : null}
+        {needing ? <span className="shrink-0 rounded-full accent-bg px-3 py-1 text-[12px] font-semibold text-white">{needing} session{needing===1?'':'s'} need players</span> : null}
       </div>
       {msg ? <div className="mt-5 rounded-2xl glass glass-soft px-4 py-3 text-[13px] accent-text">{msg}</div> : null}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -74,7 +74,7 @@ function JoinSessions(){
 function Check({ on, onClick, children }){
   return (
     <button type="button" onClick={onClick} className="flex items-center gap-2.5 text-[14px] text-white/80">
-      <span className={`grid h-5 w-5 place-items-center rounded-md transition ${on?'accent-bg text-[#0b0b0b]':'border border-white/25'}`}>
+      <span className={`grid h-5 w-5 place-items-center rounded-md transition ${on?'accent-bg text-white':'border border-white/25'}`}>
         {on ? <span style={{width:13,height:13}}>{I.check({})}</span> : null}
       </span>
       {children}
@@ -116,7 +116,7 @@ export function GetAGame(){
         </div>
         {/* coral banner divider with the downward notch, mirroring the live site */}
         <div className="relative z-10 accent-bg py-5">
-          <div className="mx-auto max-w-6xl px-6 text-center text-[13px] font-medium uppercase tracking-[.2em] text-[#0b0b0b]/80">
+          <div className="mx-auto max-w-6xl px-6 text-center text-[13px] font-medium uppercase tracking-[.2em] text-white/85">
             all standards welcome · no team needed
           </div>
           <div className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[18px] border-x-transparent border-t-[16px]" style={{borderTopColor:'var(--accent)'}}></div>
@@ -160,7 +160,7 @@ export function GetAGame(){
           <Glass strong className="h-fit rounded-[30px] p-7 lg:sticky lg:top-28">
             {done ? (
               <div className="py-8 text-center">
-                <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
+                <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-white"><span style={{width:30,height:30}}>{I.check({})}</span></span>
                 <h3 className="hero-title mt-5 text-2xl font-semibold lowercase">you’re on the bench</h3>
                 <p className="mx-auto mt-3 max-w-xs text-[14px] text-white/60">Thanks {f.name.split(' ')[0]}! We’ll add you to the Subs Bench WhatsApp group and ping you when a game needs a sub.</p>
                 <Btn kind="outline" className="mt-6" onClick={()=>{ setDone(false); setF({name:'',email:'',phone:'',age:''}); setDays([]); setConfirm(false); }}>register someone else</Btn>

@@ -17,7 +17,7 @@ const isKey = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 export function Chip({ active, onClick, children }){
   return (
     <button onClick={onClick}
-      className={`rounded-full px-4 py-2 text-[13px] transition ${active?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/75 hover:bg-white/10'}`}>
+      className={`rounded-full px-4 py-2 text-[13px] transition ${active?'text-white accent-bg':'glass glass-soft text-white/75 hover:bg-white/10'}`}>
       {children}
     </button>
   );
@@ -100,7 +100,7 @@ export function Browse(){
                       return (
                         <button key={s} disabled={taken}
                           onClick={()=>{ store.venue=p.id; store.time=s; store.day=dayKey; go('booking',{p:p.id,t:s}); }}
-                          className={`tnum rounded-xl px-3 py-2 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':'glass glass-soft text-white/80 hover:accent-bg hover:text-[#0b0b0b]'}`}>
+                          className={`tnum rounded-xl px-3 py-2 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':'glass glass-soft text-white/80 hover:accent-bg hover:text-white'}`}>
                           {s}
                         </button>
                       );

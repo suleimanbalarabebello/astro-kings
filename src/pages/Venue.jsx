@@ -103,7 +103,7 @@ export function Venue({ params }){
                     const taken = !canStart(p.id, dayKey, s, 1);
                     return (
                       <button key={s} disabled={taken} onClick={()=>setTime(s)}
-                        className={`tnum rounded-xl py-2.5 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/80 hover:bg-white/12'}`}>
+                        className={`tnum rounded-xl py-2.5 text-[13px] transition ${taken?'cursor-not-allowed text-white/25 line-through':time===s?'text-white accent-bg':'glass glass-soft text-white/80 hover:bg-white/12'}`}>
                         {s}
                       </button>
                     );

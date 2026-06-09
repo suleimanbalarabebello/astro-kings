@@ -55,7 +55,7 @@ export function Calendar({ value, onChange, className='' }){
             <button key={i} disabled={past} onClick={()=>onChange(toKey(d))}
               className={`grid h-9 place-items-center rounded-xl text-[13px] tnum transition
                 ${past ? 'cursor-not-allowed text-white/20'
-                  : isSel ? 'accent-bg font-semibold text-[#0b0b0b]'
+                  : isSel ? 'accent-bg font-semibold text-white'
                   : 'glass glass-soft text-white/80 hover:bg-white/12'}
                 ${isToday && !isSel ? 'ring-1 ring-[var(--accent)]' : ''}`}>
               {d.getDate()}

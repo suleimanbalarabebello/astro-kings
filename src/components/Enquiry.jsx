@@ -21,7 +21,7 @@ export function EnquiryForm({ cta = 'get in touch', placeholder = 'How can we he
 
   if (done) return (
     <div className="py-6 text-center">
-      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:26,height:26}}>{I.check({})}</span></span>
+      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full accent-bg text-white"><span style={{width:26,height:26}}>{I.check({})}</span></span>
       <div className="hero-title mt-4 text-xl font-semibold lowercase">enquiry sent</div>
       <p className="mx-auto mt-2 max-w-xs text-[13px] text-white/60">Thanks {v.name.split(' ')[0]} — we’ll be in touch shortly.</p>
     </div>
