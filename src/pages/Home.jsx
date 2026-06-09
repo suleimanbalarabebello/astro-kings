@@ -179,7 +179,7 @@ export function Section({ eyebrow, title, action, children }){
       <div className="mb-7 flex items-end justify-between gap-4">
         <div>
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h2 className="hero-title mt-3 text-4xl md:text-5xl font-semibold lowercase">{title}</h2>
+          <h2 className="hero-title grad-text mt-3 text-4xl md:text-5xl font-semibold lowercase">{title}</h2>
         </div>
         {action}
       </div>

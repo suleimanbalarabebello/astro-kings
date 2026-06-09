@@ -74,7 +74,7 @@ export function PageHead({ eyebrow, title, sub, children }){
       <Eyebrow>{eyebrow}</Eyebrow>
       <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="hero-title text-5xl md:text-[64px] font-semibold lowercase">{title}</h1>
+          <h1 className="hero-title grad-text text-5xl md:text-[64px] font-semibold lowercase">{title}</h1>
           {sub ? <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">{sub}</p> : null}
         </div>
         {children}

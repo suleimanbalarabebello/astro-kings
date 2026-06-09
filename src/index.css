@@ -8,6 +8,9 @@
 :root{
   --accent:#E8645A;            /* brand coral */
   --accent-2:#F2A38C;
+  --accent-3:#7AA8FF;          /* cool electric blue — for contrast pops */
+  /* vibrant warm gradient used across accent surfaces */
+  --accent-grad:linear-gradient(135deg, #FF6F5B 0%, #F49A7E 48%, #FFC15E 100%);
   --bg:#06090A;
   --ink:#F4F6F7;
   --muted:rgba(244,246,247,.62);
@@ -39,11 +42,15 @@ body{
 .ak-stage::before{
   content:""; position:fixed; inset:0; z-index:-2;
   background:
-    radial-gradient(120% 80% at 18% -10%, rgba(232,100,90,.20), transparent 55%),
-    radial-gradient(120% 90% at 88% 0%, rgba(120,170,255,.16), transparent 55%),
-    radial-gradient(140% 120% at 50% 120%, rgba(70,210,150,.10), transparent 60%),
-    linear-gradient(180deg,#0a0e10 0%, #06090a 55%, #04070a 100%);
+    radial-gradient(120% 80% at 14% -12%, rgba(255,108,88,.30), transparent 55%),
+    radial-gradient(110% 80% at 90% -6%, rgba(120,170,255,.24), transparent 55%),
+    radial-gradient(120% 95% at 85% 32%, rgba(165,110,255,.16), transparent 55%),
+    radial-gradient(120% 90% at 8% 70%, rgba(255,180,90,.12), transparent 55%),
+    radial-gradient(140% 120% at 50% 122%, rgba(70,210,150,.13), transparent 60%),
+    linear-gradient(180deg,#0b0e13 0%, #06090a 55%, #04070a 100%);
+  animation:auraShift 22s ease-in-out infinite alternate;
 }
+@keyframes auraShift{ from{ filter:hue-rotate(0deg) saturate(1); } to{ filter:hue-rotate(-14deg) saturate(1.18); } }
 /* floodlight beams + pitch grid */
 .ak-stage::after{
   content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
@@ -96,10 +103,16 @@ html[data-grain="off"] .ak-grain{ display:none; }
 /* dimming backdrop behind the open mobile menu */
 .menu-scrim{ background:rgba(3,5,8,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
 
-.accent-bg{ background:var(--accent); }
+.accent-bg{ background:var(--accent-grad); }
 .accent-text{ color:var(--accent); }
-.accent-ring{ box-shadow:0 0 0 1px var(--accent), 0 10px 30px -10px color-mix(in oklab, var(--accent), transparent 55%); }
-.accent-glow{ box-shadow:0 14px 44px -12px color-mix(in oklab, var(--accent), transparent 35%); }
+.accent-ring{ box-shadow:0 0 0 1px var(--accent), 0 14px 38px -10px rgba(255,120,90,.5); }
+.accent-glow{ box-shadow:0 16px 50px -12px rgba(255,120,90,.55); }
+
+/* vivid clipped-gradient text for big headings on dark backgrounds */
+.grad-text{
+  background:linear-gradient(100deg, #FFFFFF 0%, #FFCBA6 42%, #FF8E6B 78%, #FFC25E 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
 
 .hero-title{ letter-spacing:-0.045em; line-height:.92; }
 .tnum{ font-variant-numeric:tabular-nums; letter-spacing:-0.03em; }
@@ -108,7 +121,7 @@ html[data-grain="off"] .ak-grain{ display:none; }
 
 /* scrollbars */
 *::-webkit-scrollbar{ width:10px; height:10px; }
-*::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:99px; border:2px solid transparent; background-clip:content-box; }
+*::-webkit-scrollbar-thumb{ background:var(--accent-grad); border-radius:99px; border:2px solid transparent; background-clip:content-box; }
 
 .fade-up{ animation:fadeUp .5s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
