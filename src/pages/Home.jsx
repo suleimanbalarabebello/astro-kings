@@ -217,7 +217,7 @@ const FOOTBALL_TILES = [
   { t:'book a pitch',     d:'book a brand-new 4g pitch',                   to:'browse', img:PITCH_PHOTO },
   { t:'birthday parties', d:'football parties from just £4 per child',     to:'parties', img:'/party.jpg' },
   { t:'subs bench',       d:"on your own? we'll find you a game to join",  to:'getagame', img:'/subs.jpg' },
-  { t:'u18s kings club',  d:'pitch access for just £14.99 per month',      to:'juniors' },
+  { t:'u18s kings club',  d:'pitch access for just £14.99 per month',      to:'juniors', img:'/kingsclub-tile.jpg' },
 ];
 
 /* "What else is going on" grid */
