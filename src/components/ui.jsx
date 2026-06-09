@@ -16,7 +16,7 @@ export function Btn({ kind='primary', size='md', className='', icon, iconEnd, ch
   const sz = size==='lg' ? 'h-14 px-7 text-[15px]' : size==='sm' ? 'h-9 px-4 text-[13px]' : 'h-12 px-6 text-[14px]';
   const base = `inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-200 active:scale-[.97] whitespace-nowrap`;
   let look;
-  if (kind==='primary') look = 'text-white accent-bg accent-glow hover:brightness-110';
+  if (kind==='primary') look = 'text-[#0b0b0b] accent-bg accent-glow hover:brightness-110';
   else if (kind==='glass') look = 'glass glass-soft text-white hover:bg-white/10';
   else if (kind==='ghost') look = 'text-white/80 hover:text-white hover:bg-white/8';
   else if (kind==='outline') look = 'text-white border border-white/22 hover:border-white/45 hover:bg-white/5';
@@ -30,7 +30,7 @@ export function Btn({ kind='primary', size='md', className='', icon, iconEnd, ch
 }
 
 export function Tag({ children, accent=false, className='' }){
-  return <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wide ${accent?'text-white accent-bg':'glass text-white/80'} ${className}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wide ${accent?'text-[#0b0b0b] accent-bg':'glass text-white/80'} ${className}`}>{children}</span>;
 }
 
 export function Eyebrow({ children, className='' }){
