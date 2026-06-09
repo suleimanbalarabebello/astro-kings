@@ -135,10 +135,14 @@ export function TopNav(){
               {/* mirror the desktop nav: 6 items, juniors & events expand */}
               {NAV_LINKS.map(l=> l.children ? (
                 <div key={l.id}>
-                  <button type="button" onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
-                    className={`flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left text-[15px] ${openGroup===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
-                    {l.label}<span className={`text-white/40 transition ${openGroup===l.id?'rotate-180':''}`} style={{width:16,height:16}}>{I.chevd({})}</span>
-                  </button>
+                  {/* tapping the label navigates (like the nav bar); the chevron expands the sub-items */}
+                  <div className={`flex items-center rounded-2xl ${openGroup===l.id?'bg-white/[.06]':''} hover:bg-white/10`}>
+                    <a href={'#'+l.id} className={`flex-1 px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'}`}>{l.label}</a>
+                    <button type="button" aria-label={`expand ${l.label}`} onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
+                      className="mr-1 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white/45 hover:bg-white/10">
+                      <span className={`transition ${openGroup===l.id?'rotate-180':''}`} style={{width:16,height:16}}>{I.chevd({})}</span>
+                    </button>
+                  </div>
                   {openGroup===l.id ? (
                     <div className="mb-1 ml-4 border-l border-white/10 pl-2">
                       {l.children.map(c=>(
