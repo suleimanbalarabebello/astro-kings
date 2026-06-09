@@ -90,6 +90,14 @@ export function TopNav(){
 
   return (
     <nav className="fixed inset-x-0 top-0 z-40 px-4 pt-4 md:px-7 md:pt-6">
+      {/* blurred fading backdrop once scrolled, so content underneath doesn't clash with the nav */}
+      <div className={`pointer-events-none absolute inset-x-0 top-0 h-28 transition-opacity duration-300 ${scrolled?'opacity-100':'opacity-0'}`}
+           style={{
+             backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)',
+             background:'linear-gradient(to bottom, rgba(5,9,12,.72), rgba(5,9,12,.28) 55%, transparent)',
+             maskImage:'linear-gradient(to bottom, black 60%, transparent)',
+             WebkitMaskImage:'linear-gradient(to bottom, black 60%, transparent)',
+           }}></div>
       <div className={`relative z-50 mx-auto flex max-w-7xl items-center justify-between gap-3 transition-all duration-300 ${scrolled?'scale-[.99]':''}`}>
         {/* left — brand pill */}
         <a href="#home" className="group flex items-center">
