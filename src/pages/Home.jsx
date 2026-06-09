@@ -17,7 +17,7 @@ function QuickBook({ compact=false }){
     <Glass strong className={`rounded-3xl p-3 ${compact?'':'md:p-4'}`}>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-[1.2fr_1fr_1fr_auto]">
         <Field icon={I.pin({})}>
-          <span className="text-[14px]">Astro Kings · Nottingham</span>
+          <span className="min-w-0 flex-1 truncate text-[14px]">Astro Kings · Nottingham</span>
         </Field>
 
         {/* date → liquid-glass calendar popover */}
@@ -113,28 +113,43 @@ export function Hero({ variant='stacked' }){
 
   // 'stacked' (default) — staggered words over a looping video stage
   return (
-    <header className="relative h-[92vh] min-h-[600px] w-full overflow-hidden px-4 md:px-6">
+    <header className="relative min-h-[88vh] w-full overflow-hidden px-4 md:h-[92vh] md:min-h-[600px] md:px-6">
       <HeroVideo className="!absolute inset-0 !border-0" rounded="rounded-none" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56" style={{background:'linear-gradient(to bottom, transparent, rgba(4,7,10,.92))'}}></div>
-      <div className="relative mx-auto h-full max-w-7xl">
-        <h1 className="hero-title absolute left-0 top-[16%] text-[15vw] font-semibold lowercase md:text-[12vw] fade-up">brand</h1>
-        <h1 className="hero-title absolute right-2 top-[35%] text-[15vw] font-semibold lowercase md:text-[12vw] fade-up" style={{animationDelay:'.06s'}}>new 4g</h1>
-        <h1 className="hero-title absolute left-[10%] top-[54%] text-[15vw] font-semibold lowercase md:left-[22%] md:text-[12vw] accent-text fade-up" style={{animationDelay:'.12s'}}>pitches</h1>
+
+      {/* desktop — staggered scattered words */}
+      <div className="relative mx-auto hidden h-full max-w-7xl md:block">
+        <h1 className="hero-title absolute left-0 top-[16%] text-[12vw] font-semibold lowercase fade-up">brand</h1>
+        <h1 className="hero-title absolute right-2 top-[35%] text-[12vw] font-semibold lowercase fade-up" style={{animationDelay:'.06s'}}>new 4g</h1>
+        <h1 className="hero-title absolute left-[22%] top-[54%] text-[12vw] font-semibold lowercase accent-text fade-up" style={{animationDelay:'.12s'}}>pitches</h1>
 
         <p className="absolute left-0 top-[44%] max-w-[230px] text-[15px] leading-snug text-white/85 fade-up" style={{animationDelay:'.18s'}}>
           football, leagues, birthday parties, stag, hen & corporate events.
         </p>
 
-        <div className="absolute right-0 top-[15%] hidden text-right fade-up sm:block" style={{animationDelay:'.2s'}}>
-          <div className="flex items-center justify-end gap-3"><span className="hidden h-px w-24 bg-white/40 md:block" style={{transform:'rotate(18deg)'}}></span><span className="tnum text-4xl font-semibold md:text-5xl">65k+</span></div>
+        <div className="absolute right-0 top-[15%] text-right fade-up" style={{animationDelay:'.2s'}}>
+          <div className="flex items-center justify-end gap-3"><span className="h-px w-24 bg-white/40" style={{transform:'rotate(18deg)'}}></span><span className="tnum text-4xl font-semibold md:text-5xl">65k+</span></div>
           <div className="mt-1 text-[13px] text-white/60">games played here</div>
         </div>
-        <div className="absolute bottom-[14%] left-0 hidden fade-up sm:block" style={{animationDelay:'.24s'}}>
-          <div className="flex items-center gap-3"><span className="tnum text-4xl font-semibold md:text-5xl">4</span><span className="hidden h-px w-24 bg-white/40 md:block" style={{transform:'rotate(-18deg)'}}></span></div>
+        <div className="absolute bottom-[14%] left-0 fade-up" style={{animationDelay:'.24s'}}>
+          <div className="flex items-center gap-3"><span className="tnum text-4xl font-semibold md:text-5xl">4</span><span className="h-px w-24 bg-white/40" style={{transform:'rotate(-18deg)'}}></span></div>
           <div className="mt-1 text-[13px] text-white/60">floodlit 4G pitches</div>
         </div>
+        <div className="absolute inset-x-0 bottom-[6%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}><QuickBook /></div>
       </div>
-      <div className="absolute inset-x-6 bottom-[6%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}><QuickBook /></div>
+
+      {/* mobile — clean stacked layout (no clipping) */}
+      <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end gap-6 pb-10 md:hidden">
+        <div className="fade-up">
+          <h1 className="hero-title text-[16vw] font-semibold leading-[.95] lowercase">brand<br/>new 4g<br/><span className="accent-text">pitches</span></h1>
+          <p className="mt-4 max-w-xs text-[14px] leading-snug text-white/85">football, leagues, birthday parties, stag, hen &amp; corporate events.</p>
+          <div className="mt-5 flex items-center gap-8">
+            <div><div className="tnum text-3xl font-semibold">4</div><div className="text-[12px] text-white/60">floodlit 4G pitches</div></div>
+            <div><div className="tnum text-3xl font-semibold">65k+</div><div className="text-[12px] text-white/60">games played</div></div>
+          </div>
+        </div>
+        <div className="fade-up" style={{animationDelay:'.1s'}}><QuickBook /></div>
+      </div>
     </header>
   );
 }
