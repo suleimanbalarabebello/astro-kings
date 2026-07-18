@@ -7,37 +7,46 @@ import { useRoute } from '../lib/router.js';
 import { useStore, currentUser } from '../lib/store.js';
 import { Logo, Glass, Btn } from './ui.jsx';
 
-/* desktop pill — mirrors the live site's top-level menu */
+/* desktop pill — top-level menu (booking is the standalone CTA, always visible) */
 export const NAV_LINKS = [
-  { id:'browse',   label:'find a pitch' },
-  { id:'getagame', label:'get a game' },
-  { id:'juniors',  label:'juniors', children:[
+  { id:'browse',       label:'find a pitch' },
+  { id:'getagame',     label:'social kicks' },
+  { id:'juniors',      label:'juniors', children:[
+      { id:'coaching',   label:'kids coaching' },
       { id:'kingsclub',  label:'u18s kings club' },
       { id:'academy',    label:'holiday camps' },
       { id:'payandplay', label:'pay and play' },
+      { id:'parties',    label:'kids parties' },
   ] },
-  { id:'events',   label:'events', children:[
-      { id:'events',  label:'corporate events' },
-      { id:'manvfat', label:'man v fat' },
+  { id:'events',       label:'events', children:[
+      { id:'events',          label:'book an event' },
+      { id:'performancezone', label:'performance zone' },
+      { id:'manvfat',         label:'man v fat' },
   ] },
-  { id:'clubs',    label:'clubs' },
-  { id:'about',    label:'about' },
+  { id:'nottsolympic', label:'notts olympic' },
+  { id:'shop',         label:'shop' },
+  { id:'contact',      label:'contact' },
 ];
 
 /* full link set for footer + mobile sheet */
 export const ALL_LINKS = [
   { id:'browse',   label:'find a pitch' },
+  { id:'getagame', label:'social kicks' },
+  { id:'performancezone', label:'performance zone' },
   { id:'pricing',  label:'pricing' },
   { id:'leagues',  label:'leagues' },
-  { id:'getagame', label:'get a game' },
+  { id:'events',   label:'book an event' },
+  { id:'coaching', label:'kids coaching' },
   { id:'juniors',  label:'juniors' },
   { id:'payandplay', label:'pay and play' },
   { id:'parties',  label:'kids parties' },
   { id:'academy',  label:'academy' },
-  { id:'events',   label:'events' },
+  { id:'nottsolympic', label:'notts olympic fc' },
   { id:'manvfat',  label:'man v fat' },
   { id:'clubs',    label:'clubs' },
+  { id:'shop',     label:'the football shop' },
   { id:'about',    label:'about' },
+  { id:'contact',  label:'contact us' },
 ];
 
 /* desktop nav item — plain link, or a hover dropdown when it has children */
@@ -116,8 +125,8 @@ export function TopNav(){
             {user ? <span className="text-[14px] font-semibold accent-text uppercase">{(user.name||'?').trim().charAt(0)}</span>
                   : <span style={{width:19,height:19}}>{I.user({})}</span>}
           </a>
-          <a href="#booking" className="hidden md:block">
-            <Btn kind="primary" size="md" iconEnd={I.arrow({})}>pitch hire</Btn>
+          <a href="#booking" className="hidden md:block" aria-label="Book a pitch">
+            <Btn kind="primary" size="md" iconEnd={I.arrow({})}>book a pitch</Btn>
           </a>
           <button onClick={()=>setOpen(o=>!o)} className="glass glass-soft grid h-11 w-11 place-items-center rounded-full text-white lg:hidden">
             <span style={{width:20,height:20}}>{(open?I.x:I.menu)({})}</span>
@@ -174,6 +183,18 @@ export function TopNav(){
         </>
       ) : null}
     </nav>
+  );
+}
+
+/* Sticky mobile bottom bar — keeps the highest-converting CTA on screen at all
+   times on phones (desktop always has the nav button). Rendered from App.jsx. */
+export function BookBar(){
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 px-4 pb-4 md:hidden" style={{paddingBottom:'max(1rem, env(safe-area-inset-bottom))'}}>
+      <a href="#booking" aria-label="Book a pitch" className="block">
+        <Btn kind="primary" size="lg" className="w-full shadow-2xl" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
+      </a>
+    </div>
   );
 }
 
