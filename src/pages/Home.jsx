@@ -117,26 +117,27 @@ export function Hero({ variant='stacked' }){
       <HeroVideo className="!absolute inset-0 !border-0" rounded="rounded-none" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56" style={{background:'linear-gradient(to bottom, transparent, rgba(4,7,10,.92))'}}></div>
 
-      {/* desktop — staggered scattered words */}
+      {/* desktop — staggered scattered words (upper half), CTA + search (lower band, no overlap) */}
       <div className="relative mx-auto hidden h-full max-w-7xl md:block">
-        <h1 className="hero-title absolute left-0 top-[16%] text-[12vw] font-semibold lowercase fade-up">brand</h1>
-        <h1 className="hero-title absolute right-2 top-[35%] text-[12vw] font-semibold lowercase fade-up" style={{animationDelay:'.06s'}}>new 4g</h1>
-        <h1 className="hero-title absolute left-[22%] top-[54%] text-[12vw] font-semibold lowercase accent-text fade-up" style={{animationDelay:'.12s'}}>pitches</h1>
+        <h1 className="hero-title absolute left-0 top-[9%] text-[10vw] font-semibold lowercase fade-up">brand</h1>
+        <h1 className="hero-title absolute right-2 top-[25%] text-[10vw] font-semibold lowercase fade-up" style={{animationDelay:'.06s'}}>new 4g</h1>
+        <h1 className="hero-title absolute left-[24%] top-[41%] text-[10vw] font-semibold lowercase accent-text fade-up" style={{animationDelay:'.12s'}}>pitches</h1>
 
-        <p className="absolute left-0 top-[44%] max-w-[230px] text-[15px] leading-snug text-white/85 fade-up" style={{animationDelay:'.18s'}}>
+        <p className="absolute left-0 top-[38%] max-w-[230px] text-[15px] leading-snug text-white/85 fade-up" style={{animationDelay:'.18s'}}>
           football, leagues, birthday parties, stag, hen & corporate events.
         </p>
 
-        <div className="absolute right-0 top-[15%] text-right fade-up" style={{animationDelay:'.2s'}}>
+        <div className="absolute right-0 top-[10%] text-right fade-up" style={{animationDelay:'.2s'}}>
           <div className="flex items-center justify-end gap-3"><span className="h-px w-24 bg-white/40" style={{transform:'rotate(18deg)'}}></span><span className="tnum text-4xl font-semibold md:text-5xl">65k+</span></div>
           <div className="mt-1 text-[13px] text-white/60">games played here</div>
         </div>
-        <div className="absolute bottom-[14%] left-0 fade-up" style={{animationDelay:'.24s'}}>
+        <div className="absolute bottom-[8%] left-0 hidden fade-up xl:block" style={{animationDelay:'.24s'}}>
           <div className="flex items-center gap-3"><span className="tnum text-4xl font-semibold md:text-5xl">4</span><span className="h-px w-24 bg-white/40" style={{transform:'rotate(-18deg)'}}></span></div>
           <div className="mt-1 text-[13px] text-white/60">floodlit 4G pitches</div>
         </div>
-        {/* the main event — booking front and centre */}
-        <div className="absolute inset-x-0 bottom-[6%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}>
+
+        {/* the main event — booking front and centre, clear of the headline words */}
+        <div className="absolute inset-x-0 bottom-[5%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}>
           <div className="mb-5 flex justify-center">
             <a href="#booking" aria-label="Book a pitch">
               <Btn kind="primary" className="h-16 px-12 text-[17px] accent-glow hover:scale-[1.03]" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
