@@ -5,7 +5,6 @@
 import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
 import { PITCHES, slotsInBand, TIME_BANDS, PITCH_PHOTO, store } from '../lib/data.js';
-import { go } from '../lib/router.js';
 import { useStore, currentUser } from '../lib/store.js';
 import {
   freeStarts, quote, endTimeOf, startReservation, payReservation,
@@ -73,8 +72,8 @@ const DURATIONS = Array.from({length:MAX_HOURS}, (_,i)=>i+1);
 
 export function Booking({ params }){
   useStore();                                  // re-render on availability changes
-  const id = params.p || store.venue || 'classic';
-  const p = PITCHES.find(x=>x.id===id) || PITCHES[0];
+  const [pitchId,setPitchId] = useState(params.p || store.venue || 'classic');
+  const p = PITCHES.find(x=>x.id===pitchId) || PITCHES[0];
 
   const [step,setStep] = useState(0);
   const [time,setTime] = useState(params.t || store.time || '19:00');
@@ -167,29 +166,62 @@ export function Booking({ params }){
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="min-h-[420px]">
           {step===0 && (
-            <div className="pop space-y-7">
+            <div className="pop space-y-8">
+              {/* 1 · pitch first — see what you're booking before anything else */}
+              <div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">1 · choose your pitch</div>
+                <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                  {PITCHES.map(x=>{
+                    const active = x.id===p.id;
+                    return (
+                      <button key={x.id} type="button" aria-pressed={active}
+                        onClick={()=>{ setPitchId(x.id); store.venue=x.id; }}
+                        className={`group relative overflow-hidden rounded-2xl text-left transition ${active?'accent-ring':'glass glass-soft hover:bg-white/10'}`}>
+                        <div className="relative aspect-[16/10] w-full overflow-hidden">
+                          <img src={PITCH_PHOTO} alt={x.name} className={`absolute inset-0 h-full w-full object-cover transition duration-300 ${active?'':'opacity-70 group-hover:opacity-90'}`} />
+                          <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(to top, rgba(4,7,10,.85), transparent 60%)'}}></div>
+                          <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide ${active?'accent-bg text-[#0b0b0b] font-semibold':'glass text-white/70'}`}>{x.size}</span>
+                          {active ? <span className="absolute left-2 top-2 grid h-6 w-6 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:13,height:13}}>{I.check({})}</span></span> : null}
+                        </div>
+                        <div className="p-3">
+                          <div className="text-[14px] font-medium leading-tight">{x.name}</div>
+                          <div className="mt-0.5 flex items-baseline gap-1"><span className="tnum text-[15px] font-semibold accent-text">£{x.price}</span><span className="text-[11px] text-white/45">{x.unit}</span></div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-2.5 text-[12px] text-white/40">{p.desc}.</div>
+              </div>
+
+              {/* 2-4 · then decide when */}
               <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
                 <div>
-                  <div className="text-[12px] uppercase tracking-wide text-white/40">1 · pick a date</div>
+                  <div className="text-[12px] uppercase tracking-wide text-white/40">2 · pick a date</div>
                   <div className="mt-3 max-w-[300px]"><Calendar value={dayKey} onChange={setDayKey} /></div>
                 </div>
                 <div className="space-y-6">
                   <div>
-                    <div className="text-[12px] uppercase tracking-wide text-white/40">2 · how long?</div>
+                    <div className="text-[12px] uppercase tracking-wide text-white/40">3 · how long?</div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[12px] uppercase tracking-wide text-white/40">3 · time of day</div>
+                    <div className="text-[12px] uppercase tracking-wide text-white/40">4 · time of day</div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {Object.entries(TIME_BANDS).map(([k,b])=><Chip key={k} active={band===k} onClick={()=>setBand(k)}>{b.label}</Chip>)}
                     </div>
                   </div>
+                  <div className="hidden rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
+                    Booking <span className="text-white">{p.name}</span> · {dayLabel} · {hours} hour{hours>1?'s':''} — pick your kick-off below.
+                  </div>
                 </div>
               </div>
+
+              {/* 5 · kick-off slots for the chosen pitch/day */}
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">4 · choose a kick-off · {dayLabel}</div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">5 · choose a kick-off · {p.name} · {dayLabel}</div>
                 <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
                   {bandSlots.map(s=>{
                     const free = starts.includes(s);
@@ -209,12 +241,6 @@ export function Booking({ params }){
                   })}
                 </div>
                 <div className="mt-3 text-[12px] text-white/40">Taken slots are crossed out — tap one to join its waitlist. Ends {endTimeOf(time,hours)}.</div>
-              </div>
-              <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">5 · switch pitch (optional)</div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {PITCHES.map(x=><Chip key={x.id} active={x.id===p.id} onClick={()=>{ store.venue=x.id; store.day=dayKey; go('booking',{p:x.id,t:time}); }}>{x.name} · £{x.price}</Chip>)}
-                </div>
               </div>
             </div>
           )}
