@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
+import { BOOKING_PLATFORM_URL } from '../lib/config.js';
 import { useRoute } from '../lib/router.js';
+
+/* every Book-a-Pitch CTA points at the venue's live booking platform once
+   BOOKING_PLATFORM_URL is set; until then, the built-in demo flow */
+const BOOK_HREF = BOOKING_PLATFORM_URL || '#booking';
+const BOOK_EXT  = BOOKING_PLATFORM_URL ? { target:'_blank', rel:'noreferrer' } : {};
 
 import { Logo, Glass, Btn } from './ui.jsx';
 
@@ -118,7 +124,7 @@ export function TopNav(){
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
-          <a href="#booking" className="hidden md:block" aria-label="Book a pitch">
+          <a href={BOOK_HREF} {...BOOK_EXT} className="hidden md:block" aria-label="Book a pitch">
             <Btn kind="primary" size="md" iconEnd={I.arrow({})}>book a pitch</Btn>
           </a>
           <button onClick={()=>setOpen(o=>!o)} className="glass glass-soft grid h-11 w-11 place-items-center rounded-full text-white lg:hidden">
@@ -163,7 +169,7 @@ export function TopNav(){
                 </a>
               ))}
 
-              <a href="#booking" className="mt-1 block px-1 pb-1">
+              <a href={BOOK_HREF} {...BOOK_EXT} className="mt-1 block px-1 pb-1">
                 <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>
               </a>
             </Glass>
@@ -179,7 +185,7 @@ export function TopNav(){
 export function BookBar(){
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 px-4 pb-4 md:hidden" style={{paddingBottom:'max(1rem, env(safe-area-inset-bottom))'}}>
-      <a href="#booking" aria-label="Book a pitch" className="block">
+      <a href={BOOK_HREF} {...BOOK_EXT} aria-label="Book a pitch" className="block">
         <Btn kind="primary" size="lg" className="w-full shadow-2xl" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
       </a>
     </div>

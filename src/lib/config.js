@@ -15,6 +15,12 @@ export const PAYPLAY_PRICE      = 4.5;    // U18 daily pay & play, per person
 
 export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from email domain
 
+/* The venue's LIVE booking platform (they already run one, with Stripe).
+   TODO: paste the real booking URL here (e.g. their Pitchbooking/BookteQ page).
+   When set, every "Book a Pitch" CTA site-wide deep-links straight to it and
+   the built-in demo checkout below is bypassed. Leave '' to keep the demo flow. */
+export const BOOKING_PLATFORM_URL = '';
+
 /* Cloudflare Turnstile site key. This is Cloudflare's official ALWAYS-PASSES test
    key — it renders a real, working widget on any domain with no account needed.
    For production: replace with the owner's real site key (challenges.cloudflare.com)

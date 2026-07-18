@@ -11,7 +11,7 @@ import {
   releaseExpiredHolds, signUp, deriveStudent, prepayPolicy, joinWaitlist,
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
-import { HOLD_MINUTES, MAX_HOURS, CANCEL_WINDOW_HRS } from '../lib/config.js';
+import { HOLD_MINUTES, MAX_HOURS, CANCEL_WINDOW_HRS, BOOKING_PLATFORM_URL } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
@@ -77,7 +77,29 @@ const TIMETABLE = [
   { label:'evening',   sub:'17:00 – 22:00', slots: SLOTS.filter(s=>+s.slice(0,2) >= 17) },
 ];
 
+/* The venue runs a live booking platform (with Stripe). Once its URL is in
+   config, this page hands straight over to it instead of the demo checkout. */
+function PlatformHandoff(){
+  return (
+    <div className="mx-auto max-w-2xl px-6 pt-32 pb-16 text-center md:pt-40">
+      <Eyebrow className="justify-center">book a pitch</Eyebrow>
+      <h1 className="hero-title mt-4 text-4xl font-semibold lowercase md:text-5xl">book on our live system</h1>
+      <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/60">
+        Bookings and payments are handled securely on our booking platform — pick your pitch and time there and you’re in.
+      </p>
+      <a href={BOOKING_PLATFORM_URL} target="_blank" rel="noreferrer" className="mt-8 inline-block">
+        <Btn kind="primary" size="lg" iconEnd={I.arrow({})}>open the booking system</Btn>
+      </a>
+    </div>
+  );
+}
+
 export function Booking({ params }){
+  if (BOOKING_PLATFORM_URL) return <PlatformHandoff />;
+  return <BookingFlow params={params} />;
+}
+
+function BookingFlow({ params }){
   useStore();                                  // re-render on availability changes
   const [pitchId,setPitchId] = useState(params.p || store.venue || 'classic');
   const p = PITCHES.find(x=>x.id===pitchId) || PITCHES[0];
@@ -373,6 +395,9 @@ export function Booking({ params }){
                   <h2 className="hero-title mt-6 text-3xl md:text-4xl font-semibold lowercase">you're booked in</h2>
                   <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. £{q.total} paid in full.</p>
                   <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>
+                  <p className="mx-auto mt-4 max-w-sm text-[11.5px] leading-relaxed text-white/35">
+                    demo checkout — the final build hands bookings &amp; payment to the venue's live booking system and Stripe. {/* TODO: set BOOKING_PLATFORM_URL in config.js */}
+                  </p>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">
                     <a href="#home"><Btn kind="primary" iconEnd={I.arrow({})}>back home</Btn></a>
                     <button onClick={()=>{ setStep(0); setRef(''); setReservation(null); }} className="inline-flex"><Btn kind="outline">book another slot</Btn></button>
@@ -389,7 +414,8 @@ export function Booking({ params }){
             <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} fee={fee} />
             {step<4 && (
               <div className="flex items-center justify-between gap-3">
-                <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
+                <button onClick={back} disabled={step===0}
+                  className={`inline-flex h-12 items-center gap-2 rounded-full border px-5 text-[14px] transition ${step===0?'cursor-not-allowed border-white/10 text-white/25':'border-white/30 text-white hover:border-white/60 hover:bg-white/5'}`}>
                   <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
                 </button>
                 <Btn kind="primary" size="lg" onClick={step===0?()=>{setErr('');setStep(1);}:step===1?toDetails:step===2?toPayment:pay} iconEnd={I.arrow({})}>
