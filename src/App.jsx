@@ -7,7 +7,6 @@ import { Home } from './pages/Home.jsx';
 import { Browse } from './pages/Browse.jsx';
 import { Venue } from './pages/Venue.jsx';
 import { Booking } from './pages/Booking.jsx';
-import { Dashboard } from './pages/Dashboard.jsx';
 import { Pricing } from './pages/Pricing.jsx';
 import { Leagues } from './pages/Leagues.jsx';
 import { About } from './pages/About.jsx';
@@ -32,7 +31,6 @@ const PAGES = {
   browse: () => <Browse />,
   venue: (params) => <Venue params={params} />,
   booking: (params) => <Booking params={params} />,
-  dashboard: () => <Dashboard />,
   pricing: () => <Pricing />,
   leagues: () => <Leagues />,
   about: () => <About />,

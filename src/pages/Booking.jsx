@@ -294,8 +294,8 @@ export function Booking({ params }){
                   <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. £{q.total} paid in full.</p>
                   <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">
-                    <a href="#dashboard"><Btn kind="primary" iconEnd={I.arrow({})}>view my bookings</Btn></a>
-                    <a href="#home"><Btn kind="outline">back home</Btn></a>
+                    <a href="#home"><Btn kind="primary" iconEnd={I.arrow({})}>back home</Btn></a>
+                    <button onClick={()=>{ setStep(0); setRef(''); setReservation(null); }} className="inline-flex"><Btn kind="outline">book another slot</Btn></button>
                   </div>
                 </div>
               </Glass>

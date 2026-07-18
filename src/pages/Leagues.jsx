@@ -77,7 +77,7 @@ export function Leagues(){
                 </div>
               ))}
             </div>
-            <div className="mt-5 text-[12px] text-white/40">updated after every fixture · auto-synced to your dashboard</div>
+            <div className="mt-5 text-[12px] text-white/40">updated after every fixture</div>
           </Glass>
         </aside>
       </div>
