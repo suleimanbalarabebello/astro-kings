@@ -207,13 +207,11 @@ export function Booking({ params }){
                 <div className="mt-2.5 text-[12px] text-white/40">{p.desc}.</div>
               </div>
 
-              {/* 2 · date */}
-              <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
-                <div>
-                  <div className="text-[12px] uppercase tracking-wide text-white/40">2 · pick a date</div>
-                  <div className="mt-3 max-w-[300px]"><Calendar value={dayKey} onChange={setDayKey} /></div>
-                </div>
-                <div className="hidden self-end rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
+              {/* 2 · date — centred, full-size */}
+              <div>
+                <div className="text-center text-[12px] uppercase tracking-wide text-white/40">2 · pick a date</div>
+                <div className="mx-auto mt-4 w-full max-w-[460px]"><Calendar big value={dayKey} onChange={setDayKey} /></div>
+                <div className="mx-auto mt-4 max-w-[460px] rounded-2xl glass glass-soft p-4 text-center text-[13px] leading-relaxed text-white/55">
                   <span className="text-white">{p.name}</span> · <span className="text-white">{dayLabel}</span> — next you’ll pick your kick-off time.
                 </div>
               </div>

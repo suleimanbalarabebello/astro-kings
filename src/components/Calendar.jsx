@@ -16,7 +16,7 @@ function NavBtn({ onClick, children, label }){
   );
 }
 
-export function Calendar({ value, onChange, className='' }){
+export function Calendar({ value, onChange, className='', big=false }){
   const today = startOfToday();
   const selected = value ? fromKey(value) : null;
   const [view, setView] = useState(new Date((selected||today).getFullYear(), (selected||today).getMonth(), 1));
@@ -33,19 +33,19 @@ export function Calendar({ value, onChange, className='' }){
   const shiftYear  = (n) => setView(new Date(year+n, month, 1));
 
   return (
-    <Glass strong className={`glass-menu rounded-3xl p-4 ${className}`}>
+    <Glass strong className={`glass-menu rounded-3xl ${big?'p-5 md:p-6':'p-4'} ${className}`}>
       <div className="flex items-center justify-between gap-1">
         <NavBtn onClick={()=>shiftYear(-1)} label="previous year">«</NavBtn>
         <NavBtn onClick={()=>shiftMonth(-1)} label="previous month">‹</NavBtn>
-        <div className="flex-1 text-center text-[13px] font-medium">{monthLabel(view)}</div>
+        <div className={`flex-1 text-center font-medium ${big?'text-[16px]':'text-[13px]'}`}>{monthLabel(view)}</div>
         <NavBtn onClick={()=>shiftMonth(1)} label="next month">›</NavBtn>
         <NavBtn onClick={()=>shiftYear(1)} label="next year">»</NavBtn>
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[10px] uppercase tracking-wide text-white/35">
+      <div className={`mt-3 grid grid-cols-7 text-center uppercase tracking-wide text-white/35 ${big?'gap-1.5 text-[11px]':'gap-1 text-[10px]'}`}>
         {WEEK.map(w=><div key={w}>{w}</div>)}
       </div>
-      <div className="mt-1 grid grid-cols-7 gap-1">
+      <div className={`mt-1 grid grid-cols-7 ${big?'gap-1.5':'gap-1'}`}>
         {cells.map((d,i)=>{
           if (!d) return <div key={i} />;
           const past   = d < today;
@@ -53,7 +53,7 @@ export function Calendar({ value, onChange, className='' }){
           const isToday = isSameDay(d, today);
           return (
             <button key={i} disabled={past} onClick={()=>onChange(toKey(d))}
-              className={`grid h-9 place-items-center rounded-xl text-[13px] tnum transition
+              className={`grid place-items-center rounded-xl tnum transition ${big?'h-12 text-[15px] md:h-14':'h-9 text-[13px]'}
                 ${past ? 'cursor-not-allowed text-white/20'
                   : isSel ? 'accent-bg font-semibold text-[#0b0b0b]'
                   : 'glass glass-soft text-white/80 hover:bg-white/12'}
