@@ -4,10 +4,10 @@
 
 import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
-import { PITCHES, slotsInBand, TIME_BANDS, PITCH_PHOTO, store } from '../lib/data.js';
+import { PITCHES, SLOTS, PITCH_PHOTO, store } from '../lib/data.js';
 import { useStore, currentUser } from '../lib/store.js';
 import {
-  freeStarts, quote, endTimeOf, startReservation, payReservation,
+  freeStarts, quote, endTimeOf, toMin, startReservation, payReservation,
   releaseExpiredHolds, signUp, deriveStudent, prepayPolicy, joinWaitlist,
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
@@ -70,6 +70,13 @@ const ADDONS = [
 ];
 const DURATIONS = Array.from({length:MAX_HOURS}, (_,i)=>i+1);
 
+/* full-day timetable, grouped so 28 slots stay scannable */
+const TIMETABLE = [
+  { label:'morning',   sub:'08:00 – 12:00', slots: SLOTS.filter(s=>+s.slice(0,2) < 12) },
+  { label:'afternoon', sub:'12:00 – 17:00', slots: SLOTS.filter(s=>+s.slice(0,2) >= 12 && +s.slice(0,2) < 17) },
+  { label:'evening',   sub:'17:00 – 22:00', slots: SLOTS.filter(s=>+s.slice(0,2) >= 17) },
+];
+
 export function Booking({ params }){
   useStore();                                  // re-render on availability changes
   const [pitchId,setPitchId] = useState(params.p || store.venue || 'classic');
@@ -78,7 +85,6 @@ export function Booking({ params }){
   const [step,setStep] = useState(0);
   const [time,setTime] = useState(params.t || store.time || '19:00');
   const [dayKey,setDayKey] = useState(isKey(store.day) ? store.day : todayKey());
-  const [band,setBand] = useState('evening');
   const [hours,setHours] = useState(1);
   const [sel,setSel]   = useState([]);
   const [team,setTeam] = useState('');
@@ -98,12 +104,19 @@ export function Booking({ params }){
   const baseQ = quote(p, hours, addons);
   const q = { ...baseQ, total: baseQ.total + fee };   // pay-in-full only
   const dayLabel = keyLabel(dayKey);
-  const bandSlots = slotsInBand(band);
-  const starts = freeStarts(p.id, dayKey, bandSlots, hours);
+  const starts = freeStarts(p.id, dayKey, SLOTS, hours);
   const isStudent = deriveStudent(email);
+  // today only: times already gone are unbookable
+  const nowHM = new Date().toTimeString().slice(0,5);
+  const isPast = (s) => dayKey === todayKey() && s <= nowHM;
+  // the follow-on slots a multi-hour booking covers (highlighted in the timetable)
+  const inRun = (s) => toMin(s) > toMin(time) && toMin(s) < toMin(time) + hours*60;
 
-  // selected start may stop being valid when day/band/hours/pitch change
-  useEffect(()=>{ if (!starts.includes(time) && starts.length) setTime(starts[0]); }, [dayKey, band, hours, p.id]); // eslint-disable-line
+  // selected start may stop being valid when day/hours/pitch change
+  useEffect(()=>{
+    const usable = starts.filter(s=>!isPast(s));
+    if ((!starts.includes(time) || isPast(time)) && usable.length) setTime(usable[0]);
+  }, [dayKey, hours, p.id]); // eslint-disable-line
 
   // countdown while a hold is live on the payment step
   useEffect(()=>{
@@ -207,40 +220,68 @@ export function Booking({ params }){
                       {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
                     </div>
                   </div>
-                  <div>
-                    <div className="text-[12px] uppercase tracking-wide text-white/40">4 · time of day</div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {Object.entries(TIME_BANDS).map(([k,b])=><Chip key={k} active={band===k} onClick={()=>setBand(k)}>{b.label}</Chip>)}
-                    </div>
-                  </div>
                   <div className="hidden rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
-                    Booking <span className="text-white">{p.name}</span> · {dayLabel} · {hours} hour{hours>1?'s':''} — pick your kick-off below.
+                    Booking <span className="text-white">{p.name}</span> · {dayLabel} · {hours} hour{hours>1?'s':''} · kicks off <span className="tnum text-white">{time}</span>, ends <span className="tnum text-white">{endTimeOf(time,hours)}</span>.
                   </div>
                 </div>
               </div>
 
-              {/* 5 · kick-off slots for the chosen pitch/day */}
+              {/* 4 · full-day timetable — every slot visible, grouped by part of day */}
               <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">5 · choose a kick-off · {p.name} · {dayLabel}</div>
-                <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-5">
-                  {bandSlots.map(s=>{
-                    const free = starts.includes(s);
-                    if (!free) return (
-                      <button key={s} title="join the waitlist"
-                        onClick={()=>{ const r=joinWaitlist({pitchId:p.id,day:dayKey,startTime:s,hours,userId:currentUser()?.id}); setMsg(`You're #${r.position} on the waitlist for ${s} on ${dayLabel} — we'll offer it the moment it frees up.`); }}
-                        className="glass glass-soft tnum rounded-2xl py-3.5 text-[13px] text-white/30 line-through transition hover:text-white/70">
-                        {s}
-                      </button>
-                    );
-                    return (
-                      <button key={s} onClick={()=>setTime(s)}
-                        className={`tnum rounded-2xl py-3.5 text-[14px] transition ${time===s?'text-[#0b0b0b] accent-bg':'glass glass-soft text-white/85 hover:bg-white/12'}`}>
-                        {s}
-                      </button>
-                    );
-                  })}
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div className="text-[12px] uppercase tracking-wide text-white/40">4 · pick your kick-off · {p.name} · {dayLabel}</div>
+                  {/* legend */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-white/45">
+                    <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md glass glass-soft"></span>free</span>
+                    <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md accent-bg"></span>kick-off</span>
+                    <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md" style={{background:'color-mix(in oklab, var(--accent), transparent 75%)'}}></span>your game</span>
+                    <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-md bg-white/10 text-center text-[9px] leading-3 text-white/40">✕</span>taken · tap = waitlist</span>
+                  </div>
                 </div>
-                <div className="mt-3 text-[12px] text-white/40">Taken slots are crossed out — tap one to join its waitlist. Ends {endTimeOf(time,hours)}.</div>
+
+                <div className="mt-3 space-y-5">
+                  {TIMETABLE.map(g=>(
+                    <div key={g.label}>
+                      <div className="mb-2 flex items-center gap-3">
+                        <span className="text-[11px] uppercase tracking-[.18em] text-white/50">{g.label}</span>
+                        <span className="tnum text-[11px] text-white/30">{g.sub}</span>
+                        <span className="h-px flex-1 bg-white/8"></span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
+                        {g.slots.map(s=>{
+                          const past = isPast(s);
+                          const free = starts.includes(s);
+                          const covered = inRun(s);
+                          if (past) return (
+                            <span key={s} aria-hidden className="tnum rounded-xl py-2.5 text-center text-[13px] text-white/15">{s}</span>
+                          );
+                          if (s===time) return (
+                            <button key={s} aria-pressed className="tnum rounded-xl py-2.5 text-center text-[13px] font-semibold text-[#0b0b0b] accent-bg">{s}</button>
+                          );
+                          if (covered) return (
+                            <span key={s} title="covered by your booking"
+                              className="tnum rounded-xl py-2.5 text-center text-[13px] text-white/85"
+                              style={{background:'color-mix(in oklab, var(--accent), transparent 75%)'}}>{s}</span>
+                          );
+                          if (!free) return (
+                            <button key={s} title="taken — tap to join the waitlist"
+                              onClick={()=>{ const r=joinWaitlist({pitchId:p.id,day:dayKey,startTime:s,hours,userId:currentUser()?.id}); setMsg(`You're #${r.position} on the waitlist for ${s} on ${dayLabel} — we'll offer it the moment it frees up.`); }}
+                              className="tnum rounded-xl bg-white/[.04] py-2.5 text-center text-[13px] text-white/25 line-through transition hover:text-white/60">
+                              {s}
+                            </button>
+                          );
+                          return (
+                            <button key={s} onClick={()=>setTime(s)}
+                              className="glass glass-soft tnum rounded-xl py-2.5 text-center text-[13px] text-white/85 transition hover:bg-white/12">
+                              {s}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 text-[12px] text-white/40">Your {hours}-hour game runs {time}–{endTimeOf(time,hours)}. Crossed-out slots are taken — tap one to join its waitlist.</div>
               </div>
             </div>
           )}
