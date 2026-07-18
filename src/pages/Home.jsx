@@ -225,13 +225,13 @@ export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/
     <div className={`grid gap-4 ${cols}`}>
       {tiles.map((t,i)=>(
         <a key={i} href={'#'+t.to}
-           className={`ph group relative block ${aspect} overflow-hidden rounded-[28px] fade-up`}
+           className={`ph group relative block ${aspect} overflow-hidden rounded-[28px] fade-up ${t.cls||''}`}
            style={{animationDelay:(i*.06)+'s'}}>
           {t.img ? <img src={t.img} alt={t.t} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /> : null}
           <div className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-90"
                style={{background:'linear-gradient(to top, rgba(4,7,10,.88), rgba(4,7,10,.18) 55%, rgba(4,7,10,.04))'}}></div>
           <div className="absolute inset-x-0 bottom-0 p-5 text-center md:p-6">
-            <div className={`hero-title font-semibold lowercase ${big?'text-3xl md:text-4xl':'text-xl md:text-2xl'}`}>{t.t}</div>
+            <div className={`hero-title font-semibold lowercase ${(t.big ?? big)?'text-3xl md:text-4xl':'text-xl md:text-2xl'}`}>{t.t}</div>
             <div className="mt-1.5 text-[13.5px] text-white/70">{t.d}</div>
             <span className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide accent-text">
               explore <span className="transition group-hover:translate-x-1" style={{width:13,height:13}}>{I.arrow({})}</span>
@@ -244,19 +244,17 @@ export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/
 }
 
 /* "Football" hero grid — the four headline offerings */
-const FOOTBALL_TILES = [
-  { t:'book a pitch',     d:'book a brand-new 4g pitch',                   to:'browse', img:PITCH_PHOTO },
-  { t:'birthday parties', d:'football parties from just £4 per child',     to:'parties', img:'/party.jpg' },
-  { t:'subs bench',       d:"on your own? we'll find you a game to join",  to:'getagame', img:'/subs.jpg' },
-  { t:'u18s kings club',  d:'pitch access for just £14.99 per month',      to:'juniors', img:'/kingsclub-tile.jpg' },
-];
-
-/* "What else is going on" grid */
-const WHATSON_TILES = [
-  { t:'coaching',         d:'home of kings football academy',     to:'academy', img:'/coaching.jpg' },
-  { t:'corporate events', d:'tournaments, team building & more',  to:'events', img:'/corporate.jpg' },
-  { t:'man v fat',        d:'play football, lose weight, win',    to:'manvfat', img:'/manvfat-tile.jpg' },
-  { t:'u18s pay & play',  d:'play for just £3.50 every day',      to:'payandplay', img:'/payandplay-tile.jpg' },
+/* The 8 headline tiles — booking first (primary goal), club-building close behind. */
+const HOME_TILES = [
+  { t:'book a pitch',              d:'brand-new 4g pitches · pay a deposit or in full', to:'booking',         img:PITCH_PHOTO, cls:'sm:col-span-2', big:true },
+  { t:'kids coaching',             d:'notts olympic kids league & weekly coaching',     to:'coaching',        img:'/coaching.jpg' },
+  { t:'notts olympic fc',          d:'the club behind the centre — follow & support',   to:'nottsolympic',    img:'/juniors-poster.jpg' },
+  { t:'book the performance zone', d:'1-2-1 & small-group coaching space for hire',     to:'performancezone', img:'/academy-poster.jpg' },
+  { t:'book an event',             d:'zorb football, darts, tournaments & more',        to:'events',          img:'/corporate.jpg' },
+  { t:'kids football party',       d:'parties from just £4 per child — fully hosted',   to:'parties',         img:'/party.jpg' },
+  { t:'social kicks',              d:'casual pick-up games — join the whatsapp group',  to:'getagame',        img:'/subs.jpg' },
+  /* TODO: real shop/product photo for this tile */
+  { t:'the football shop',         d:'balls, grip socks & notts olympic kit',           to:'shop' },
 ];
 
 export function Home(){
@@ -264,7 +262,10 @@ export function Home(){
     <div>
       <Hero variant="stacked" />
 
-      <Section eyebrow="play at astro kings" title="football"><FeatureTiles tiles={FOOTBALL_TILES} /></Section>
+      {/* the 8 headline tiles — everything the centre offers, booking first */}
+      <Section eyebrow="play at astro kings" title="what would you like to do?">
+        <FeatureTiles tiles={HOME_TILES} cols="sm:grid-cols-2 lg:grid-cols-4" aspect="aspect-[4/3]" big={false} />
+      </Section>
 
       <Section eyebrow="our pitches" title="choose your format"
         action={<a href="#browse" className="hidden md:block"><Btn kind="outline" size="sm" iconEnd={I.arrow({})}>see all pitches</Btn></a>}>
@@ -272,10 +273,6 @@ export function Home(){
       </Section>
 
       <Section eyebrow="everything sorted" title="more than just a pitch"><FacilityRow /></Section>
-
-      <Section eyebrow="ways to play" title="what else is going on">
-        <FeatureTiles tiles={WHATSON_TILES} cols="sm:grid-cols-2 lg:grid-cols-4" aspect="aspect-[4/3]" big={false} />
-      </Section>
 
       <section className="mx-auto mt-24 max-w-7xl px-6">
         <Glass strong className="relative overflow-hidden rounded-[34px] p-10 text-center md:p-16">
