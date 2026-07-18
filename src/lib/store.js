@@ -14,7 +14,7 @@ function seed(){
   const t = startOfToday();
   const d0 = toKey(t), d1 = toKey(addDays(t,1));
   const booked = {};
-  ['18:00','19:30','20:30'].forEach(time => { booked[`classic|${d0}|${time}`] = 'seed'; });
+  ['18:00','20:00'].forEach(time => { booked[`classic|${d0}|${time}`] = 'seed'; });
   ['12:00','13:00'].forEach(time => { booked[`samba|${d1}|${time}`] = 'seed'; });
   return {
     currentUserId: null,

@@ -17,10 +17,10 @@ export const PITCHES = [
   { id:'mini',    name:'Mini Soccer',      price:90, unit:'/hr', size:'7v7', goals:'12ft × 6ft goals', tag:'FA approved', desc:'For juniors · FA approved', spec:['FA approved','12ft × 6ft goals','Junior friendly'] },
 ];
 
-/* full operating day, 30-min slots from 08:00 to 21:30 (venue closes 22:00) */
+/* full operating day, on-the-hour slots from 08:00 to 21:00 (venue closes 22:00) */
 export const SLOTS = (() => {
   const out = [];
-  for (let h = 8; h < 22; h++) out.push(`${String(h).padStart(2,'0')}:00`, `${String(h).padStart(2,'0')}:30`);
+  for (let h = 8; h < 22; h++) out.push(`${String(h).padStart(2,'0')}:00`);
   return out;
 })();
 

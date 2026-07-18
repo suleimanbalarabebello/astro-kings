@@ -4,7 +4,7 @@ export const DEPOSIT_PERCENT   = 0.20;   // deposit = 20% of total, DEDUCTED fro
 export const HOLD_MINUTES      = 15;     // a pending reservation holds the slot(s) this long
 export const CANCEL_WINDOW_HRS = 24;     // >24h before start → refund as credit; inside → forfeit
 export const NO_SHOW_LIMIT     = 2;      // legacy threshold (kept for compatibility)
-export const MAX_HOURS         = 3;      // longest bookable run (consecutive 1h slots)
+export const MAX_HOURS         = 2;      // longest bookable run (consecutive 1h slots)
 
 /* Escalating no-show defence */
 export const NO_SHOW_PREPAY_AT = 1;      // after this many no-shows → full prepayment required (no deposit)

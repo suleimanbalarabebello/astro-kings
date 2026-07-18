@@ -216,8 +216,14 @@ export function Booking({ params }){
                 <div className="space-y-6">
                   <div>
                     <div className="text-[12px] uppercase tracking-wide text-white/40">3 · how long?</div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {DURATIONS.map(h=><Chip key={h} active={hours===h} onClick={()=>setHours(h)}>{h} hour{h>1?'s':''}</Chip>)}
+                    <div className="mt-3 grid max-w-sm grid-cols-2 gap-2.5">
+                      {DURATIONS.map(h=>(
+                        <button key={h} type="button" aria-pressed={hours===h} onClick={()=>setHours(h)}
+                          className={`rounded-2xl p-4 text-left transition ${hours===h?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
+                          <div className="text-[14px] font-medium">{h} hour{h>1?'s':''}</div>
+                          <div className="mt-0.5 text-[12px] text-white/45"><span className="tnum accent-text">£{p.price*h}</span> · {h===1?'the classic game':'double header'}</div>
+                        </button>
+                      ))}
                     </div>
                   </div>
                   <div className="hidden rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
@@ -239,47 +245,52 @@ export function Booking({ params }){
                   </div>
                 </div>
 
-                <div className="mt-3 space-y-5">
-                  {TIMETABLE.map(g=>(
+                <div className="mt-3 space-y-6">
+                  {TIMETABLE.map(g=>{
+                    const freeCount = g.slots.filter(s=>starts.includes(s) && !isPast(s)).length;
+                    return (
                     <div key={g.label}>
-                      <div className="mb-2 flex items-center gap-3">
+                      <div className="mb-2.5 flex items-center gap-3">
                         <span className="text-[11px] uppercase tracking-[.18em] text-white/50">{g.label}</span>
                         <span className="tnum text-[11px] text-white/30">{g.sub}</span>
                         <span className="h-px flex-1 bg-white/8"></span>
+                        <span className={`tnum text-[11px] ${freeCount?'text-white/40':'text-white/25'}`}>{freeCount?`${freeCount} free`:'fully booked'}</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
+                      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 lg:grid-cols-7">
                         {g.slots.map(s=>{
                           const past = isPast(s);
                           const free = starts.includes(s);
                           const covered = inRun(s);
                           if (past) return (
-                            <span key={s} aria-hidden className="tnum rounded-xl py-2.5 text-center text-[13px] text-white/15">{s}</span>
+                            <span key={s} aria-hidden className="tnum rounded-2xl py-3.5 text-center text-[14px] text-white/15">{s}</span>
                           );
                           if (s===time) return (
-                            <button key={s} aria-pressed className="tnum rounded-xl py-2.5 text-center text-[13px] font-semibold text-[#0b0b0b] accent-bg">{s}</button>
+                            <button key={s} aria-pressed className="tnum rounded-2xl py-3.5 text-center text-[14px] font-semibold text-[#0b0b0b] accent-bg accent-glow">
+                              {s}<span className="ml-1.5 inline-block align-[1px]" style={{width:12,height:12}}>{I.check({})}</span>
+                            </button>
                           );
                           if (covered) return (
                             <span key={s} title="covered by your booking"
-                              className="tnum rounded-xl py-2.5 text-center text-[13px] text-white/85"
+                              className="tnum rounded-2xl py-3.5 text-center text-[14px] text-white/85"
                               style={{background:'color-mix(in oklab, var(--accent), transparent 75%)'}}>{s}</span>
                           );
                           if (!free) return (
                             <button key={s} title="taken — tap to join the waitlist"
                               onClick={()=>{ const r=joinWaitlist({pitchId:p.id,day:dayKey,startTime:s,hours,userId:currentUser()?.id}); setMsg(`You're #${r.position} on the waitlist for ${s} on ${dayLabel} — we'll offer it the moment it frees up.`); }}
-                              className="tnum rounded-xl bg-white/[.04] py-2.5 text-center text-[13px] text-white/25 line-through transition hover:text-white/60">
+                              className="tnum rounded-2xl bg-white/[.04] py-3.5 text-center text-[14px] text-white/25 line-through transition hover:text-white/60">
                               {s}
                             </button>
                           );
                           return (
                             <button key={s} onClick={()=>setTime(s)}
-                              className="glass glass-soft tnum rounded-xl py-2.5 text-center text-[13px] text-white/85 transition hover:bg-white/12">
+                              className="glass glass-soft tnum rounded-2xl py-3.5 text-center text-[14px] text-white/85 transition hover:bg-white/12 hover:scale-[1.03]">
                               {s}
                             </button>
                           );
                         })}
                       </div>
                     </div>
-                  ))}
+                  );})}
                 </div>
                 <div className="mt-3 text-[12px] text-white/40">Your {hours}-hour game runs {time}–{endTimeOf(time,hours)}. Crossed-out slots are taken — tap one to join its waitlist.</div>
               </div>
