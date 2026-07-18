@@ -1,7 +1,8 @@
 /* Parties.jsx — kids football birthday parties */
 
 import { I } from '../lib/icons.jsx';
-import { Glass, Btn, Tag, Placeholder, PageHead } from '../components/ui.jsx';
+import { Glass, Btn, Tag, Placeholder, PageHead, Eyebrow } from '../components/ui.jsx';
+import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
 
@@ -18,7 +19,7 @@ export function Parties(){
     <div>
       <PageHead eyebrow="kids football parties" title="parties they’ll never forget"
         sub="Fully hosted football birthday parties on floodlit 4G — coaching, matches, mini-tournaments, photos and prizes. Built around your child, run by qualified Kings Academy coaches.">
-        <a href="#about"><Btn kind="primary" iconEnd={I.arrow({})}>enquire now</Btn></a>
+        <a href="#party-enquiry"><Btn kind="primary" iconEnd={I.arrow({})}>enquire now</Btn></a>
       </PageHead>
 
       <div className="mx-auto mt-10 max-w-6xl px-6">
@@ -46,6 +47,25 @@ export function Parties(){
           <a href="#about"><Btn kind="glass" iconEnd={I.arrow({})}>talk to the team</Btn></a>
         </Glass>
       </div>
+      {/* party enquiry */}
+      <section id="party-enquiry" className="mx-auto mt-20 max-w-6xl px-6">
+        <div className="grid gap-8 lg:grid-cols-[1fr_440px]">
+          <div>
+            <Eyebrow>book a party</Eyebrow>
+            <h2 className="hero-title mt-3 text-3xl font-semibold lowercase md:text-4xl">enquire about a kids party</h2>
+            <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/65">
+              Tell us the date you have in mind, how many children, and the age group — we’ll come back with
+              availability and a full price the same day.
+            </p>
+          </div>
+          <Glass strong className="rounded-[30px] p-7">
+            <div className="text-[12px] uppercase tracking-wide text-white/45">party enquiry</div>
+            <div className="mt-4">
+              <EnquiryForm cta="enquire about a party" placeholder="e.g. Saturday 14th, 12 kids, age 8…" />
+            </div>
+          </Glass>
+        </div>
+      </section>
       <Footer />
     </div>
   );

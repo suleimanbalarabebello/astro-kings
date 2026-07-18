@@ -20,10 +20,22 @@ export function Events(){
   ];
   return (
     <div>
-      <PageHead eyebrow="events & experiences" title="football corporate events"
-        sub="You've found Nottingham's best venue for football-based corporate events — Astro Kings' state-of-the-art 4G pitches alongside the redeveloped Harvey Hadden Sports Village.">
+      <PageHead eyebrow="events & experiences" title="book an event"
+        sub="Zorb football, darts, tournaments, team building and corporate days — Nottingham's best venue for sports events, on state-of-the-art 4G pitches alongside the redeveloped Harvey Hadden Sports Village.">
         <a href="#events-enquiry"><Btn kind="primary" iconEnd={I.arrow({})}>plan your event</Btn></a>
       </PageHead>
+
+      {/* event types — TODO: real photos & pricing per event type */}
+      <section className="mx-auto mt-10 max-w-6xl px-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[['zorb football','bubble-suit chaos — brilliant for groups'],['darts & social games','soft darts, table games & more'],['tournaments','5-a-side cups for work, clubs or mates'],['team building','coached games & challenge days']].map(([t,d],i)=>(
+            <Glass key={t} className="rounded-3xl p-5 fade-up" style={{animationDelay:(i*.05)+'s'}}>
+              <div className="text-[15px] font-medium lowercase">{t}</div>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-white/55">{d}</p>
+            </Glass>
+          ))}
+        </div>
+      </section>
 
       {/* great corporate events + event ideas */}
       <section className="mx-auto mt-12 max-w-6xl px-6">

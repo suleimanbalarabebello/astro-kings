@@ -111,8 +111,13 @@ export function GetAGame(){
 
         <div className="relative z-10 mx-auto max-w-5xl px-6 pt-40 pb-24 text-center md:pt-48 md:pb-28">
           <h1 className="hero-title text-5xl font-semibold leading-[1.05] lowercase md:text-7xl">
-            join the subs bench<br/>to be invited to play
+            social kicks —<br/>get a game tonight
           </h1>
+          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/75">Casual pick-up football. Join the WhatsApp group, get invited when a game needs players, turn up and play.</p>
+          {/* TODO: replace with the real Social Kicks WhatsApp invite link */}
+          <a href="https://chat.whatsapp.com/" target="_blank" rel="noreferrer" className="mt-6 inline-block">
+            <Btn kind="primary" iconEnd={I.arrow({})}>join the whatsapp group</Btn>
+          </a>
         </div>
         {/* coral banner divider with the downward notch, mirroring the live site */}
         <div className="relative z-10 accent-bg py-5">
