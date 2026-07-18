@@ -20,7 +20,7 @@ import { Chip } from './Browse.jsx';
 const isKey = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 
 function Stepper({ step }){
-  const steps = ['slot','details','payment','done'];
+  const steps = ['pitch & date','time','details','payment','done'];
   return (
     <div className="flex items-center gap-2">
       {steps.map((s,i)=>(
@@ -120,11 +120,11 @@ export function Booking({ params }){
 
   // countdown while a hold is live on the payment step
   useEffect(()=>{
-    if (step!==2 || !reservation) return;
+    if (step!==3 || !reservation) return;
     const tick = ()=>{
       const secs = Math.max(0, Math.round((reservation.holdExpiresAt - Date.now())/1000));
       setLeft(secs);
-      if (secs===0){ releaseExpiredHolds(); setErr('Your 15-minute hold expired — please pick your slot again.'); setReservation(null); setStep(0); }
+      if (secs===0){ releaseExpiredHolds(); setErr('Your 15-minute hold expired — please pick your slot again.'); setReservation(null); setStep(1); }
     };
     tick();
     const iv = setInterval(tick, 1000);
@@ -135,7 +135,7 @@ export function Booking({ params }){
 
   function toDetails(){
     if (!starts.includes(time)) { setErr('That slot just went — pick another.'); return; }
-    setErr(''); setStep(1);
+    setErr(''); setStep(2);
   }
 
   function toPayment(){
@@ -146,7 +146,7 @@ export function Booking({ params }){
     if (!res.ok){ setErr(res.error); return; }
     setReservation(res.booking);
     setLeft(HOLD_MINUTES*60);
-    setStep(2);
+    setStep(3);
   }
 
   function pay(){
@@ -154,10 +154,10 @@ export function Booking({ params }){
     if (stripeEnabled && !cardComplete){ setErr('Enter your card details.'); return; }
     const effectiveCard = stripeEnabled ? '4242424242424242' : card;   // charge is simulated (no backend)
     const res = payReservation(reservation.id, { mode: 'full', card: effectiveCard });
-    if (!res.ok){ setErr(res.error); if (/expired/.test(res.error)){ setReservation(null); setStep(0); } return; }
+    if (!res.ok){ setErr(res.error); if (/expired/.test(res.error)){ setReservation(null); setStep(1); } return; }
     setRef(res.booking.id);
     store.venue = p.id;
-    setStep(3);
+    setStep(4);
   }
 
   const mins = String(Math.floor(left/60)).padStart(2,'0');
@@ -207,28 +207,32 @@ export function Booking({ params }){
                 <div className="mt-2.5 text-[12px] text-white/40">{p.desc}.</div>
               </div>
 
-              {/* 2-4 · then decide when */}
+              {/* 2 · date */}
               <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
                 <div>
                   <div className="text-[12px] uppercase tracking-wide text-white/40">2 · pick a date</div>
                   <div className="mt-3 max-w-[300px]"><Calendar value={dayKey} onChange={setDayKey} /></div>
                 </div>
-                <div className="space-y-6">
-                  <div>
-                    <div className="text-[12px] uppercase tracking-wide text-white/40">3 · how long?</div>
-                    <div className="mt-3 grid max-w-sm grid-cols-2 gap-2.5">
-                      {DURATIONS.map(h=>(
-                        <button key={h} type="button" aria-pressed={hours===h} onClick={()=>setHours(h)}
-                          className={`rounded-2xl p-4 text-left transition ${hours===h?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
-                          <div className="text-[14px] font-medium">{h} hour{h>1?'s':''}</div>
-                          <div className="mt-0.5 text-[12px] text-white/45"><span className="tnum accent-text">£{p.price*h}</span> · {h===1?'the classic game':'double header'}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="hidden rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
-                    Booking <span className="text-white">{p.name}</span> · {dayLabel} · {hours} hour{hours>1?'s':''} · kicks off <span className="tnum text-white">{time}</span>, ends <span className="tnum text-white">{endTimeOf(time,hours)}</span>.
-                  </div>
+                <div className="hidden self-end rounded-2xl glass glass-soft p-4 text-[13px] leading-relaxed text-white/55 sm:block">
+                  <span className="text-white">{p.name}</span> · <span className="text-white">{dayLabel}</span> — next you’ll pick your kick-off time.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step===1 && (
+            <div className="pop space-y-8">
+              {/* 3 · duration */}
+              <div>
+                <div className="text-[12px] uppercase tracking-wide text-white/40">3 · how long?</div>
+                <div className="mt-3 grid max-w-sm grid-cols-2 gap-2.5">
+                  {DURATIONS.map(h=>(
+                    <button key={h} type="button" aria-pressed={hours===h} onClick={()=>setHours(h)}
+                      className={`rounded-2xl p-4 text-left transition ${hours===h?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
+                      <div className="text-[14px] font-medium">{h} hour{h>1?'s':''}</div>
+                      <div className="mt-0.5 text-[12px] text-white/45"><span className="tnum accent-text">£{p.price*h}</span> · {h===1?'the classic game':'double header'}</div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -297,7 +301,7 @@ export function Booking({ params }){
             </div>
           )}
 
-          {step===1 && (
+          {step===2 && (
             <div className="pop space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="team / booking name" icon={I.user({})}><input value={team} onChange={e=>setTeam(e.target.value)} className="w-full bg-transparent text-[14px] outline-none placeholder:text-white/35" placeholder="e.g. Sunday Allstars" /></Field>
@@ -324,7 +328,7 @@ export function Booking({ params }){
             </div>
           )}
 
-          {step===2 && (
+          {step===3 && (
             <div className="pop space-y-6">
               <div className="flex items-center justify-between rounded-2xl glass glass-soft px-4 py-3 text-[13px]">
                 <span className="text-white/60">slot held for you</span>
@@ -362,7 +366,7 @@ export function Booking({ params }){
             </div>
           )}
 
-          {step===3 && (
+          {step===4 && (
             <div className="pop">
               <Glass strong className="relative overflow-hidden rounded-[30px] p-8 text-center md:p-12">
                 <div className="pointer-events-none absolute -inset-16 opacity-60" style={{background:'radial-gradient(40% 60% at 50% 0%, color-mix(in oklab, var(--accent), transparent 65%), transparent)'}}></div>
@@ -385,13 +389,13 @@ export function Booking({ params }){
         <aside>
           <div className="space-y-4 lg:sticky lg:top-28">
             <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} fee={fee} />
-            {step<3 && (
+            {step<4 && (
               <div className="flex items-center justify-between gap-3">
                 <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
                   <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
                 </button>
-                <Btn kind="primary" size="lg" onClick={step===0?toDetails:step===1?toPayment:pay} iconEnd={I.arrow({})}>
-                  {step===0?'continue':step===1?'go to payment':'pay £'+q.total}
+                <Btn kind="primary" size="lg" onClick={step===0?()=>{setErr('');setStep(1);}:step===1?toDetails:step===2?toPayment:pay} iconEnd={I.arrow({})}>
+                  {step===0?'choose a time':step===1?'continue':step===2?'go to payment':'pay £'+q.total}
                 </Btn>
               </div>
             )}
