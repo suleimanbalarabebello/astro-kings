@@ -135,7 +135,15 @@ export function Hero({ variant='stacked' }){
           <div className="flex items-center gap-3"><span className="tnum text-4xl font-semibold md:text-5xl">4</span><span className="h-px w-24 bg-white/40" style={{transform:'rotate(-18deg)'}}></span></div>
           <div className="mt-1 text-[13px] text-white/60">floodlit 4G pitches</div>
         </div>
-        <div className="absolute inset-x-0 bottom-[6%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}><QuickBook /></div>
+        {/* the main event — booking front and centre */}
+        <div className="absolute inset-x-0 bottom-[6%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}>
+          <div className="mb-5 flex justify-center">
+            <a href="#booking" aria-label="Book a pitch">
+              <Btn kind="primary" className="h-16 px-12 text-[17px] accent-glow hover:scale-[1.03]" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
+            </a>
+          </div>
+          <QuickBook />
+        </div>
       </div>
 
       {/* mobile — clean stacked layout (no clipping) */}
@@ -148,7 +156,12 @@ export function Hero({ variant='stacked' }){
             <div><div className="tnum text-3xl font-semibold">65k+</div><div className="text-[12px] text-white/60">games played</div></div>
           </div>
         </div>
-        <div className="fade-up" style={{animationDelay:'.1s'}}><QuickBook /></div>
+        <div className="fade-up" style={{animationDelay:'.08s'}}>
+          <a href="#booking" aria-label="Book a pitch" className="block">
+            <Btn kind="primary" size="lg" className="h-16 w-full text-[17px] accent-glow" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
+          </a>
+        </div>
+        <div className="fade-up" style={{animationDelay:'.14s'}}><QuickBook /></div>
       </div>
     </header>
   );

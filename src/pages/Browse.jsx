@@ -25,7 +25,7 @@ export function Chip({ active, onClick, children }){
 
 export function Browse(){
   useStore();
-  const [fmt,setFmt] = useState(['5v5','7v7','9v9'].includes(store.players) ? store.players : 'all');
+  const [fmt,setFmt] = useState('all');   // always land on 'all' — users narrow down themselves
   const [dayKey,setDayKey] = useState(isKey(store.day) ? store.day : todayKey());
   const [band,setBand] = useState('evening');
   const list = fmt==='all' ? PITCHES : PITCHES.filter(p=>p.size===fmt);
