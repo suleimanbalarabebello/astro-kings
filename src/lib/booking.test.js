@@ -5,10 +5,10 @@ import { resetState, getState, update, currentUser } from './store.js';
 import { PITCHES } from './data.js';
 import {
   quote, canStart, startReservation, payReservation, releaseExpiredHolds,
-  cancelBooking, extendBooking, signUp, sessionList, joinSession,
+  cancelBooking, extendBooking, signUp,
   prepayPolicy, joinWaitlist, confirmAttendance, markNoShow,
 } from './booking.js';
-import { DEPOSIT_PERCENT, JOIN_SESSION_PRICE, NO_SHOW_FEE } from './config.js';
+import { DEPOSIT_PERCENT, NO_SHOW_FEE } from './config.js';
 import { todayKey } from './dates.js';
 
 const classic = PITCHES.find(p => p.id === 'classic');   // £60/hr
@@ -122,29 +122,6 @@ describe('cancellation and extend', () => {
     expect(e.booking.hours).toBe(2);
     expect(e.booking.endTime).toBe('21:00');
     expect(e.booking.total).toBe(120);
-  });
-
-  it('flags sessions short on players and lets a user pay to join', () => {
-    const before = sessionList();
-    expect(before.find(s => s.id === 's1').isLow).toBe(true);    // 4/10
-    expect(before.find(s => s.id === 's2').isLow).toBe(false);   // 8/10
-
-    const r = joinSession('s1');
-    expect(r.ok).toBe(true);
-    expect(r.charged).toBe(JOIN_SESSION_PRICE);
-    expect(sessionList().find(s => s.id === 's1').joined).toBe(5);   // took a spot
-  });
-
-  it('cannot join the same session twice', () => {
-    joinSession('s3');
-    expect(joinSession('s3').ok).toBe(false);
-  });
-
-  it('cannot join a full session', () => {
-    update((s) => { s.sessions.s4.joined = s.sessions.s4.capacity; });
-    const r = joinSession('s4');
-    expect(r.ok).toBe(false);
-    expect(r.error).toMatch(/full/i);
   });
 
   it('escalating prepayment: deposit → full → full+fee with no-show history', () => {

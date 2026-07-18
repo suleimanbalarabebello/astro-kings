@@ -3,73 +3,13 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
-import { CONTACT, GETAGAME_VIDEO, PITCHES } from '../lib/data.js';
-import { useStore } from '../lib/store.js';
-import { sessionList, joinSession } from '../lib/booking.js';
-import { keyLabel } from '../lib/dates.js';
-import { JOIN_SESSION_PRICE } from '../lib/config.js';
-import { Glass, Btn, Field, Eyebrow, Placeholder } from '../components/ui.jsx';
+import { CONTACT, GETAGAME_VIDEO } from '../lib/data.js';
+import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
 import { Turnstile } from '../components/Turnstile.jsx';
 import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
-
-/* ---------- pay to join an ongoing session ---------- */
-function SessionCard({ s, onMsg }){
-  const p = PITCHES.find(x=>x.id===s.pitchId) || {};
-  function join(){
-    const r = joinSession(s.id);
-    onMsg(r.ok ? `You’re in — £${r.charged} charged. See you on the pitch!` : r.error);
-  }
-  return (
-    <Glass strong className="flex flex-col rounded-3xl p-5">
-      <div className="flex items-center justify-between">
-        <div className="text-[12px] uppercase tracking-wide text-white/45">{keyLabel(s.day)} · {s.time}</div>
-        {s.isFull ? <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] uppercase tracking-wide text-white/50">full</span>
-          : s.isLow ? <span className="rounded-full accent-bg px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0b0b0b]">needs players</span> : null}
-      </div>
-      <div className="mt-2 text-[16px] font-medium">{p.name}</div>
-      <div className="text-[12px] text-white/50">{s.level}</div>
-      <div className="mt-4">
-        <div className="flex justify-between text-[12px] text-white/50"><span>players</span><span className="tnum">{s.joined}/{s.capacity}</span></div>
-        <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/10"><div className={`h-full ${s.isLow?'accent-bg':'bg-white/35'}`} style={{width:(s.fill*100)+'%'}}></div></div>
-        <div className="mt-1 text-[11px] text-white/40">{s.spotsLeft} spot{s.spotsLeft===1?'':'s'} left</div>
-      </div>
-      <div className="mt-auto pt-4">
-        {s.joinedByMe ? <Btn kind="glass" size="sm" className="w-full" disabled>you’re in ✓</Btn>
-          : s.isFull ? <Btn kind="glass" size="sm" className="w-full" disabled>full</Btn>
-          : <Btn kind="primary" size="sm" className="w-full" onClick={join}>join · £{JOIN_SESSION_PRICE}</Btn>}
-      </div>
-    </Glass>
-  );
-}
-
-function JoinSessions(){
-  useStore();
-  const [msg,setMsg] = useState('');
-  const sessions = sessionList();
-  const needing = sessions.filter(s=>s.isLow && !s.isFull).length;
-  return (
-    <section className="mx-auto mt-20 max-w-6xl px-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Eyebrow>join a session</Eyebrow>
-          <h2 className="hero-title mt-3 text-3xl font-semibold lowercase md:text-4xl">jump into a game tonight</h2>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">
-            Some games are short on players. For just £{JOIN_SESSION_PRICE} you can drop into an ongoing session — a bit more than
-            pay &amp; play, but you get a guaranteed game when a team needs an extra body.
-          </p>
-        </div>
-        {needing ? <span className="shrink-0 rounded-full accent-bg px-3 py-1 text-[12px] font-semibold text-[#0b0b0b]">{needing} session{needing===1?'':'s'} need players</span> : null}
-      </div>
-      {msg ? <div className="mt-5 rounded-2xl glass glass-soft px-4 py-3 text-[13px] accent-text">{msg}</div> : null}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {sessions.map(s=><SessionCard key={s.id} s={s} onMsg={setMsg} />)}
-      </div>
-    </section>
-  );
-}
 
 function Check({ on, onClick, children }){
   return (
@@ -127,9 +67,6 @@ export function GetAGame(){
           <div className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[18px] border-x-transparent border-t-[16px]" style={{borderTopColor:'var(--accent)'}}></div>
         </div>
       </section>
-
-      {/* ---------- join an ongoing session ---------- */}
-      <JoinSessions />
 
       {/* ---------- register ---------- */}
       <section className="mx-auto mt-20 max-w-6xl px-6">

@@ -12,8 +12,6 @@ export const NO_SHOW_FEE_AT    = 2;      // after this many no-shows → also ad
 export const NO_SHOW_FEE       = 10;     // £ surcharge added for repeat offenders
 export const CONFIRM_WINDOW_HRS = 2;     // must confirm attendance at least this long before kick-off
 export const PAYPLAY_PRICE      = 4.5;    // U18 daily pay & play, per person
-export const JOIN_SESSION_PRICE = 6;      // drop-in to join an ongoing session (a bit above pay & play)
-export const LOW_ATTENDANCE     = 0.6;    // a session is "short on players" below this fill ratio
 
 export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from email domain
 

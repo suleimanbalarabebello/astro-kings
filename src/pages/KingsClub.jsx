@@ -56,7 +56,7 @@ export function KingsClub(){
             <div className="fade-up">
               <h3 className="text-2xl font-medium lowercase">how to join the kings fa club</h3>
               <p className="mt-4 text-[15px] leading-relaxed text-white/65">
-                It’s easy to join the club — just simply <a href="#login" className="accent-text hover:underline">sign up here</a>.
+                It’s easy to join the club — just simply <a href="#contact" className="accent-text hover:underline">get in touch</a>.
                 It doesn’t matter what standard you are, come to Astro Kings and play every day!
               </p>
             </div>
@@ -84,7 +84,7 @@ export function KingsClub(){
                 <div className="rounded-xl bg-white/[.04] py-2.5">Week days till 6pm</div>
                 <div className="rounded-xl bg-white/[.04] py-2.5">Weekends all day</div>
               </div>
-              <a href="#login" className="mt-6 block"><Btn kind="primary" size="lg" className="w-full" icon={I.ball({})}>sign up</Btn></a>
+              <a href="#contact" className="mt-6 block"><Btn kind="primary" size="lg" className="w-full" icon={I.ball({})}>sign up</Btn></a>
             </Glass>
           </aside>
         </div>

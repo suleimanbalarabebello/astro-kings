@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
 import { useRoute } from '../lib/router.js';
-import { useStore, currentUser } from '../lib/store.js';
+
 import { Logo, Glass, Btn } from './ui.jsx';
 
 /* desktop pill — top-level menu (booking is the standalone CTA, always visible) */
@@ -85,8 +85,6 @@ function NavItem({ l, name }){
 
 export function TopNav(){
   const { name } = useRoute();
-  useStore();
-  const user = currentUser();
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -120,10 +118,9 @@ export function TopNav(){
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
-          <a href={user?'#dashboard':'#login'} title={user?user.name:'log in'}
+          <a href="#dashboard" title="my bookings" aria-label="My bookings"
              className="glass glass-soft hidden h-11 w-11 place-items-center rounded-full text-white/80 transition hover:bg-white/10 md:grid">
-            {user ? <span className="text-[14px] font-semibold accent-text uppercase">{(user.name||'?').trim().charAt(0)}</span>
-                  : <span style={{width:19,height:19}}>{I.user({})}</span>}
+            <span style={{width:19,height:19}}>{I.user({})}</span>
           </a>
           <a href="#booking" className="hidden md:block" aria-label="Book a pitch">
             <Btn kind="primary" size="md" iconEnd={I.arrow({})}>book a pitch</Btn>
@@ -171,9 +168,9 @@ export function TopNav(){
               ))}
 
               <div className="my-1.5 h-px bg-white/10" />
-              <a href={user?'#dashboard':'#login'}
-                 className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name==='login'||name==='dashboard'?'accent-text':'text-white/85'} hover:bg-white/10`}>
-                {user?'my bookings':'log in'}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
+              <a href="#dashboard"
+                 className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name==='dashboard'?'accent-text':'text-white/85'} hover:bg-white/10`}>
+                my bookings<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
               </a>
               <a href="#booking" className="mt-1 block px-1 pb-1">
                 <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>

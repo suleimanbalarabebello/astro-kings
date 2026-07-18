@@ -11,7 +11,7 @@ import { useStore, currentUser } from '../lib/store.js';
 import { bookingsFor, extendBooking, extendQuote, cancelBooking, confirmAttendance, endTimeOf } from '../lib/booking.js';
 
 const STATUS_LABEL = {
-  pending_deposit:'awaiting deposit', confirmed:'confirmed',
+  pending_deposit:'awaiting payment', confirmed:'confirmed',
   completed:'completed', cancelled:'cancelled', no_show:'no-show',
 };
 const pitchName = (id) => (PITCHES.find(p=>p.id===id)||{}).name || id;
@@ -100,7 +100,7 @@ function BookingCard({ b, onMsg, onExtend }){
           <span>paid <span className="tnum text-white/80">£{b.amountPaid}</span></span>
           {b.balanceDue>0 && b.status!=='cancelled' ? <span>on arrival <span className="tnum accent-text">£{b.balanceDue}</span></span> : null}
           {b.cancelOutcome==='refunded_credit' ? <span className="accent-text">refunded to credit</span> : null}
-          {b.cancelOutcome==='forfeited' ? <span className="text-white/40">deposit forfeited</span> : null}
+          {b.cancelOutcome==='forfeited' ? <span className="text-white/40">payment forfeited</span> : null}
           {b.cancelOutcome==='venue_cancelled' ? <span className="accent-text">venue cancelled · refunded</span> : null}
         </div>
 
@@ -121,7 +121,7 @@ function BookingCard({ b, onMsg, onExtend }){
             {b.status==='confirmed' ? (
               <Btn kind="glass" size="sm" onClick={()=>onExtend(b)}>extend +1h</Btn>
             ) : null}
-            <Btn kind="glass" size="sm" onClick={()=>{ const r=cancelBooking(b.id); onMsg(r.ok?((r.waitlistOffered?`Cancelled · offered to ${r.waitlistOffered} on the waitlist · `:'Cancelled · ')+(r.refundCredit?`£${r.refundCredit} added to credit`:'deposit forfeited (within 24h)')):r.error); }}>cancel</Btn>
+            <Btn kind="glass" size="sm" onClick={()=>{ const r=cancelBooking(b.id); onMsg(r.ok?((r.waitlistOffered?`Cancelled · offered to ${r.waitlistOffered} on the waitlist · `:'Cancelled · ')+(r.refundCredit?`£${r.refundCredit} added to credit`:'payment forfeited (within 24h)')):r.error); }}>cancel</Btn>
             <span className="ml-auto self-center tnum text-[12px] text-white/40">ref {b.id}</span>
           </div>
         ) : <div className="mt-3 tnum text-[12px] text-white/35">ref {b.id}</div>}
@@ -139,8 +139,8 @@ export function Dashboard(){
   if (!user){
     return (
       <div>
-        <PageHead eyebrow="my bookings" title="log in to continue" sub="Sign in to see your upcoming games, payment splits and store credit.">
-          <a href="#login"><Btn kind="primary" iconEnd={I.arrow({})}>log in</Btn></a>
+        <PageHead eyebrow="my bookings" title="no bookings yet" sub="Book a pitch and your games, credit and booking history will show up here automatically.">
+          <a href="#booking"><Btn kind="primary" iconEnd={I.arrow({})}>book a pitch</Btn></a>
         </PageHead>
         <Footer />
       </div>

@@ -10,7 +10,7 @@ import { PITCHES } from './data.js';
 import { fromKey } from './dates.js';
 import {
   DEPOSIT_PERCENT, HOLD_MINUTES, CANCEL_WINDOW_HRS, NO_SHOW_LIMIT,
-  STUDENT_DOMAIN_RE, TEST_CARDS, JOIN_SESSION_PRICE, LOW_ATTENDANCE,
+  STUDENT_DOMAIN_RE, TEST_CARDS,
   NO_SHOW_PREPAY_AT, NO_SHOW_FEE_AT, NO_SHOW_FEE, MAX_HOURS,
 } from './config.js';
 
@@ -311,38 +311,6 @@ export function extendBooking(bookingId, addHours, { card } = {}){
     return bk;
   });
   return { ok: true, booking: updated, charged: chargeNow };
-}
-
-/* ---------------------------------------------------------------- join a session */
-/* Ongoing sessions a player can pay to drop into, with derived attendance flags. */
-export function sessionList(){
-  const s = getState();
-  return Object.values(s.sessions || {})
-    .map((se) => {
-      const spotsLeft = Math.max(0, se.capacity - se.joined);
-      return {
-        ...se,
-        spotsLeft,
-        fill: se.joined / se.capacity,
-        isFull: spotsLeft === 0,
-        isLow: se.joined / se.capacity < LOW_ATTENDANCE,   // short on players
-        joinedByMe: !!s.myJoins[se.id],
-      };
-    })
-    .sort((a, b) => a.day.localeCompare(b.day) || a.time.localeCompare(b.time));
-}
-
-/* Pay to join an ongoing session — simulated charge, then take the spot. */
-export function joinSession(id, { card } = {}){
-  const s = getState();
-  const se = s.sessions[id];
-  if (!se) return { ok: false, error: 'Session not found.' };
-  if (s.myJoins[id]) return { ok: false, error: 'You’ve already joined this session.' };
-  if (se.joined >= se.capacity) return { ok: false, error: 'This session is full.' };
-  const res = charge(card || '4242424242424242');   // card on file (simulated)
-  if (!res.ok) return { ok: false, error: res.error };
-  update((st) => { st.sessions[id].joined += 1; st.myJoins[id] = true; });
-  return { ok: true, charged: JOIN_SESSION_PRICE };
 }
 
 /* bookings for a given user, newest first */

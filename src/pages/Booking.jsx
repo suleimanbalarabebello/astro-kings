@@ -1,6 +1,6 @@
 /* Booking.jsx — multi-step booking flow (slot → details → payment → done)
    Now backed by the booking engine: real availability, multi-hour duration,
-   a 15-minute pending-deposit hold, and pay-in-full or 20%-deposit checkout. */
+   a 15-minute pending hold, and pay-in-full checkout. */
 
 import { Fragment, useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
@@ -12,7 +12,7 @@ import {
   releaseExpiredHolds, signUp, deriveStudent, prepayPolicy, joinWaitlist,
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
-import { HOLD_MINUTES, MAX_HOURS, DEPOSIT_PERCENT, CANCEL_WINDOW_HRS } from '../lib/config.js';
+import { HOLD_MINUTES, MAX_HOURS, CANCEL_WINDOW_HRS } from '../lib/config.js';
 import { Glass, Btn, Eyebrow, Field } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
@@ -39,7 +39,7 @@ function Stepper({ step }){
   );
 }
 
-function Summary({ p, day, time, hours, q, payMode, fee=0 }){
+function Summary({ p, day, time, hours, q, fee=0 }){
   return (
     <Glass strong className="rounded-[28px] p-6">
       <div className="text-[12px] uppercase tracking-wide text-white/40">your booking</div>
@@ -57,14 +57,7 @@ function Summary({ p, day, time, hours, q, payMode, fee=0 }){
         {q.addonsTotal>0 ? <div className="flex justify-between text-white/65"><span>Add-ons</span><span className="tnum">£{q.addonsTotal}</span></div> : null}
         {fee>0 ? <div className="flex justify-between text-white/65"><span>No-show fee</span><span className="tnum">£{fee}</span></div> : null}
         <div className="mt-2 flex justify-between border-t border-white/10 pt-3 text-[16px] font-semibold"><span>Total</span><span className="tnum accent-text">£{q.total}</span></div>
-        {payMode==='deposit' ? (
-          <div className="mt-2 rounded-2xl glass glass-soft p-3 text-[13px]">
-            <div className="flex justify-between"><span className="text-white/60">Pay now (20% deposit)</span><span className="tnum accent-text">£{q.depositDue}</span></div>
-            <div className="mt-1 flex justify-between"><span className="text-white/60">On arrival</span><span className="tnum">£{q.balanceDue}</span></div>
-          </div>
-        ) : (
-          <div className="mt-2 flex justify-between text-[13px] text-white/60"><span>Pay now (in full)</span><span className="tnum accent-text">£{q.total}</span></div>
-        )}
+        <div className="mt-2 flex justify-between text-[13px] text-white/60"><span>Pay today</span><span className="tnum accent-text">£{q.total}</span></div>
       </div>
     </Glass>
   );
@@ -91,7 +84,6 @@ export function Booking({ params }){
   const [sel,setSel]   = useState([]);
   const [team,setTeam] = useState('');
   const [email,setEmail] = useState((currentUser()?.email) || '');
-  const [payMode,setPayMode] = useState('deposit');
   const [card,setCard] = useState('');
   const [cardComplete,setCardComplete] = useState(false);
   const [err,setErr]   = useState('');
@@ -105,8 +97,7 @@ export function Booking({ params }){
   const policy = prepayPolicy(user);            // escalating no-show defence
   const fee = policy.fee;                       // repeat no-show surcharge
   const baseQ = quote(p, hours, addons);
-  const total = baseQ.total + fee;
-  const q = { ...baseQ, total, depositDue: Math.round(total*DEPOSIT_PERCENT), balanceDue: total - Math.round(total*DEPOSIT_PERCENT) };
+  const q = { ...baseQ, total: baseQ.total + fee };   // pay-in-full only
   const dayLabel = keyLabel(dayKey);
   const bandSlots = slotsInBand(band);
   const starts = freeStarts(p.id, dayKey, bandSlots, hours);
@@ -127,9 +118,6 @@ export function Booking({ params }){
     const iv = setInterval(tick, 1000);
     return ()=> clearInterval(iv);
   }, [step, reservation]);
-
-  // repeat no-show offenders must pay in full — lock the option
-  useEffect(()=>{ if (policy.requireFull && payMode!=='full') setPayMode('full'); }, [policy.requireFull]); // eslint-disable-line
 
   const back = ()=> { setErr(''); setStep(s=>Math.max(0,s-1)); };
 
@@ -153,7 +141,7 @@ export function Booking({ params }){
     setErr('');
     if (stripeEnabled && !cardComplete){ setErr('Enter your card details.'); return; }
     const effectiveCard = stripeEnabled ? '4242424242424242' : card;   // charge is simulated (no backend)
-    const res = payReservation(reservation.id, { mode: payMode, card: effectiveCard });
+    const res = payReservation(reservation.id, { mode: 'full', card: effectiveCard });
     if (!res.ok){ setErr(res.error); if (/expired/.test(res.error)){ setReservation(null); setStep(0); } return; }
     setRef(res.booking.id);
     store.venue = p.id;
@@ -264,31 +252,18 @@ export function Booking({ params }){
                 <span className="text-white/60">slot held for you</span>
                 <span className={`tnum font-semibold ${left<60?'text-red-300':'accent-text'}`}>{mins}:{secs}</span>
               </div>
-              <div>
-                <div className="text-[12px] uppercase tracking-wide text-white/40">how would you like to pay?</div>
-                <div className="mt-3 flex gap-2.5">
-                  <button disabled={policy.requireFull} onClick={()=>setPayMode('deposit')}
-                    className={`flex-1 rounded-2xl p-4 text-left transition ${policy.requireFull?'cursor-not-allowed opacity-40 glass glass-soft':payMode==='deposit'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
-                    <div className="text-[13px]">20% deposit</div><div className="mt-1 text-[12px] text-white/45">£{q.depositDue} now · £{q.balanceDue} on arrival</div>
-                  </button>
-                  <button onClick={()=>setPayMode('full')} className={`flex-1 rounded-2xl p-4 text-left transition ${payMode==='full'?'accent-ring bg-white/5':'glass glass-soft hover:bg-white/8'}`}>
-                    <div className="text-[13px]">Pay in full</div><div className="mt-1 text-[12px] text-white/45">£{q.total} now · nothing on arrival</div>
-                  </button>
+              {fee>0 ? (
+                <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-[12.5px] text-amber-200">
+                  A £{fee} no-show fee has been added — our records show {policy.noShowCount} previous no-show{policy.noShowCount>1?'s':''}.
                 </div>
-                {policy.requireFull ? (
-                  <div className="mt-3 rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-[12.5px] text-amber-200">
-                    Full prepayment required — our records show {policy.noShowCount} previous no-show{policy.noShowCount>1?'s':''}.{fee?` A £${fee} no-show fee has been added.`:''}
-                  </div>
-                ) : null}
-              </div>
+              ) : null}
 
-              {/* no-show / cancellation policy — visible before paying */}
+              {/* cancellation policy — visible before paying */}
               <div className="rounded-2xl glass glass-soft p-4 text-[12.5px] leading-relaxed text-white/60">
                 <div className="mb-1.5 text-[11px] uppercase tracking-wide text-white/40">cancellation policy</div>
                 <ul className="space-y-1">
                   <li>· Cancel more than {CANCEL_WINDOW_HRS}h before kick-off → refunded as account credit.</li>
-                  <li>· Cancel within {CANCEL_WINDOW_HRS}h, or no-show → deposit forfeited.</li>
-                  <li>· Repeat no-shows → full prepayment required, then a no-show fee.</li>
+                  <li>· Cancel within {CANCEL_WINDOW_HRS}h, or no-show → payment forfeited.</li>
                 </ul>
               </div>
               {stripeEnabled ? (
@@ -316,7 +291,7 @@ export function Booking({ params }){
                 <div className="relative">
                   <span className="mx-auto grid h-16 w-16 place-items-center rounded-full accent-bg text-[#0b0b0b]"><span style={{width:30,height:30}}>{I.check({})}</span></span>
                   <h2 className="hero-title mt-6 text-3xl md:text-4xl font-semibold lowercase">you're booked in</h2>
-                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. {payMode==='deposit'?`£${q.depositDue} paid — £${q.balanceDue} due on arrival.`:`£${q.total} paid in full.`}</p>
+                  <p className="mx-auto mt-3 max-w-sm text-[14px] text-white/60">{p.name} · {dayLabel} · {time}–{endTimeOf(time,hours)}. £{q.total} paid in full.</p>
                   <div className="mx-auto mt-6 inline-flex items-center gap-3 glass rounded-2xl px-5 py-3 tnum text-[14px]">booking ref <span className="accent-text font-semibold">{ref}</span></div>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">
                     <a href="#dashboard"><Btn kind="primary" iconEnd={I.arrow({})}>view my bookings</Btn></a>
@@ -331,14 +306,14 @@ export function Booking({ params }){
 
         <aside>
           <div className="space-y-4 lg:sticky lg:top-28">
-            <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} payMode={payMode} fee={fee} />
+            <Summary p={p} day={dayLabel} time={time} hours={hours} q={q} fee={fee} />
             {step<3 && (
               <div className="flex items-center justify-between gap-3">
                 <button onClick={back} disabled={step===0} className={`inline-flex items-center gap-2 text-[14px] ${step===0?'text-white/25':'text-white/65 hover:text-white'}`}>
                   <span className="rotate-180" style={{width:16,height:16}}>{I.arrow({})}</span> back
                 </button>
                 <Btn kind="primary" size="lg" onClick={step===0?toDetails:step===1?toPayment:pay} iconEnd={I.arrow({})}>
-                  {step===0?'continue':step===1?'go to payment':payMode==='deposit'?'pay £'+q.depositDue+' deposit':'pay £'+q.total}
+                  {step===0?'continue':step===1?'go to payment':'pay £'+q.total}
                 </Btn>
               </div>
             )}
