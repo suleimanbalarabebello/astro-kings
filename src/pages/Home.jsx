@@ -262,9 +262,9 @@ export function Home(){
     <div>
       <Hero variant="stacked" />
 
-      {/* the 8 headline tiles — everything the centre offers, booking first */}
+      {/* the 8 headline tiles — the hub: everything the centre offers, booking first */}
       <Section eyebrow="play at astro kings" title="what would you like to do?">
-        <FeatureTiles tiles={HOME_TILES} cols="sm:grid-cols-2 lg:grid-cols-4" aspect="aspect-[4/3]" big={false} />
+        <FeatureTiles tiles={HOME_TILES} cols="md:grid-cols-2" aspect="aspect-[16/10]" big={true} />
       </Section>
 
       <Section eyebrow="our pitches" title="choose your format"
