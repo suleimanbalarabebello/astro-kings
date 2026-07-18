@@ -6,10 +6,11 @@ import { CONTACT } from '../lib/data.js';
 import { BOOKING_PLATFORM_URL } from '../lib/config.js';
 import { useRoute } from '../lib/router.js';
 
-/* every Book-a-Pitch CTA points at the venue's live booking platform once
-   BOOKING_PLATFORM_URL is set; until then, the built-in demo flow */
-const BOOK_HREF = BOOKING_PLATFORM_URL || '#booking';
-const BOOK_EXT  = BOOKING_PLATFORM_URL ? { target:'_blank', rel:'noreferrer' } : {};
+/* every booking CTA points at the venue's live booking platform once
+   BOOKING_PLATFORM_URL is set; until then, the built-in demo flow.
+   All booking buttons share this destination — only their look differs. */
+export const BOOK_HREF = BOOKING_PLATFORM_URL || '#booking';
+export const BOOK_EXT  = BOOKING_PLATFORM_URL ? { target:'_blank', rel:'noreferrer' } : {};
 
 import { Logo, Glass, Btn } from './ui.jsx';
 
@@ -124,8 +125,8 @@ export function TopNav(){
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
-          <a href={BOOK_HREF} {...BOOK_EXT} className="hidden md:block" aria-label="Book a pitch">
-            <Btn kind="primary" size="md" iconEnd={I.arrow({})}>book a pitch</Btn>
+          <a href={BOOK_HREF} {...BOOK_EXT} className="hidden md:block" aria-label="Search availability">
+            <Btn kind="primary" size="md" icon={I.search({})}>search availability</Btn>
           </a>
           <button onClick={()=>setOpen(o=>!o)} className="glass glass-soft grid h-11 w-11 place-items-center rounded-full text-white lg:hidden">
             <span style={{width:20,height:20}}>{(open?I.x:I.menu)({})}</span>

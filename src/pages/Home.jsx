@@ -7,7 +7,7 @@ import { todayKey, keyLabel } from '../lib/dates.js';
 import { go } from '../lib/router.js';
 import { Glass, Btn, Tag, Eyebrow, Field, Placeholder, Stat } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
-import { Footer } from '../components/Nav.jsx';
+import { Footer, BOOK_HREF, BOOK_EXT } from '../components/Nav.jsx';
 
 function QuickBook({ compact=false }){
   const [dayKey,setDayKey] = useState(todayKey());
@@ -136,14 +136,11 @@ export function Hero({ variant='stacked' }){
           <div className="mt-1 text-[13px] text-white/60">floodlit 4G pitches</div>
         </div>
 
-        {/* the main event — booking front and centre, clear of the headline words */}
-        <div className="absolute inset-x-0 bottom-[5%] mx-auto max-w-3xl fade-up" style={{animationDelay:'.3s'}}>
-          <div className="mb-5 flex justify-center">
-            <a href="#booking" aria-label="Book a pitch">
-              <Btn kind="primary" className="h-16 px-12 text-[17px] accent-glow hover:scale-[1.03]" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
-            </a>
-          </div>
-          <QuickBook />
+        {/* the main event — one booking CTA, front and centre */}
+        <div className="absolute inset-x-0 bottom-[10%] flex justify-center fade-up" style={{animationDelay:'.3s'}}>
+          <a href={BOOK_HREF} {...BOOK_EXT} aria-label="Book a pitch">
+            <Btn kind="primary" className="h-16 px-12 text-[17px] accent-glow hover:scale-[1.03]" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
+          </a>
         </div>
       </div>
 
@@ -158,11 +155,10 @@ export function Hero({ variant='stacked' }){
           </div>
         </div>
         <div className="fade-up" style={{animationDelay:'.08s'}}>
-          <a href="#booking" aria-label="Book a pitch" className="block">
+          <a href={BOOK_HREF} {...BOOK_EXT} aria-label="Book a pitch" className="block">
             <Btn kind="primary" size="lg" className="h-16 w-full text-[17px] accent-glow" icon={I.ball({})} iconEnd={I.arrow({})}>book a pitch</Btn>
           </a>
         </div>
-        <div className="fade-up" style={{animationDelay:'.14s'}}><QuickBook /></div>
       </div>
     </header>
   );
