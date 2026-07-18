@@ -246,7 +246,7 @@ export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/
 /* "Football" hero grid — the four headline offerings */
 /* The 8 headline tiles — booking first (primary goal), club-building close behind. */
 const HOME_TILES = [
-  { t:'book a pitch',              d:'brand-new 4g pitches · pay a deposit or in full', to:'booking',         img:PITCH_PHOTO, cls:'sm:col-span-2', big:true },
+  { t:'book a pitch',              d:'brand-new 4g pitches · pay a deposit or in full', to:'booking',         img:PITCH_PHOTO },
   { t:'kids coaching',             d:'notts olympic kids league & weekly coaching',     to:'coaching',        img:'/coaching.jpg' },
   { t:'notts olympic fc',          d:'the club behind the centre — follow & support',   to:'nottsolympic',    img:'/juniors-poster.jpg' },
   { t:'book the performance zone', d:'1-2-1 & small-group coaching space for hire',     to:'performancezone', img:'/academy-poster.jpg' },
