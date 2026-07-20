@@ -15,25 +15,17 @@ export const BOOK_EXT  = linkOut ? { target:'_blank', rel:'noreferrer' } : {};
 
 import { Logo, Glass, Btn } from './ui.jsx';
 
-/* desktop pill — top-level menu (booking is the standalone CTA, always visible) */
+/* The 8 nav links = the 8 headline tiles on the home page, in the same order.
+   No dropdowns — every destination the client wants is one tap away. */
 export const NAV_LINKS = [
-  { id:'browse',       label:'find a pitch' },
-  { id:'getagame',     label:'social kicks' },
-  { id:'juniors',      label:'juniors', children:[
-      { id:'coaching',   label:'kids coaching' },
-      { id:'kingsclub',  label:'u18s kings club' },
-      { id:'academy',    label:'holiday camps' },
-      { id:'payandplay', label:'pay and play' },
-      { id:'parties',    label:'kids parties' },
-  ] },
-  { id:'events',       label:'events', children:[
-      { id:'events',          label:'book an event' },
-      { id:'performancezone', label:'performance zone' },
-      { id:'manvfat',         label:'man v fat' },
-  ] },
-  { id:'nottsolympic', label:'notts olympic' },
-  { id:'shop',         label:'shop' },
-  { id:'contact',      label:'contact' },
+  { id:'booking',         label:'book a pitch' },
+  { id:'coaching',        label:'coaching' },
+  { id:'nottsolympic',    label:'notts olympic' },
+  { id:'performancezone', label:'performance zone' },
+  { id:'events',          label:'events' },
+  { id:'parties',         label:'parties' },
+  { id:'getagame',        label:'social kicks' },
+  { id:'shop',            label:'shop' },
 ];
 
 /* full link set for footer + mobile sheet */
@@ -57,60 +49,20 @@ export const ALL_LINKS = [
   { id:'contact',  label:'contact us' },
 ];
 
-/* desktop nav item — plain link, or a hover dropdown when it has children */
+/* desktop nav item — a single tap-through link (no dropdowns) */
 function NavItem({ l, name }){
-  const active = name===l.id || (l.children && l.children.some(c=>c.id===name));
-  if (!l.children) {
-    return (
-      <a href={'#'+l.id} aria-current={name===l.id?'page':undefined}
-         className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${name===l.id?'text-[#0b0b0b] accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
-        {l.label}
-      </a>
-    );
-  }
+  const active = name===l.id;
   return (
-    <div className="group relative">
-      <a href={'#'+l.id}
-         className={`flex items-center gap-1 rounded-full px-4 py-2 text-[13.5px] transition-colors ${active?'text-[#0b0b0b] accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
-        {l.label}<span className="opacity-60 transition group-hover:rotate-180" style={{width:13,height:13}}>{I.chevd({})}</span>
-      </a>
-      {/* pt-2 keeps the hover bridge contiguous so the menu doesn't flicker */}
-      <div className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 translate-y-1 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-        <Glass strong className="glass-menu min-w-[220px] overflow-hidden rounded-2xl p-1.5">
-          {l.children.map(c=>(
-            <a key={c.id} href={'#'+c.id}
-               className={`nav-drop-item flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13.5px] transition-colors ${name===c.id?'accent-text':'text-white/80'} hover:bg-white/8`}>
-              <span className="nav-ball accent-text" style={{width:15,height:15}}>{I.ball({})}</span>
-              <span className="flex-1">{c.label}</span>
-              <span className="nav-go accent-text" style={{width:15,height:15}}>{I.arrow({})}</span>
-            </a>
-          ))}
-        </Glass>
-      </div>
-    </div>
-  );
-}
-
-function ThemeToggle({ className='' }){
-  const [light, setLight] = useState(() => typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light');
-  function toggle(){
-    const next = !light; setLight(next);
-    const el = document.documentElement;
-    next ? el.setAttribute('data-theme','light') : el.removeAttribute('data-theme');
-    try { localStorage.setItem('ak.theme', next ? 'light' : 'dark'); } catch(e){}
-  }
-  return (
-    <button onClick={toggle} aria-label={light ? 'Switch to dark mode' : 'Switch to light mode'} title="Toggle light / dark"
-      className={`glass glass-soft grid h-11 w-11 place-items-center rounded-full text-[16px] text-white/80 transition hover:bg-white/10 ${className}`}>
-      <span aria-hidden>{light ? '☀️' : '🌙'}</span>
-    </button>
+    <a href={'#'+l.id} aria-current={active?'page':undefined}
+       className={`relative rounded-full px-3.5 py-2 text-[13px] transition-colors duration-200 ${active?'text-[#0b0b0b] accent-bg':'text-white/65 hover:text-white hover:bg-white/8'}`}>
+      {l.label}
+    </a>
   );
 }
 
 export function TopNav(){
   const { name } = useRoute();
   const [open, setOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   useEffect(()=>{
     const on = ()=> setScrolled(window.scrollY > 12);
@@ -135,61 +87,43 @@ export function TopNav(){
           <Logo h={48} className="transition group-hover:scale-105" />
         </a>
 
-        {/* center — links pill */}
-        <div className="glass glass-soft hidden items-center gap-1 rounded-full p-1.5 lg:flex">
+        {/* center — the 8 links (mirrors the home tiles) */}
+        <div className="glass glass-soft hidden items-center gap-0.5 rounded-full p-1.5 xl:flex">
           {NAV_LINKS.map(l=>(<NavItem key={l.id} l={l} name={name} />))}
         </div>
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <a href={BOOK_HREF} {...BOOK_EXT} className="hidden md:block" aria-label="Search availability">
             <Btn kind="primary" size="md" icon={I.search({})}>search availability</Btn>
           </a>
-          <button onClick={()=>setOpen(o=>!o)} className="glass glass-soft grid h-11 w-11 place-items-center rounded-full text-white lg:hidden">
+          <button onClick={()=>setOpen(o=>!o)} aria-label={open?'Close menu':'Open menu'} aria-expanded={open}
+            className="glass glass-soft grid h-11 w-11 place-items-center rounded-full text-white xl:hidden">
             <span style={{width:20,height:20}}>{(open?I.x:I.menu)({})}</span>
           </button>
         </div>
       </div>
 
-      {/* mobile sheet */}
+      {/* mobile sheet — the same 8 links, flat */}
       {open ? (
         <>
           {/* dimming backdrop — tap to close */}
-          <button aria-label="close menu" onClick={()=>setOpen(false)} className="menu-scrim fixed inset-0 z-30 lg:hidden" />
-          <div className="pop relative z-40 mx-auto mt-3 max-w-7xl lg:hidden">
+          <button aria-label="close menu" onClick={()=>setOpen(false)} className="menu-scrim fixed inset-0 z-30 xl:hidden" />
+          <div className="pop relative z-40 mx-auto mt-3 max-w-7xl xl:hidden">
             <Glass strong className="glass-menu max-h-[calc(100dvh-7rem)] overflow-y-auto overflow-x-hidden rounded-3xl p-2">
-              {/* mirror the desktop nav: 6 items, juniors & events expand */}
-              {NAV_LINKS.map(l=> l.children ? (
-                <div key={l.id}>
-                  {/* tapping the label navigates (like the nav bar); the chevron expands the sub-items */}
-                  <div className={`flex items-center rounded-2xl ${openGroup===l.id?'bg-white/[.06]':''} hover:bg-white/10`}>
-                    <a href={'#'+l.id} className={`flex-1 px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'}`}>{l.label}</a>
-                    <button type="button" aria-label={`expand ${l.label}`} onClick={()=>setOpenGroup(g=>g===l.id?null:l.id)}
-                      className="mr-1 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white/45 hover:bg-white/10">
-                      <span className={`transition ${openGroup===l.id?'rotate-180':''}`} style={{width:16,height:16}}>{I.chevd({})}</span>
-                    </button>
-                  </div>
-                  {openGroup===l.id ? (
-                    <div className="mb-1 ml-4 border-l border-white/10 pl-2">
-                      {l.children.map(c=>(
-                        <a key={c.id} href={'#'+c.id}
-                           className={`flex items-center justify-between rounded-xl px-4 py-3 text-[14px] ${name===c.id?'accent-text':'text-white/70'} hover:bg-white/10`}>
-                          {c.label}<span className="text-white/25" style={{width:16,height:16}}>{I.chev({})}</span>
-                        </a>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              ) : (
-                <a key={l.id} href={'#'+l.id}
-                   className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] ${name===l.id?'accent-text':'text-white/85'} hover:bg-white/10`}>
-                  {l.label}<span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
+              {NAV_LINKS.map((l,i)=>(
+                <a key={l.id} href={'#'+l.id} aria-current={name===l.id?'page':undefined}
+                   className={`flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] transition-colors ${name===l.id?'accent-text bg-white/[.06]':'text-white/85'} hover:bg-white/10`}>
+                  <span className="flex items-center gap-3">
+                    <span className="grid h-6 w-6 place-items-center rounded-full text-[11px] tnum text-white/35">{String(i+1).padStart(2,'0')}</span>
+                    {l.label}
+                  </span>
+                  <span className="text-white/30" style={{width:18,height:18}}>{I.chev({})}</span>
                 </a>
               ))}
 
               <a href={BOOK_HREF} {...BOOK_EXT} className="mt-1 block px-1 pb-1">
-                <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>book a pitch</Btn>
+                <Btn kind="primary" className="w-full" iconEnd={I.arrow({})}>search availability</Btn>
               </a>
             </Glass>
           </div>

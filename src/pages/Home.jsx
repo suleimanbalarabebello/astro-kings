@@ -232,19 +232,25 @@ export function Section({ eyebrow, title, action, children }){
 /* big captioned image tiles — mirrors the live site's "Football" & "What Else" grids */
 export function FeatureTiles({ tiles, cols='md:grid-cols-2', aspect='aspect-[16/10]', big=true }){
   return (
-    <div className={`grid gap-4 ${cols}`}>
+    <div className={`grid gap-4 md:gap-5 ${cols}`}>
       {tiles.map((t,i)=>(
         <a key={i} href={'#'+t.to}
-           className={`ph group relative block ${aspect} overflow-hidden rounded-[28px] fade-up ${t.cls||''}`}
+           className={`ph group relative block ${aspect} overflow-hidden rounded-[28px] ring-1 ring-white/10 shadow-[0_18px_40px_-24px_rgba(0,0,0,.9)] transition-[transform,box-shadow] duration-500 will-change-transform hover:-translate-y-1.5 hover:shadow-[0_34px_70px_-28px_rgba(0,0,0,.95)] hover:ring-white/25 fade-up ${t.cls||''}`}
            style={{animationDelay:(i*.06)+'s'}}>
-          {t.img ? <img src={t.img} alt={t.t} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" /> : null}
-          <div className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-90"
-               style={{background:'linear-gradient(to top, rgba(4,7,10,.88), rgba(4,7,10,.18) 55%, rgba(4,7,10,.04))'}}></div>
+          {t.img ? <img src={t.img} alt={t.t} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[700ms] ease-out group-hover:scale-[1.07]" /> : null}
+          {/* base legibility gradient + a coral wash that blooms on hover */}
+          <div className="pointer-events-none absolute inset-0"
+               style={{background:'linear-gradient(to top, rgba(4,7,10,.90), rgba(4,7,10,.20) 56%, rgba(4,7,10,.02))'}}></div>
+          <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+               style={{background:'radial-gradient(80% 60% at 50% 100%, color-mix(in oklab, var(--accent), transparent 78%), transparent 70%)'}}></div>
+          {/* thin top sheen */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"></div>
+
           <div className="absolute inset-x-0 bottom-0 p-5 text-center md:p-6">
-            <div className={`hero-title font-semibold lowercase ${(t.big ?? big)?'text-3xl md:text-4xl':'text-xl md:text-2xl'}`}>{t.t}</div>
-            <div className="mt-1.5 text-[13.5px] text-white/70">{t.d}</div>
-            <span className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide accent-text">
-              explore <span className="transition group-hover:translate-x-1" style={{width:13,height:13}}>{I.arrow({})}</span>
+            <div className={`hero-title font-semibold lowercase transition-transform duration-500 group-hover:-translate-y-0.5 ${(t.big ?? big)?'text-3xl md:text-4xl':'text-xl md:text-2xl'}`}>{t.t}</div>
+            <div className="mt-1.5 text-[13.5px] leading-snug text-white/70">{t.d}</div>
+            <span className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[11px] uppercase tracking-wide text-white/90 backdrop-blur-sm transition-colors duration-300 group-hover:accent-bg group-hover:text-[#0b0b0b]">
+              explore <span className="transition-transform duration-300 group-hover:translate-x-1" style={{width:13,height:13}}>{I.arrow({})}</span>
             </span>
           </div>
         </a>
