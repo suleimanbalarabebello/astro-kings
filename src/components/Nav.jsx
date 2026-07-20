@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import { I } from '../lib/icons.jsx';
 import { CONTACT } from '../lib/data.js';
-import { BOOKING_PLATFORM_URL } from '../lib/config.js';
+import { BOOKING_MODE, BOOKING_PLATFORM_URL } from '../lib/config.js';
 import { useRoute } from '../lib/router.js';
 
-/* every booking CTA points at the venue's live booking platform once
-   BOOKING_PLATFORM_URL is set; until then, the built-in demo flow.
-   All booking buttons share this destination — only their look differs. */
-export const BOOK_HREF = BOOKING_PLATFORM_URL || '#booking';
-export const BOOK_EXT  = BOOKING_PLATFORM_URL ? { target:'_blank', rel:'noreferrer' } : {};
+/* All booking CTAs share one destination — only their look differs.
+   'link' mode deep-links to the hosted Planyo page; 'demo'/'embed' stay on
+   our #booking page (which renders the built-in flow or the Planyo widget). */
+const linkOut = BOOKING_MODE === 'link' && BOOKING_PLATFORM_URL;
+export const BOOK_HREF = linkOut ? BOOKING_PLATFORM_URL : '#booking';
+export const BOOK_EXT  = linkOut ? { target:'_blank', rel:'noreferrer' } : {};
 
 import { Logo, Glass, Btn } from './ui.jsx';
 

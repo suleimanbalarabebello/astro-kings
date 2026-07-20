@@ -11,7 +11,8 @@ import {
   releaseExpiredHolds, signUp, deriveStudent, prepayPolicy, joinWaitlist,
 } from '../lib/booking.js';
 import { todayKey, keyLabel } from '../lib/dates.js';
-import { HOLD_MINUTES, MAX_HOURS, CANCEL_WINDOW_HRS, BOOKING_PLATFORM_URL } from '../lib/config.js';
+import { HOLD_MINUTES, MAX_HOURS, CANCEL_WINDOW_HRS, BOOKING_MODE, BOOKING_PLATFORM_URL } from '../lib/config.js';
+import { PlanyoBooking } from '../components/PlanyoBooking.jsx';
 import { Glass, Btn, Eyebrow, Field } from '../components/ui.jsx';
 import { Calendar } from '../components/Calendar.jsx';
 import { StripeCard, stripeEnabled } from '../components/StripeCard.jsx';
@@ -95,8 +96,9 @@ function PlatformHandoff(){
 }
 
 export function Booking({ params }){
-  if (BOOKING_PLATFORM_URL) return <PlatformHandoff />;
-  return <BookingFlow params={params} />;
+  if (BOOKING_MODE === 'embed') return <PlanyoBooking />;                 // Level 2: widget in-page
+  if (BOOKING_MODE === 'link' && BOOKING_PLATFORM_URL) return <PlatformHandoff />;  // Level 1: link out
+  return <BookingFlow params={params} />;                                 // demo: built-in flow
 }
 
 function BookingFlow({ params }){

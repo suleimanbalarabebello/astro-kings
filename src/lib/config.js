@@ -15,10 +15,18 @@ export const PAYPLAY_PRICE      = 4.5;    // U18 daily pay & play, per person
 
 export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from email domain
 
-/* The venue's LIVE booking platform (they already run one, with Stripe).
-   TODO: paste the real booking URL here (e.g. their Pitchbooking/BookteQ page).
-   When set, every "Book a Pitch" CTA site-wide deep-links straight to it and
-   the built-in demo checkout below is bypassed. Leave '' to keep the demo flow. */
+/* Which booking experience the #booking page shows:
+   'demo'   — our built-in simulated flow (default)
+   'embed'  — Level 2: the venue's Planyo booking widget lives inside our page
+   'link'   — deep-link out to BOOKING_PLATFORM_URL (their hosted booking page) */
+export const BOOKING_MODE = 'embed';
+
+/* Planyo Level-2 embed. Paste the venue's Planyo INLINE/IFRAME embed src here.
+   Empty = show a styled PREVIEW of where the live widget will sit (demo only). */
+export const PLANYO_EMBED_URL = '';
+
+/* The venue's LIVE hosted booking page (Planyo). Used by 'link' mode and as the
+   fallback destination for booking CTAs. TODO: paste the real Planyo URL. */
 export const BOOKING_PLATFORM_URL = '';
 
 /* Cloudflare Turnstile site key. This is Cloudflare's official ALWAYS-PASSES test
