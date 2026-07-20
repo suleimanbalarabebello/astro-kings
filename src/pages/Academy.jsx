@@ -24,7 +24,7 @@ export function Academy(){
   return (
     <div>
       {/* video hero */}
-      <section className="relative h-[58vh] min-h-[400px] w-full overflow-hidden">
+      <section className="media-hero relative h-[58vh] min-h-[400px] w-full overflow-hidden">
         <video className="absolute inset-0 h-full w-full object-cover" poster="/academy-poster.jpg" autoPlay loop muted playsInline preload="metadata">
           <source src={ACADEMY_VIDEO} type="video/mp4" />
         </video>

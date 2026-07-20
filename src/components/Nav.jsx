@@ -62,7 +62,7 @@ function NavItem({ l, name }){
   const active = name===l.id || (l.children && l.children.some(c=>c.id===name));
   if (!l.children) {
     return (
-      <a href={'#'+l.id}
+      <a href={'#'+l.id} aria-current={name===l.id?'page':undefined}
          className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${name===l.id?'text-[#0b0b0b] accent-bg':'text-white/70 hover:text-white hover:bg-white/8'}`}>
         {l.label}
       </a>
@@ -91,6 +91,22 @@ function NavItem({ l, name }){
   );
 }
 
+function ThemeToggle({ className='' }){
+  const [light, setLight] = useState(() => typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light');
+  function toggle(){
+    const next = !light; setLight(next);
+    const el = document.documentElement;
+    next ? el.setAttribute('data-theme','light') : el.removeAttribute('data-theme');
+    try { localStorage.setItem('ak.theme', next ? 'light' : 'dark'); } catch(e){}
+  }
+  return (
+    <button onClick={toggle} aria-label={light ? 'Switch to dark mode' : 'Switch to light mode'} title="Toggle light / dark"
+      className={`glass glass-soft grid h-11 w-11 place-items-center rounded-full text-[16px] text-white/80 transition hover:bg-white/10 ${className}`}>
+      <span aria-hidden>{light ? '☀️' : '🌙'}</span>
+    </button>
+  );
+}
+
 export function TopNav(){
   const { name } = useRoute();
   const [open, setOpen] = useState(false);
@@ -104,7 +120,7 @@ export function TopNav(){
   useEffect(()=>{ setOpen(false); },[name]);
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-40 px-4 pt-4 md:px-7 md:pt-6">
+    <nav aria-label="Primary" className="fixed inset-x-0 top-0 z-40 px-4 pt-4 md:px-7 md:pt-6">
       {/* blurred fading backdrop once scrolled, so content underneath doesn't clash with the nav */}
       <div className={`pointer-events-none absolute inset-x-0 top-0 h-28 transition-opacity duration-300 ${scrolled?'opacity-100':'opacity-0'}`}
            style={{
@@ -126,6 +142,7 @@ export function TopNav(){
 
         {/* right — actions */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <a href={BOOK_HREF} {...BOOK_EXT} className="hidden md:block" aria-label="Search availability">
             <Btn kind="primary" size="md" icon={I.search({})}>search availability</Btn>
           </a>

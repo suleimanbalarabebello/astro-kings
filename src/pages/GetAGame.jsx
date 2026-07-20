@@ -42,7 +42,7 @@ export function GetAGame(){
   return (
     <div>
       {/* ---------- hero ---------- */}
-      <section className="relative overflow-hidden">
+      <section className="media-hero relative overflow-hidden">
         {/* video background */}
         <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
           <source src={GETAGAME_VIDEO} type="video/mp4" />

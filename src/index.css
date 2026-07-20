@@ -24,6 +24,69 @@
 html[data-glass="medium"]{ --glass-bg:rgba(255,255,255,.05); --glass-blur:18px; --glass-border:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.22); }
 html[data-glass="subtle"]{ --glass-bg:rgba(255,255,255,.035); --glass-blur:10px; --glass-border:rgba(255,255,255,.09); --glass-hi:rgba(255,255,255,.14); }
 
+/* ============================================================
+   LIGHT THEME  (opt-in via the nav toggle; default stays dark)
+   ============================================================ */
+:root[data-theme="light"]{
+  --bg:#eef1f6;
+  --ink:#12151b;
+  --muted:rgba(18,21,27,.62);
+  --faint:rgba(18,21,27,.42);
+  --hair:rgba(0,0,0,.10);
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-bg-2:rgba(255,255,255,.72);
+  --glass-border:rgba(0,0,0,.08);
+  --glass-hi:rgba(255,255,255,.9);
+}
+:root[data-theme="light"] .ak-stage::before{
+  background:
+    radial-gradient(120% 80% at 18% -10%, rgba(232,100,90,.10), transparent 55%),
+    radial-gradient(120% 90% at 88% 0%, rgba(120,170,255,.12), transparent 55%),
+    linear-gradient(180deg,#eef2f7 0%, #e7ecf3 55%, #e2e8f0 100%);
+}
+:root[data-theme="light"] .ak-grain{ opacity:.25; }
+:root[data-theme="light"] .glass-menu{ background:rgba(255,255,255,.92); border-color:rgba(0,0,0,.08); box-shadow:0 26px 64px -22px rgba(20,30,60,.28), inset 0 1px 0 rgba(255,255,255,.8); }
+:root[data-theme="light"] .menu-scrim{ background:rgba(20,28,48,.35); }
+/* flip white content text to dark in light mode */
+:root[data-theme="light"] .text-white{ color:#12151b !important; }
+:root[data-theme="light"] .text-white\/90{ color:rgba(18,21,27,.9)!important; }
+:root[data-theme="light"] .text-white\/85{ color:rgba(18,21,27,.85)!important; }
+:root[data-theme="light"] .text-white\/80{ color:rgba(18,21,27,.8)!important; }
+:root[data-theme="light"] .text-white\/75{ color:rgba(18,21,27,.75)!important; }
+:root[data-theme="light"] .text-white\/70{ color:rgba(18,21,27,.72)!important; }
+:root[data-theme="light"] .text-white\/65{ color:rgba(18,21,27,.68)!important; }
+:root[data-theme="light"] .text-white\/60{ color:rgba(18,21,27,.64)!important; }
+:root[data-theme="light"] .text-white\/55{ color:rgba(18,21,27,.6)!important; }
+:root[data-theme="light"] .text-white\/50{ color:rgba(18,21,27,.55)!important; }
+:root[data-theme="light"] .text-white\/45{ color:rgba(18,21,27,.5)!important; }
+:root[data-theme="light"] .text-white\/40{ color:rgba(18,21,27,.45)!important; }
+:root[data-theme="light"] .text-white\/35{ color:rgba(18,21,27,.4)!important; }
+:root[data-theme="light"] .placeholder\:text-white\/35::placeholder{ color:rgba(18,21,27,.4)!important; }
+/* subtle white fills → subtle dark fills */
+:root[data-theme="light"] .bg-white\/5,
+:root[data-theme="light"] .bg-white\/8,
+:root[data-theme="light"] .bg-white\/10,
+:root[data-theme="light"] .bg-white\/\[\.04\]{ background-color:rgba(20,28,48,.05)!important; }
+:root[data-theme="light"] .border-white\/10,
+:root[data-theme="light"] .border-white\/8{ border-color:rgba(0,0,0,.08)!important; }
+/* KEEP hero/video content light regardless of theme (dark media underneath) */
+:root[data-theme="light"] .media-hero .text-white,
+:root[data-theme="light"] .media-hero .hero-title,
+:root[data-theme="light"] .media-hero p{ color:#fff !important; }
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+.skip-link{
+  position:fixed; top:-100px; left:16px; z-index:100;
+  background:var(--accent); color:#0b0b0b; font-weight:600;
+  padding:10px 16px; border-radius:12px; transition:top .2s ease;
+}
+.skip-link:focus{ top:16px; outline:2px solid #fff; outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+
 *{ -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
 html,body,#root{ height:100%; }
 body{

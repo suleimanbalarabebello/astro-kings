@@ -20,7 +20,7 @@ export function Juniors(){
   return (
     <div>
       {/* video hero */}
-      <section className="relative h-[58vh] min-h-[400px] w-full overflow-hidden">
+      <section className="media-hero relative h-[58vh] min-h-[400px] w-full overflow-hidden">
         <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
           <source src={JUNIORS_VIDEO} type="video/mp4" />
         </video>

@@ -23,7 +23,7 @@ export function KingsClub(){
   return (
     <div>
       {/* ---------- image hero ---------- */}
-      <section className="relative h-[64vh] min-h-[440px] w-full overflow-hidden">
+      <section className="media-hero relative h-[64vh] min-h-[440px] w-full overflow-hidden">
         <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
           <source src={KINGSCLUB_VIDEO} type="video/mp4" />
         </video>

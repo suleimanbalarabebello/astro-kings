@@ -79,7 +79,7 @@ export function Hero({ variant='stacked' }){
 
   if (variant === 'split') {
     return (
-      <header className="relative px-6 pt-32 md:pt-40">
+      <header className="media-hero relative px-6 pt-32 md:pt-40">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_.9fr]">
           <div className="fade-up">
             <Eyebrow>Nottingham · NG8</Eyebrow>
@@ -98,7 +98,7 @@ export function Hero({ variant='stacked' }){
 
   if (variant === 'centered') {
     return (
-      <header className="relative overflow-hidden px-6 pt-36 md:pt-44">
+      <header className="media-hero relative overflow-hidden px-6 pt-36 md:pt-44">
         <HeroVideo className="!absolute inset-x-3 inset-y-3 md:inset-x-4 md:inset-y-4" dim />
         <div className="relative z-10 mx-auto max-w-4xl text-center fade-up">
           <Tag accent className="mb-6">⚡ brand new 4g pitches</Tag>
@@ -113,7 +113,7 @@ export function Hero({ variant='stacked' }){
 
   // 'stacked' (default) — staggered words over a looping video stage
   return (
-    <header className="relative min-h-[88vh] w-full overflow-hidden px-4 md:h-[92vh] md:min-h-[600px] md:px-6">
+    <header className="media-hero relative min-h-[88vh] w-full overflow-hidden px-4 md:h-[92vh] md:min-h-[600px] md:px-6">
       <HeroVideo className="!absolute inset-0 !border-0" rounded="rounded-none" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56" style={{background:'linear-gradient(to bottom, transparent, rgba(4,7,10,.92))'}}></div>
 

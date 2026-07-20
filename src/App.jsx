@@ -65,7 +65,7 @@ export default function App(){
       <div className="ak-grain"></div>
       <TopNav />
       {/* bottom padding on mobile stops the sticky bar overlapping page content */}
-      <main key={name} className={showBookBar ? 'pb-24 md:pb-0' : ''}>{render(params)}</main>
+      <main id="main" tabIndex={-1} key={name} className={showBookBar ? 'pb-24 md:pb-0' : ''}>{render(params)}</main>
       {showBookBar ? <BookBar /> : null}
     </div>
   );
