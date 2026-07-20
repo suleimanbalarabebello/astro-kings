@@ -19,7 +19,7 @@ export const STUDENT_DOMAIN_RE = /\.ac\.uk$/i;  // student status derived from e
    'demo'   — our built-in simulated flow (default)
    'embed'  — Level 2: the venue's Planyo booking widget lives inside our page
    'link'   — deep-link out to BOOKING_PLATFORM_URL (their hosted booking page) */
-export const BOOKING_MODE = 'embed';
+export const BOOKING_MODE = 'demo';
 
 /* Planyo Level-2 embed. Paste the venue's Planyo INLINE/IFRAME embed src here.
    Empty = show a styled PREVIEW of where the live widget will sit (demo only). */
