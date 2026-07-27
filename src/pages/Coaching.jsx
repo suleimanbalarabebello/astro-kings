@@ -154,7 +154,7 @@ function LeagueCard({ l, i }){
           <div className="absolute inset-0" style={{background:`linear-gradient(150deg, ${l.c}, ${l.c}22)`}}></div>
         )}
         <div className="absolute inset-x-0 top-0 z-10 h-1.5" style={{background:l.c}}></div>
-        <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(180deg, rgba(6,9,10,.06) 0%, rgba(6,9,10,.12) 45%, rgba(6,9,10,.86) 100%)'}}></div>
+        <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(180deg, rgba(11,21,51,.05) 0%, rgba(11,21,51,.12) 45%, rgba(11,21,51,.9) 100%)'}}></div>
         {/* overlaid tag + name */}
         <div className="absolute inset-x-0 bottom-0 p-6">
           <span className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide backdrop-blur-sm" style={{background:l.c+'33',color:'#fff'}}>{l.tag}</span>
@@ -194,6 +194,14 @@ function FaqItem({ q, a, defaultOpen }){
 export function Coaching(){
   return (
     <div>
+      {/* page-scoped backdrop — a deep KFL navy (with blue + orange glows) that
+         covers the site's near-black stadium bg, so this reads as its own space */}
+      <div className="pointer-events-none fixed inset-0" style={{ zIndex:-1, background:
+        'radial-gradient(70% 55% at 14% 0%, rgba(59,130,246,.18), transparent 55%),'+
+        'radial-gradient(70% 55% at 90% 6%, rgba(242,106,61,.15), transparent 55%),'+
+        'radial-gradient(95% 70% at 50% 118%, rgba(59,130,246,.12), transparent 60%),'+
+        'linear-gradient(180deg, #0b1533 0%, #0a1228 55%, #080d1f 100%)' }}></div>
+
       {/* ---------- hero — full-bleed KFL banner, headline filling the centre ---------- */}
       <section className="relative w-full overflow-hidden pt-20 md:pt-24">
         {/* ambient orange bleed so the banner sits IN the page, not stuck on it */}
@@ -202,8 +210,8 @@ export function Coaching(){
         <div className="relative w-full">
           <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
           {/* feather the top & bottom edges into the dark page */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{background:'linear-gradient(to top, transparent, rgba(6,9,10,.9))'}}></div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{background:'linear-gradient(to bottom, transparent, rgba(6,9,10,.95))'}}></div>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{background:'linear-gradient(to top, transparent, rgba(11,21,51,.92))'}}></div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{background:'linear-gradient(to bottom, transparent, rgba(11,21,51,.96))'}}></div>
           {/* headline sits in the open centre on tablet/desktop */}
           <div className="absolute inset-0 z-10 hidden items-center justify-center px-6 text-center md:flex">
             <h1 className="hero-title font-semibold lowercase leading-[.95]" style={{color:'#16235c', fontSize:'clamp(2.5rem, 6.2vw, 5.5rem)'}}>every child<br/>gets to play</h1>
