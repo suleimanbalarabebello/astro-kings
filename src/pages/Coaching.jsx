@@ -202,26 +202,32 @@ export function Coaching(){
         'radial-gradient(95% 70% at 50% 118%, rgba(59,130,246,.12), transparent 60%),'+
         'linear-gradient(180deg, #0b1533 0%, #0a1228 55%, #080d1f 100%)' }}></div>
 
-      {/* ---------- hero — full-bleed KFL banner, headline filling the centre ---------- */}
+      {/* ---------- hero ---------- */}
       <section className="relative w-full overflow-hidden pt-20 md:pt-24">
-        {/* ambient orange bleed so the banner sits IN the page, not stuck on it */}
+        {/* ambient orange bleed so the hero sits IN the page, not stuck on it */}
         <div className="pointer-events-none absolute inset-x-0 top-6 h-[560px]" style={{background:'radial-gradient(62% 58% at 50% 40%, rgba(242,106,61,.16), transparent 72%)'}}></div>
-        {/* the banner runs edge-to-edge (crests at both screen edges) */}
-        <div className="relative w-full">
+
+        {/* tablet / desktop: full-bleed banner, headline filling the centre */}
+        <div className="relative hidden w-full md:block">
           <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
-          {/* feather the top & bottom edges into the dark page */}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{background:'linear-gradient(to top, transparent, rgba(11,21,51,.92))'}}></div>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{background:'linear-gradient(to bottom, transparent, rgba(11,21,51,.96))'}}></div>
-          {/* headline sits in the open centre on tablet/desktop */}
-          <div className="absolute inset-0 z-10 hidden items-center justify-center px-6 text-center md:flex">
+          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
             <h1 className="hero-title font-semibold lowercase leading-[.95]" style={{color:'#16235c', fontSize:'clamp(2.5rem, 6.2vw, 5.5rem)'}}>every child<br/>gets to play</h1>
           </div>
         </div>
 
-        {/* mobile headline (banner is short on phones) + shared subtitle & CTAs */}
-        <div className="mx-auto max-w-2xl px-6 pt-7 pb-12 text-center md:pt-9">
-          <h1 className="hero-title text-4xl font-semibold lowercase md:hidden">every child gets to play</h1>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
+        {/* mobile: a single crest emblem (cropped from the banner) + headline */}
+        <div className="px-6 text-center md:hidden">
+          <div className="mx-auto h-32 w-32 rounded-[28px] ring-1 ring-white/10 shadow-[0_18px_44px_-18px_rgba(0,0,0,.7)]"
+               role="img" aria-label="Kids Football League crest"
+               style={{ backgroundImage:'url(/kfl-hero.png)', backgroundSize:'cover', backgroundPosition:'left center' }}></div>
+          <h1 className="hero-title mt-6 text-[2.6rem] font-semibold lowercase leading-[.98]">every child gets to play</h1>
+        </div>
+
+        {/* shared subtitle + CTAs */}
+        <div className="mx-auto max-w-2xl px-6 pt-5 pb-12 text-center md:pt-9">
+          <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
             <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
