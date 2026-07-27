@@ -60,7 +60,9 @@ function Crest({ className='' }){
 
 export function NottsOlympic(){
   return (
-    <div>
+    /* scope the brand accent to club RED for this whole page — buttons, links,
+       glows and the enquiry form all pick it up via var(--accent) */
+    <div style={{ '--accent': RED, '--accent-2': '#F0838C' }}>
       {/* page-scoped backdrop — deep crimson/green wash so the club reads as its own space */}
       <div className="pointer-events-none fixed inset-0" style={{ zIndex:-1, background:
         'radial-gradient(70% 55% at 12% 0%, rgba(226,55,68,.16), transparent 55%),'+
