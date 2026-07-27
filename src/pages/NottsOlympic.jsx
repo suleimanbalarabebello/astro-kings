@@ -65,6 +65,14 @@ const PARTNERS = [
   { name:'Notts Senior League', to:SENIOR_LEAGUE },
 ];
 
+/* TODO: client to supply full squad, staff, fixtures & results */
+const TEAMS = [
+  { c:RED,   t:'first team', league:'Notts Senior League',
+    d:'Senior men’s football, competing week in, week out as the club climbs back up the pyramid.' },
+  { c:GREEN, t:'juniors', league:'Kids Football League',
+    d:'Boys’ and girls’ teams playing through the Kids Football League here at Astro Kings — the pathway to the senior side.' },
+];
+
 /* crest emblem — feathered so its backdrop melts into the page */
 function Crest({ className='' }){
   return (
@@ -188,6 +196,25 @@ export function NottsOlympic(){
           <a href={SENIOR_LEAGUE} target="_blank" rel="noreferrer"><Btn kind="outline" size="sm" icon={I.trophy({})} iconEnd={I.arrow({})}>notts senior league</Btn></a>
           <a href="#coaching"><Btn kind="outline" size="sm" iconEnd={I.arrow({})}>the kids league</Btn></a>
         </div>
+      </Section>
+
+      {/* ---------- teams ---------- */}
+      <Section eyebrow="who plays" title="our teams">
+        <div className="grid gap-4 md:grid-cols-2">
+          {TEAMS.map((t,i)=>(
+            <Glass key={t.t} className="rounded-3xl p-7 fade-up" style={{animationDelay:(i*.06)+'s'}}>
+              <div className="flex items-center gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{background:t.c+'22',color:t.c}}><span style={{width:20,height:20}}>{I.ball({})}</span></span>
+                <div>
+                  <div className="text-[18px] font-medium lowercase">{t.t}</div>
+                  <div className="text-[12px] uppercase tracking-wide" style={{color:t.c}}>{t.league}</div>
+                </div>
+              </div>
+              <p className="mt-4 text-[14px] leading-relaxed text-white/60">{t.d}</p>
+            </Glass>
+          ))}
+        </div>
+        <p className="mt-4 text-[13px] text-white/45">Full squad, fixtures and results coming soon. Want to play for Notts Olympic? <a href="#partner" className="accent-text hover:underline">Get in touch about trials</a> or <a href="#coaching" className="accent-text hover:underline">start in the juniors</a>.</p>
       </Section>
 
       {/* ---------- get involved ---------- */}
