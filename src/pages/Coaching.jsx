@@ -102,6 +102,22 @@ const STATS = [
   { v:'85%',  l:'first-time players', c:'#F472B6' },
 ];
 
+/* iOS-app-icon gloss: a curved specular dome over the top, a fine light edge,
+   and a soft inner base shadow — sits above the badge, ignores pointer events */
+function Gloss(){
+  return (
+    <div className="pointer-events-none absolute inset-0 rounded-[inherit]">
+      {/* domed reflection across the top half */}
+      <div className="absolute inset-x-0 top-0 h-[58%]"
+           style={{ background:'linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,.28) 45%, rgba(255,255,255,.06) 100%)',
+                    borderRadius:'inherit', borderBottomLeftRadius:'50% 100%', borderBottomRightRadius:'50% 100%' }} />
+      {/* crisp top light line + darkened base for the glassy curve */}
+      <div className="absolute inset-0 rounded-[inherit]"
+           style={{ boxShadow:'inset 0 1.5px 1px rgba(255,255,255,.85), inset 0 -14px 22px -10px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.35)' }} />
+    </div>
+  );
+}
+
 /* a team crest — real badge if /public has the file, else a bright placeholder */
 function Crest({ t }){
   const [broken, setBroken] = useState(false);
@@ -110,15 +126,16 @@ function Crest({ t }){
     <div className="group text-center">
       {showLogo ? (
         /* real badge: neutral light tile so any logo style reads well */
-        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[26px] bg-white/95 p-4 ring-1 ring-white/15 shadow-[0_18px_40px_-18px_rgba(0,0,0,.7)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.03]">
+        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[28px] bg-white/95 p-4 ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.75)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]">
           <img src={t.logo} alt={`${t.name} team badge`} loading="lazy" onError={()=>setBroken(true)}
-               className="h-full w-full object-contain" />
+               className="relative z-[1] h-full w-full object-contain" />
+          <Gloss />
         </div>
       ) : (
-        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[26px] ring-1 ring-white/15 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.03]"
-             style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 18px 40px -18px ${t.b}`}}>
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-white/15" style={{maskImage:'linear-gradient(black,transparent)',WebkitMaskImage:'linear-gradient(black,transparent)'}}></div>
-          <span className="text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
+        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[28px] ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.7)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]"
+             style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 22px 44px -16px ${t.b}`}}>
+          <span className="relative z-[1] text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
+          <Gloss />
         </div>
       )}
       <div className="mt-3 text-[14px] font-medium lowercase">{t.name}</div>
