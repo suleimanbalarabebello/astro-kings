@@ -219,8 +219,8 @@ export function Section({ eyebrow, title, action, children }){
     <section className="mx-auto mt-24 max-w-7xl px-6">
       <div className="mb-7 flex items-end justify-between gap-4">
         <div>
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h2 className="hero-title mt-3 text-4xl md:text-5xl font-semibold lowercase">{title}</h2>
+          {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+          <h2 className={`hero-title text-4xl md:text-5xl font-semibold lowercase ${eyebrow?'mt-3':''}`}>{title}</h2>
         </div>
         {action}
       </div>

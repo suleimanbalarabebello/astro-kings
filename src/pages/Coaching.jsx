@@ -13,10 +13,10 @@
    • team crests = emoji + colour gradients (real badges to replace)
    • booking + league-table links point at the platforms KFL uses today. */
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { I } from '../lib/icons.jsx';
 import { JUNIORS_VIDEO, CONTACT } from '../lib/data.js';
-import { Glass, Btn, Tag, Eyebrow } from '../components/ui.jsx';
+import { Glass, Btn, Eyebrow } from '../components/ui.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
 import { Footer } from '../components/Nav.jsx';
@@ -95,11 +95,15 @@ const FAQ = [
     a:'There’s no minimum term and you can cancel anytime — we just ask for 28 days’ notice by email.' },
 ];
 
-const STATS = [
-  { v:'2022', l:'league founded', c:'#34D399' },
-  { v:'3',    l:'divisions',      c:'#38BDF8' },
-  { v:'8',    l:'teams per div',  c:'#A78BFA' },
-  { v:'85%',  l:'first-time players', c:'#F472B6' },
+/* one shared colour palette (leagues + accents key off this) */
+const PALETTE = ['#34D399', '#38BDF8', '#A78BFA', '#F472B6'];
+
+/* the founding facts — shown as a slim inline ribbon, not big-number tiles */
+const FACTS = [
+  { v:'since 2022', l:'building the league' },
+  { v:'3 divisions', l:'foundation → academy' },
+  { v:'8 teams', l:'in every division' },
+  { v:'85%', l:'first-ever team' },
 ];
 
 /* iOS-app-icon gloss: a curved specular dome over the top, a fine light edge,
@@ -124,21 +128,45 @@ function Crest({ t }){
   const showLogo = t.logo && !broken;
   return (
     <div className="group text-center">
-      {showLogo ? (
-        /* real badge: neutral light tile so any logo style reads well */
-        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[28px] bg-white/95 p-4 ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.75)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]">
-          <img src={t.logo} alt={`${t.name} team badge`} loading="lazy" onError={()=>setBroken(true)}
-               className="relative z-[1] h-full w-full object-contain" />
-          <Gloss />
+      <div className="relative mx-auto w-full max-w-[130px]">
+        {/* team-coloured glow that blooms on hover */}
+        <div className="pointer-events-none absolute -inset-3 rounded-[34px] opacity-35 blur-2xl transition-opacity duration-300 group-hover:opacity-80"
+             style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`}}></div>
+        {showLogo ? (
+          /* real badge: neutral light tile so any logo style reads well */
+          <div className="relative grid aspect-square w-full place-items-center overflow-hidden rounded-[28px] bg-white/95 p-4 ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.75)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]">
+            <img src={t.logo} alt={`${t.name} team badge`} loading="lazy" onError={()=>setBroken(true)}
+                 className="relative z-[1] h-full w-full object-contain" />
+            <Gloss />
+          </div>
+        ) : (
+          <div className="relative grid aspect-square w-full place-items-center overflow-hidden rounded-[28px] ring-1 ring-white/20 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]"
+               style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 22px 44px -16px ${t.b}`}}>
+            <span className="relative z-[1] text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
+            <Gloss />
+          </div>
+        )}
+      </div>
+      <div className="mt-3.5 text-[14px] font-medium lowercase">{t.name}</div>
+    </div>
+  );
+}
+
+/* one FAQ row — quiet by default, expands smoothly */
+function FaqItem({ q, a, defaultOpen }){
+  const [open, setOpen] = useState(!!defaultOpen);
+  return (
+    <div className="border-t border-white/10">
+      <button onClick={()=>setOpen(o=>!o)} aria-expanded={open}
+        className="flex w-full items-center justify-between gap-5 py-5 text-left transition-colors hover:text-white">
+        <span className="text-[16px] font-medium text-white/90">{q}</span>
+        <span className={`shrink-0 text-white/40 transition-transform duration-300 ${open?'rotate-180 accent-text':''}`} style={{width:18,height:18}}>{I.chevd({})}</span>
+      </button>
+      <div className={`grid transition-all duration-300 ease-out ${open?'grid-rows-[1fr] opacity-100':'grid-rows-[0fr] opacity-0'}`}>
+        <div className="overflow-hidden">
+          <p className="max-w-2xl pb-5 pr-6 text-[14.5px] leading-relaxed text-white/65">{a}</p>
         </div>
-      ) : (
-        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[28px] ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.7)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]"
-             style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 22px 44px -16px ${t.b}`}}>
-          <span className="relative z-[1] text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
-          <Gloss />
-        </div>
-      )}
-      <div className="mt-3 text-[14px] font-medium lowercase">{t.name}</div>
+      </div>
     </div>
   );
 }
@@ -170,13 +198,14 @@ export function Coaching(){
         </div>
       </section>
 
-      {/* ---------- stats strip ---------- */}
-      <section className="mx-auto -mt-10 max-w-5xl px-6">
-        <Glass strong className="relative z-10 grid grid-cols-2 gap-4 rounded-[28px] p-6 md:grid-cols-4 md:p-8">
-          {STATS.map((s,i)=>(
-            <div key={i} className="text-center fade-up" style={{animationDelay:(i*.05)+'s'}}>
-              <div className="tnum text-4xl font-semibold md:text-5xl" style={{color:s.c}}>{s.v}</div>
-              <div className="mt-1 text-[12px] uppercase tracking-wide text-white/55">{s.l}</div>
+      {/* ---------- fact ribbon ---------- */}
+      <section className="mx-auto -mt-8 max-w-4xl px-6">
+        <Glass strong className="relative z-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 rounded-full px-8 py-5">
+          {FACTS.map((f,i)=>(
+            <div key={i} className="flex items-center gap-2.5 fade-up" style={{animationDelay:(i*.05)+'s'}}>
+              <span className="h-2 w-2 rounded-full" style={{background:PALETTE[i], boxShadow:`0 0 10px ${PALETTE[i]}`}}></span>
+              <span className="text-[15px] font-semibold lowercase text-white/95">{f.v}</span>
+              <span className="hidden text-[13px] text-white/45 sm:inline">{f.l}</span>
             </div>
           ))}
         </Glass>
@@ -202,29 +231,32 @@ export function Coaching(){
         </div>
       </Section>
 
-      {/* ---------- the three leagues ---------- */}
+      {/* ---------- the three leagues (a real progression) ---------- */}
       <Section eyebrow="the pathway" title="three leagues, one journey">
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-2">
           {LEAGUES.map((l,i)=>(
-            <Glass key={l.key} className="relative overflow-hidden rounded-[28px] p-7 fade-up" style={{animationDelay:(i*.06)+'s'}}>
-              {/* colour cap + glow */}
-              <div className="absolute inset-x-0 top-0 h-1.5" style={{background:l.c}}></div>
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-30 blur-2xl" style={{background:l.c}}></div>
-              <div className="relative">
-                <div className="flex items-center justify-between">
+            <Fragment key={l.key}>
+              <Glass className="group relative flex-1 overflow-hidden rounded-[26px] p-7 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.08)+'s'}}>
+                <div className="absolute inset-x-0 top-0 h-1.5" style={{background:l.c}}></div>
+                <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-45" style={{background:l.c}}></div>
+                <div className="relative">
                   <span className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:l.c+'22',color:l.c}}>{l.tag}</span>
-                  <span className="tnum text-[12px] text-white/40">0{i+1}</span>
+                  <h3 className="hero-title mt-5 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
+                  <p className="mt-3 text-[14px] leading-relaxed text-white/70">{l.d}</p>
+                  <div className="mt-5 flex items-center gap-2 text-[13px] text-white/75">
+                    <span style={{width:15,height:15,color:l.c}}>{I.cal({})}</span> now running · {l.runs}
+                  </div>
                 </div>
-                <h3 className="hero-title mt-5 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-white/65">{l.d}</p>
-                <div className="mt-5 flex items-center gap-2 text-[13px] text-white/70">
-                  <span style={{width:15,height:15,color:l.c}}>{I.cal({})}</span> now running · {l.runs}
+              </Glass>
+              {i < LEAGUES.length-1 ? (
+                <div className="flex shrink-0 items-center justify-center py-1 text-white/30 lg:py-0" aria-hidden>
+                  <span className="rotate-90 lg:rotate-0" style={{width:22,height:22}}>{I.arrow({})}</span>
                 </div>
-              </div>
-            </Glass>
+              ) : null}
+            </Fragment>
           ))}
         </div>
-        <div className="mt-5 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <a href={LEAGUE_TABLES_URL} target="_blank" rel="noreferrer"><Btn kind="outline" icon={I.trophy({})} iconEnd={I.arrow({})}>view live league tables</Btn></a>
         </div>
       </Section>
@@ -248,21 +280,28 @@ export function Coaching(){
         </p>
       </Section>
 
-      {/* ---------- the teams ---------- */}
-      <Section eyebrow="meet the teams" title="8 teams · own kit, colours & badge">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {TEAMS.map((t,i)=>(
-            <div key={t.name} className="fade-up" style={{animationDelay:(i*.04)+'s'}}><Crest t={t} /></div>
-          ))}
+      {/* ---------- the teams — the signature moment ---------- */}
+      <section className="relative mx-auto mt-24 max-w-7xl overflow-hidden px-6">
+        {/* soft multi-colour glow bed behind the crests */}
+        <div className="pointer-events-none absolute inset-0 opacity-60" style={{background:'radial-gradient(50% 60% at 20% 30%, rgba(56,189,248,.16), transparent 60%), radial-gradient(50% 60% at 80% 40%, rgba(232,121,249,.16), transparent 60%), radial-gradient(60% 60% at 50% 90%, rgba(52,211,153,.14), transparent 60%)'}}></div>
+        <div className="relative">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="hero-title text-4xl font-semibold lowercase md:text-5xl">pick a shirt, join a team</h2>
+            <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-white/65">Eight teams across the league — each with its own kit, colours and badge. Every child gets theirs.</p>
+          </div>
+          <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+            {TEAMS.map((t,i)=>(
+              <div key={t.name} className="fade-up" style={{animationDelay:(i*.05)+'s'}}><Crest t={t} /></div>
+            ))}
+          </div>
         </div>
-        <p className="mt-6 text-center text-[13px] text-white/40">Team crests shown are placeholders — real badges drop straight in.</p>
-      </Section>
+      </section>
 
       {/* ---------- how the trial works ---------- */}
       <Section eyebrow="how it works" title="from free trial to matchday">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s,i)=>{
-            const c = STATS[i].c;
+            const c = PALETTE[i];
             return (
               <Glass key={s.n} className="rounded-3xl p-6 fade-up" style={{animationDelay:(i*.05)+'s'}}>
                 <div className="grid h-11 w-11 place-items-center rounded-2xl text-[15px] font-semibold" style={{background:c+'22',color:c}}>{s.n}</div>
@@ -287,7 +326,7 @@ export function Coaching(){
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {INCLUDED.map((f,i)=>(
                 <div key={f} className="flex items-center gap-3 text-[14px] text-white/75">
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full" style={{background:STATS[i%STATS.length].c+'22',color:STATS[i%STATS.length].c}}><span style={{width:13,height:13}}>{I.check({})}</span></span>{f}
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full" style={{background:PALETTE[i%PALETTE.length]+'22',color:PALETTE[i%PALETTE.length]}}><span style={{width:13,height:13}}>{I.check({})}</span></span>{f}
                 </div>
               ))}
             </div>
@@ -306,21 +345,13 @@ export function Coaching(){
       </section>
 
       {/* ---------- FAQ ---------- */}
-      <Section eyebrow="good to know" title="questions, answered">
-        <div className="grid gap-3 md:grid-cols-2">
+      <Section title="questions, answered">
+        <div className="mx-auto max-w-3xl border-b border-white/10">
           {FAQ.map((f,i)=>(
-            <Glass key={i} className="rounded-2xl p-5 fade-up" style={{animationDelay:(i*.03)+'s'}}>
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 shrink-0 accent-text" style={{width:17,height:17}}>{I.whistle({})}</span>
-                <div>
-                  <div className="text-[15px] font-medium">{f.q}</div>
-                  <p className="mt-1.5 text-[14px] leading-relaxed text-white/60">{f.a}</p>
-                </div>
-              </div>
-            </Glass>
+            <FaqItem key={i} q={f.q} a={f.a} defaultOpen={i===0} />
           ))}
         </div>
-        <p className="mt-5 text-center text-[13.5px] text-white/55">
+        <p className="mx-auto mt-6 max-w-3xl text-[13.5px] text-white/55">
           Still unsure? Email <a href={'mailto:'+CONTACT.email} className="accent-text hover:underline">{CONTACT.email}</a> — we’re happy to help.
         </p>
       </Section>
