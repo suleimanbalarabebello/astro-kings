@@ -95,16 +95,37 @@ export function NottsOlympic(){
         'linear-gradient(180deg, #120a0c 0%, #0d0a0b 55%, #080809 100%)' }}></div>
 
       {/* ---------- hero ---------- */}
-      <section className="relative w-full overflow-hidden px-6 pt-28 pb-4 md:pt-32">
-        <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <Crest className="w-40 md:w-52" />
-          <div className="mt-5 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[.24em] text-white/60">
-            <span className="h-1.5 w-1.5 rounded-full" style={{background:RED, boxShadow:`0 0 10px ${RED}`}}></span>
-            nottingham · founded 1882
+      <section className="relative w-full overflow-hidden pt-20 md:pt-24">
+        {/* ambient red/green wash */}
+        <div className="pointer-events-none absolute inset-x-0 top-6 h-[540px]" style={{background:'radial-gradient(58% 58% at 28% 42%, rgba(51,164,87,.14), transparent 70%), radial-gradient(58% 58% at 74% 42%, rgba(226,55,68,.16), transparent 70%)'}}></div>
+
+        {/* tablet / desktop: full-bleed banner with the club name overlaid */}
+        <div className="relative hidden w-full md:block">
+          <img src="/nottsolympic-hero.png" alt="Notts Olympic FC" fetchpriority="high" className="block w-full" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{background:'linear-gradient(to top, transparent, rgba(18,10,12,.92))'}}></div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{background:'linear-gradient(to bottom, transparent, rgba(18,10,12,.96))'}}></div>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+            <h1 className="hero-title font-semibold lowercase leading-[.95] text-white" style={{ fontSize:'clamp(2.5rem, 6vw, 5rem)', textShadow:'0 2px 22px rgba(0,0,0,.45)' }}>notts olympic fc</h1>
+            <div className="mt-3 text-[15px] italic tracking-wide text-white/85 md:text-[17px]" style={{textShadow:'0 1px 10px rgba(0,0,0,.5)'}}>“per sempre calcio” — <span className="not-italic text-white/60">forever football</span></div>
           </div>
-          <h1 className="hero-title mt-4 text-5xl font-semibold lowercase leading-[1] md:text-7xl">notts olympic fc</h1>
-          <div className="mt-4 text-[15px] italic tracking-wide text-white/80">“per sempre calcio” — <span className="not-italic text-white/50">forever football</span></div>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/70">
+        </div>
+
+        {/* mobile: the crest emblem hero (unchanged) */}
+        <div className="px-6 pt-8 md:hidden">
+          <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+            <Crest className="w-40" />
+            <div className="mt-5 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[.24em] text-white/60">
+              <span className="h-1.5 w-1.5 rounded-full" style={{background:RED, boxShadow:`0 0 10px ${RED}`}}></span>
+              nottingham · founded 1882
+            </div>
+            <h1 className="hero-title mt-4 text-5xl font-semibold lowercase leading-[1]">notts olympic fc</h1>
+            <div className="mt-4 text-[15px] italic tracking-wide text-white/80">“per sempre calcio” — <span className="not-italic text-white/50">forever football</span></div>
+          </div>
+        </div>
+
+        {/* shared subtitle + CTAs */}
+        <div className="mx-auto max-w-2xl px-6 pt-5 pb-4 text-center md:pt-8">
+          <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/70">
             One of football’s original clubs — reborn. From the 1880s FA Cup to founding AC&nbsp;Milan, and now back on
             the pitch in the Notts Senior League, playing out of Astro Kings.
           </p>
@@ -160,6 +181,9 @@ export function NottsOlympic(){
           <div className="pointer-events-none absolute -bottom-16 -left-16 h-64 w-64 rounded-full opacity-20 blur-3xl" style={{background:GREEN}}></div>
           <div className="relative grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-center">
             <div className="text-center lg:text-left">
+              <img src="/kilpin.png" alt="Herbert Kilpin in AC Milan stripes"
+                   className="mx-auto mb-4 w-full max-w-[240px] rounded-2xl ring-1 ring-white/15 shadow-[0_18px_40px_-16px_rgba(0,0,0,.75)] lg:mx-0" />
+              <div className="mb-5 text-[12px] text-white/50">Herbert Kilpin · Notts Olympic &amp; founder of AC Milan</div>
               <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:RED+'22',color:RED}}>the rossoneri connection</div>
               <div className="hero-title mt-4 text-4xl font-semibold lowercase md:text-5xl">from nottingham<br/>to milan</div>
             </div>
