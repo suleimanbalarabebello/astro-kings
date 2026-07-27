@@ -13,6 +13,7 @@
    • team crests = emoji + colour gradients (real badges to replace)
    • booking + league-table links point at the platforms KFL uses today. */
 
+import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
 import { JUNIORS_VIDEO, CONTACT } from '../lib/data.js';
 import { Glass, Btn, Tag, Eyebrow } from '../components/ui.jsx';
@@ -43,16 +44,17 @@ const TRAINING = [
   { age:'ages 10+',  days:'Mon · Tue · Wed', time:'6:00–7:00pm' },
 ];
 
-/* the 8 teams — emoji + colour crest placeholders */
+/* the 8 teams. `logo` is a real badge dropped into /public — if the file isn't
+   there yet, the Crest falls back to the emoji + colour placeholder. */
 const TEAMS = [
-  { name:'Dragons',  emoji:'🐉', a:'#F97316', b:'#DC2626' },
-  { name:'Wasps',    emoji:'🐝', a:'#FACC15', b:'#B45309' },
-  { name:'Bears',    emoji:'🐻', a:'#D97706', b:'#78350F' },
-  { name:'Lions',    emoji:'🦁', a:'#FCD34D', b:'#D97706' },
-  { name:'Sharks',   emoji:'🦈', a:'#38BDF8', b:'#1D4ED8' },
-  { name:'Hawks',    emoji:'🦅', a:'#818CF8', b:'#3730A3' },
-  { name:'Panthers', emoji:'🐆', a:'#E879F9', b:'#7E22CE' },
-  { name:'Ducks',    emoji:'🦆', a:'#34D399', b:'#0F766E' },
+  { name:'Dragons',  emoji:'🐉', a:'#F97316', b:'#DC2626', logo:'/team-dragons.png' },
+  { name:'Wasps',    emoji:'🐝', a:'#FACC15', b:'#B45309', logo:'/team-wasps.png' },
+  { name:'Bears',    emoji:'🐻', a:'#D97706', b:'#78350F', logo:'/team-bears.png' },
+  { name:'Lions',    emoji:'🦁', a:'#FCD34D', b:'#D97706', logo:'/team-lions.png' },
+  { name:'Sharks',   emoji:'🦈', a:'#38BDF8', b:'#1D4ED8', logo:'/team-sharks.png' },
+  { name:'Hawks',    emoji:'🦅', a:'#818CF8', b:'#3730A3', logo:'/team-hawks.png' },
+  { name:'Panthers', emoji:'🐆', a:'#E879F9', b:'#7E22CE', logo:'/team-panthers.png' },
+  { name:'Ducks',    emoji:'🦆', a:'#34D399', b:'#0F766E', logo:'/team-ducks.png' },
 ];
 
 /* how the free trial → team works */
@@ -100,15 +102,25 @@ const STATS = [
   { v:'85%',  l:'first-time players', c:'#F472B6' },
 ];
 
-/* a bright crest placeholder */
+/* a team crest — real badge if /public has the file, else a bright placeholder */
 function Crest({ t }){
+  const [broken, setBroken] = useState(false);
+  const showLogo = t.logo && !broken;
   return (
     <div className="group text-center">
-      <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[26px] ring-1 ring-white/15 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.03]"
-           style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 18px 40px -18px ${t.b}`}}>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-white/15" style={{maskImage:'linear-gradient(black,transparent)',WebkitMaskImage:'linear-gradient(black,transparent)'}}></div>
-        <span className="text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
-      </div>
+      {showLogo ? (
+        /* real badge: neutral light tile so any logo style reads well */
+        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[26px] bg-white/95 p-4 ring-1 ring-white/15 shadow-[0_18px_40px_-18px_rgba(0,0,0,.7)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.03]">
+          <img src={t.logo} alt={`${t.name} team badge`} loading="lazy" onError={()=>setBroken(true)}
+               className="h-full w-full object-contain" />
+        </div>
+      ) : (
+        <div className="relative mx-auto grid aspect-square w-full max-w-[130px] place-items-center overflow-hidden rounded-[26px] ring-1 ring-white/15 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.03]"
+             style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 18px 40px -18px ${t.b}`}}>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-white/15" style={{maskImage:'linear-gradient(black,transparent)',WebkitMaskImage:'linear-gradient(black,transparent)'}}></div>
+          <span className="text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
+        </div>
+      )}
       <div className="mt-3 text-[14px] font-medium lowercase">{t.name}</div>
     </div>
   );
