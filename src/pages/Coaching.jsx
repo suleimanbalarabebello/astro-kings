@@ -152,17 +152,36 @@ function Crest({ t }){
   );
 }
 
-/* league card photo banner — fades into the card; hidden until the file exists */
-function LeaguePhoto({ l }){
+/* league card — photo fills the card, name overlaid, compact caption below */
+function LeagueCard({ l, i }){
   const [broken, setBroken] = useState(false);
-  if (!l.img || broken) return null;
+  const hasImg = l.img && !broken;
   return (
-    <div className="relative h-44 w-full overflow-hidden">
-      <img src={l.img} alt={`${l.name} league players`} loading="lazy" onError={()=>setBroken(true)}
-           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-      {/* colour wash + fade into the glass card below */}
-      <div className="pointer-events-none absolute inset-0" style={{background:`linear-gradient(180deg, ${l.c}14 0%, transparent 30%, rgba(6,9,10,.55) 78%, rgba(6,9,10,.92) 100%)`}}></div>
-    </div>
+    <Glass className="group relative flex flex-1 flex-col overflow-hidden rounded-[26px] transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.08)+'s'}}>
+      {/* media — grows to fill any extra height so there's never dead space */}
+      <div className="relative min-h-[260px] flex-1 overflow-hidden">
+        {hasImg ? (
+          <img src={l.img} alt={`${l.name} league players`} loading="lazy" onError={()=>setBroken(true)}
+               className="absolute inset-0 h-full w-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-105" />
+        ) : (
+          <div className="absolute inset-0" style={{background:`linear-gradient(150deg, ${l.c}, ${l.c}22)`}}></div>
+        )}
+        <div className="absolute inset-x-0 top-0 z-10 h-1.5" style={{background:l.c}}></div>
+        <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(180deg, rgba(6,9,10,.06) 0%, rgba(6,9,10,.12) 45%, rgba(6,9,10,.86) 100%)'}}></div>
+        {/* overlaid tag + name */}
+        <div className="absolute inset-x-0 bottom-0 p-6">
+          <span className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide backdrop-blur-sm" style={{background:l.c+'33',color:'#fff'}}>{l.tag}</span>
+          <h3 className="hero-title mt-3 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
+        </div>
+      </div>
+      {/* caption */}
+      <div className="p-6 pt-5">
+        <p className="text-[14px] leading-relaxed text-white/70">{l.d}</p>
+        <div className="mt-4 flex items-center gap-2 text-[13px] text-white/75">
+          <span style={{width:15,height:15,color:l.c}}>{I.cal({})}</span> now running · {l.runs}
+        </div>
+      </div>
+    </Glass>
   );
 }
 
@@ -250,19 +269,7 @@ export function Coaching(){
         <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-2">
           {LEAGUES.map((l,i)=>(
             <Fragment key={l.key}>
-              <Glass className="group relative flex flex-1 flex-col overflow-hidden rounded-[26px] transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.08)+'s'}}>
-                <div className="absolute inset-x-0 top-0 z-10 h-1.5" style={{background:l.c}}></div>
-                <LeaguePhoto l={l} />
-                <div className="pointer-events-none absolute -right-12 top-24 h-44 w-44 rounded-full opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-40" style={{background:l.c}}></div>
-                <div className="relative flex flex-1 flex-col p-7 pt-6">
-                  <span className="self-start rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:l.c+'22',color:l.c}}>{l.tag}</span>
-                  <h3 className="hero-title mt-4 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
-                  <p className="mt-3 text-[14px] leading-relaxed text-white/70">{l.d}</p>
-                  <div className="mt-5 flex items-center gap-2 text-[13px] text-white/75">
-                    <span style={{width:15,height:15,color:l.c}}>{I.cal({})}</span> now running · {l.runs}
-                  </div>
-                </div>
-              </Glass>
+              <LeagueCard l={l} i={i} />
               {i < LEAGUES.length-1 ? (
                 <div className="flex shrink-0 items-center justify-center py-1 text-white/30 lg:py-0" aria-hidden>
                   <span className="rotate-90 lg:rotate-0" style={{width:22,height:22}}>{I.arrow({})}</span>
