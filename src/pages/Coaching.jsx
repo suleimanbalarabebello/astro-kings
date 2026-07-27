@@ -207,23 +207,25 @@ function FaqItem({ q, a, defaultOpen }){
 export function Coaching(){
   return (
     <div>
-      {/* ---------- hero — the KFL crest, front & centre ---------- */}
-      <section className="relative w-full overflow-hidden">
-        {/* soft radial lift behind the emblem */}
-        <div className="pointer-events-none absolute inset-0" style={{background:'radial-gradient(60% 55% at 50% 34%, rgba(120,150,220,.20), transparent 62%)'}}></div>
-        <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 pt-28 pb-14 text-center md:pt-32">
-          <img src="/kfl-hero.png" alt="Kids Football League crest" fetchpriority="high"
-               className="pop w-[260px] drop-shadow-[0_30px_60px_rgba(0,0,0,.55)] md:w-[340px]"
-               style={{ WebkitMaskImage:'radial-gradient(closest-side, #000 78%, transparent 100%)', maskImage:'radial-gradient(closest-side, #000 78%, transparent 100%)' }} />
-          <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[.2em] text-white backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full" style={{background:'#34D399',boxShadow:'0 0 10px #34D399'}}></span>
-            kids football league · at astro kings
-          </span>
-          <h1 className="hero-title mt-5 text-4xl font-semibold leading-[1.02] lowercase md:text-6xl">every child gets to play</h1>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-            <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
-            <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
+      {/* ---------- hero — KFL banner + headline ---------- */}
+      <section className="relative w-full">
+        <div className="mx-auto max-w-[1360px] px-4 pt-24 md:px-6 md:pt-28">
+          {/* the wide banner (crests at both edges); headline overlaid in the centre gap on desktop */}
+          <div className="relative overflow-hidden rounded-[26px] ring-1 ring-white/10 shadow-[0_28px_60px_-24px_rgba(0,0,0,.8)]">
+            <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
+            <div className="absolute inset-0 hidden items-center justify-center px-6 text-center md:flex">
+              <h1 className="hero-title text-4xl font-semibold lowercase lg:text-6xl md:text-5xl" style={{color:'#16235c', textShadow:'0 1px 0 rgba(255,255,255,.25)'}}>every child<br/>gets to play</h1>
+            </div>
+          </div>
+
+          {/* mobile headline (below the band) + shared subtitle & CTAs */}
+          <div className="mx-auto max-w-2xl pt-7 pb-12 text-center md:pt-8">
+            <h1 className="hero-title text-4xl font-semibold lowercase md:hidden">every child gets to play</h1>
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
+              <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
+            </div>
           </div>
         </div>
       </section>
