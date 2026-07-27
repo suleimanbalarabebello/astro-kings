@@ -28,13 +28,13 @@ const LEAGUE_TABLES_URL = 'https://kfl1.leaguerepublic.com/';
 /* the three leagues — colour-coded, in progression order */
 const LEAGUES = [
   { key:'foundation',  name:'Foundation',  c:'#34D399', runs:'Sundays',
-    tag:'beginners welcome',
+    tag:'beginners welcome', img:'/league-foundation.png',
     d:'Where the journey starts. Specially designed sessions teach the FUNdamentals every young player needs to take that next step — most of our players are pulling on a team shirt for the very first time.' },
   { key:'development', name:'Development', c:'#38BDF8', runs:'Saturdays · girls',
-    tag:'the next step',
+    tag:'the next step', img:'/league-development.png',
     d:'Once the FUNdamentals are nailed, it’s time to move on. A more competitive and detailed division where confidence turns into real match understanding.' },
   { key:'academy',     name:'Academy',     c:'#A78BFA', runs:'Sundays',
-    tag:'tactical & technical',
+    tag:'tactical & technical', img:'/league-academy.png',
     d:'The players now understand the game, know how they want to play and are shaping their own tactical preferences. A more tactical, technical division for our older players.' },
 ];
 
@@ -152,6 +152,20 @@ function Crest({ t }){
   );
 }
 
+/* league card photo banner — fades into the card; hidden until the file exists */
+function LeaguePhoto({ l }){
+  const [broken, setBroken] = useState(false);
+  if (!l.img || broken) return null;
+  return (
+    <div className="relative h-44 w-full overflow-hidden">
+      <img src={l.img} alt={`${l.name} league players`} loading="lazy" onError={()=>setBroken(true)}
+           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      {/* colour wash + fade into the glass card below */}
+      <div className="pointer-events-none absolute inset-0" style={{background:`linear-gradient(180deg, ${l.c}14 0%, transparent 30%, rgba(6,9,10,.55) 78%, rgba(6,9,10,.92) 100%)`}}></div>
+    </div>
+  );
+}
+
 /* one FAQ row — quiet by default, expands smoothly */
 function FaqItem({ q, a, defaultOpen }){
   const [open, setOpen] = useState(!!defaultOpen);
@@ -236,12 +250,13 @@ export function Coaching(){
         <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-2">
           {LEAGUES.map((l,i)=>(
             <Fragment key={l.key}>
-              <Glass className="group relative flex-1 overflow-hidden rounded-[26px] p-7 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.08)+'s'}}>
-                <div className="absolute inset-x-0 top-0 h-1.5" style={{background:l.c}}></div>
-                <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-45" style={{background:l.c}}></div>
-                <div className="relative">
-                  <span className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:l.c+'22',color:l.c}}>{l.tag}</span>
-                  <h3 className="hero-title mt-5 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
+              <Glass className="group relative flex flex-1 flex-col overflow-hidden rounded-[26px] transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.08)+'s'}}>
+                <div className="absolute inset-x-0 top-0 z-10 h-1.5" style={{background:l.c}}></div>
+                <LeaguePhoto l={l} />
+                <div className="pointer-events-none absolute -right-12 top-24 h-44 w-44 rounded-full opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-40" style={{background:l.c}}></div>
+                <div className="relative flex flex-1 flex-col p-7 pt-6">
+                  <span className="self-start rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:l.c+'22',color:l.c}}>{l.tag}</span>
+                  <h3 className="hero-title mt-4 text-3xl font-semibold lowercase" style={{color:l.c}}>{l.name}</h3>
                   <p className="mt-3 text-[14px] leading-relaxed text-white/70">{l.d}</p>
                   <div className="mt-5 flex items-center gap-2 text-[13px] text-white/75">
                     <span style={{width:15,height:15,color:l.c}}>{I.cal({})}</span> now running · {l.runs}
