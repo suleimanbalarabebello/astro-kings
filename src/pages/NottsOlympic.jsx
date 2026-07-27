@@ -17,12 +17,28 @@ const GREEN = '#33A457';
 
 const CREST = '/nottsolympic-crest.png';
 const PATREON = 'https://www.patreon.com/NottsOlympicFootballClub';
-const SOCIAL = {
-  twitter:  'https://twitter.com/NottsOlympic',
-  facebook: 'https://www.facebook.com/NottsOlympic',
-  instagram:'https://www.instagram.com/nottsolympic',
-};
 const SENIOR_LEAGUE = 'https://www.nottsseniorleague.co.uk/';
+
+/* every channel the club is on (TODO: confirm exact YouTube/TikTok/Threads handles) */
+const SOCIALS = [
+  { label:'Instagram', short:'ig', to:'https://www.instagram.com/nottsolympic' },
+  { label:'Facebook',  short:'f',  to:'https://www.facebook.com/NottsOlympic' },
+  { label:'X',         short:'x',  to:'https://twitter.com/NottsOlympic' },
+  { label:'YouTube',   short:'yt', to:'https://www.youtube.com/@nottsolympic' },
+  { label:'TikTok',    short:'tk', to:'https://www.tiktok.com/@nottsolympic' },
+  { label:'Threads',   short:'th', to:'https://www.threads.net/@nottsolympic' },
+];
+
+/* Notts Olympic has adopted the policies of Nottinghamshire FA */
+const POLICIES = [
+  'FA Safeguarding Children Policy (Youth Teams)',
+  'FA Safeguarding Children Policy (Adult Teams)',
+  'Safeguarding Declaration — Youth Football',
+  'Safeguarding Declaration — Open Age Football',
+  'FA Equality Policy',
+  'FA Football Leadership Diversity Code',
+  'FA Club Rules & Constitution',
+];
 
 const FACTS = [
   { v:'est. 1882',        l:'one of the originals', c:RED },
@@ -32,15 +48,15 @@ const FACTS = [
 ];
 
 const SUPPORT = [
-  { ic:I.star,   t:'join the supporters club', c:RED,
-    d:'Have your say, help shape our future and help run the club — from just a few pounds a month on Patreon.',
-    cta:'become a supporter', to:PATREON, ext:true },
-  { ic:I.trophy, t:'sponsor the club', c:GREEN,
-    d:'Shirt, pitchside and matchday sponsorship — put your business in front of the community while backing grassroots football.',
-    cta:'enquire below', to:'#partner' },
-  { ic:I.user,   t:'follow every game', c:RED,
-    d:'Results, matchday news and behind-the-scenes as we climb back up the pyramid.',
-    cta:'follow on instagram', to:SOCIAL.instagram, ext:true },
+  { ic:I.star,   t:'the 1882 supporters club', c:RED,
+    d:'Join the community chat, share your ideas and experiences, be part of the conversations, and help carry out the plans for the season and the future of the club. Help run it, vote on key decisions, have your say.',
+    cta:'i want to support', to:PATREON, ext:true },
+  { ic:I.ball,   t:'the 100 club', c:GREEN,
+    d:'£10 a number, drawn monthly. The winner takes a big share of the pot, and everything left over goes straight back into the club.',
+    cta:'100 club sign up', to:'#partner' },   /* TODO: real 100 Club signup link */
+  { ic:I.trophy, t:'sponsor the club', c:RED,
+    d:'Sponsor a junior or first-team player, an NSL league game or the cup run, or advertise in the matchday programme. Options for every budget, from £5 to £1,500.',
+    cta:'i can sponsor', to:'#partner' },
 ];
 
 const PARTNERS = [
@@ -174,8 +190,14 @@ export function NottsOlympic(){
         </div>
       </Section>
 
-      {/* ---------- support ---------- */}
+      {/* ---------- get involved ---------- */}
       <Section eyebrow="get involved" title="help write the next chapter">
+        <p className="-mt-2 mb-7 max-w-2xl text-[15px] leading-relaxed text-white/65">
+          This is a club where you can make a difference — no matter how small. Play a small part, or become a
+          significant contributor with ideas you see through. Support us on social media, be at the games, or get
+          involved within the club itself. The best part of supporting Notts Olympic is that <span className="text-white">you choose
+          how, and what suits you best</span>.
+        </p>
         <div className="grid gap-4 md:grid-cols-3">
           {SUPPORT.map((s,i)=>(
             <Glass key={s.t} strong className="flex flex-col rounded-3xl p-6 fade-up" style={{animationDelay:(i*.06)+'s'}}>
@@ -186,6 +208,18 @@ export function NottsOlympic(){
             </Glass>
           ))}
         </div>
+
+        {/* join the board */}
+        <Glass className="mt-4 flex flex-col items-start justify-between gap-4 rounded-3xl p-6 md:flex-row md:items-center">
+          <div className="flex items-start gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl" style={{background:GREEN+'22',color:GREEN}}><span style={{width:22,height:22}}>{I.shield({})}</span></span>
+            <div>
+              <div className="text-[17px] font-medium lowercase">join the 1882 club board</div>
+              <p className="mt-1 text-[14px] leading-relaxed text-white/60">Help us run the club, vote on key decisions and have your say in where Notts Olympic goes next.</p>
+            </div>
+          </div>
+          <a href={PATREON} target="_blank" rel="noreferrer" className="shrink-0"><Btn kind="primary" iconEnd={I.arrow({})}>get on board</Btn></a>
+        </Glass>
       </Section>
 
       {/* ---------- partners ---------- */}
@@ -199,6 +233,40 @@ export function NottsOlympic(){
         </div>
       </section>
 
+      {/* ---------- watch NOFC ---------- */}
+      <Section eyebrow="watch nofc" title="follow every kick">
+        <Glass strong className="flex flex-col items-center gap-6 rounded-[30px] p-8 text-center md:flex-row md:justify-between md:p-10 md:text-left">
+          <div className="max-w-xl">
+            <p className="text-[15px] leading-relaxed text-white/70">
+              Match streams, highlights and behind-the-scenes as we climb back up the pyramid. We’re on every channel —
+              YouTube, TikTok, X, Facebook, Instagram and Threads. Follow along and never miss a game.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {SOCIALS.map(s=>(
+              <a key={s.short} href={s.to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${s.label}`} title={s.label}
+                 className="glass grid h-11 w-11 place-items-center rounded-full text-[13px] font-medium text-white/75 transition hover:bg-white/10 hover:text-white">{s.short}</a>
+            ))}
+          </div>
+        </Glass>
+      </Section>
+
+      {/* ---------- club policies ---------- */}
+      <Section eyebrow="safe & proper" title="club policies">
+        <p className="-mt-2 mb-6 max-w-2xl text-[15px] leading-relaxed text-white/65">
+          Notts Olympic has adopted the policies of Nottinghamshire FA. These are in force across the club —
+          request a copy of any document via the contact form below.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {POLICIES.map((p,i)=>(
+            <div key={p} className="flex items-center gap-3 rounded-2xl glass glass-soft px-4 py-3.5 fade-up" style={{animationDelay:(i*.03)+'s'}}>
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{background:GREEN+'1e',color:GREEN}}><span style={{width:16,height:16}}>{I.shield({})}</span></span>
+              <span className="text-[14px] text-white/80">{p}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* ---------- partner / sponsor enquiry ---------- */}
       <section id="partner" className="mx-auto mt-24 max-w-6xl px-6">
         <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
@@ -206,19 +274,20 @@ export function NottsOlympic(){
             <Eyebrow>partner with us</Eyebrow>
             <h2 className="hero-title mt-3 text-3xl font-semibold lowercase md:text-4xl">sponsor a piece of history</h2>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/65">
-              Back a club with real heritage and real momentum. From shirt and pitchside sponsorship to matchday
-              support, every pound goes straight back into putting Notts Olympic where it belongs. Tell us what you
-              have in mind and we’ll send the sponsorship pack.
+              Back a club with real heritage and real momentum. Sponsor a junior or first-team player, an NSL league
+              game or the cup run, or advertise in the new home-ground matchday programme. Options for every budget,
+              <span className="text-white"> from £5 to £1,500</span> — and every pound goes straight back into putting
+              Notts Olympic where it belongs. Tell us what you have in mind and we’ll send the sponsorship pack.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              {['Shirt sponsor','Pitchside boards','Matchday sponsor','Community partner'].map(t=>(
+              {['Sponsor a player','NSL league game','Cup run','Programme advert','£5–£1,500'].map(t=>(
                 <span key={t} className="rounded-full px-3 py-1 text-[12px] font-medium" style={{background:GREEN+'1e',color:GREEN}}>{t}</span>
               ))}
             </div>
-            <div className="mt-7 flex items-center gap-2.5">
-              {[['ig',SOCIAL.instagram],['f',SOCIAL.facebook],['x',SOCIAL.twitter]].map(([lbl,to])=>(
-                <a key={lbl} href={to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${lbl}`}
-                   className="glass grid h-10 w-10 place-items-center rounded-full text-[13px] text-white/70 transition hover:bg-white/10 hover:text-white">{lbl}</a>
+            <div className="mt-7 flex flex-wrap items-center gap-2.5">
+              {SOCIALS.map(s=>(
+                <a key={s.short} href={s.to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${s.label}`} title={s.label}
+                   className="glass grid h-10 w-10 place-items-center rounded-full text-[13px] text-white/70 transition hover:bg-white/10 hover:text-white">{s.short}</a>
               ))}
             </div>
           </div>
