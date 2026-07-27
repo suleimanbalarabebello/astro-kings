@@ -217,12 +217,12 @@ export function Coaching(){
           </div>
         </div>
 
-        {/* mobile: a single crest emblem (cropped from the banner) + headline */}
+        {/* mobile: the KFL crest emblem + headline */}
         <div className="px-6 text-center md:hidden">
-          <div className="mx-auto h-32 w-32 rounded-[28px] ring-1 ring-white/10 shadow-[0_18px_44px_-18px_rgba(0,0,0,.7)]"
-               role="img" aria-label="Kids Football League crest"
-               style={{ backgroundImage:'url(/kfl-hero.png)', backgroundSize:'cover', backgroundPosition:'left center' }}></div>
-          <h1 className="hero-title mt-6 text-[2.6rem] font-semibold lowercase leading-[.98]">every child gets to play</h1>
+          <img src="/kfl-crest.png" alt="Kids Football League crest" fetchpriority="high"
+               className="mx-auto w-52 drop-shadow-[0_20px_44px_rgba(0,0,0,.5)]"
+               style={{ WebkitMaskImage:'radial-gradient(closest-side, #000 74%, transparent 100%)', maskImage:'radial-gradient(closest-side, #000 74%, transparent 100%)' }} />
+          <h1 className="hero-title mt-4 text-[2.6rem] font-semibold lowercase leading-[.98]">every child gets to play</h1>
         </div>
 
         {/* shared subtitle + CTAs */}
