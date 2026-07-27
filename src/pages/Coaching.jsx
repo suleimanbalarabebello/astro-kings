@@ -207,25 +207,24 @@ function FaqItem({ q, a, defaultOpen }){
 export function Coaching(){
   return (
     <div>
-      {/* ---------- hero — KFL banner + headline ---------- */}
-      <section className="relative w-full">
-        <div className="mx-auto max-w-[1360px] px-4 pt-24 md:px-6 md:pt-28">
-          {/* the wide banner (crests at both edges); headline overlaid in the centre gap on desktop */}
-          <div className="relative overflow-hidden rounded-[26px] ring-1 ring-white/10 shadow-[0_28px_60px_-24px_rgba(0,0,0,.8)]">
-            <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
-            <div className="absolute inset-0 hidden items-center justify-center px-6 text-center md:flex">
-              <h1 className="hero-title text-4xl font-semibold lowercase lg:text-6xl md:text-5xl" style={{color:'#16235c', textShadow:'0 1px 0 rgba(255,255,255,.25)'}}>every child<br/>gets to play</h1>
-            </div>
+      {/* ---------- hero — full-bleed KFL banner, headline filling the centre ---------- */}
+      <section className="relative w-full pt-20 md:pt-24">
+        {/* the banner runs edge-to-edge (crests at both screen edges) */}
+        <div className="relative w-full">
+          <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
+          {/* headline sits in the open centre on tablet/desktop */}
+          <div className="absolute inset-0 hidden items-center justify-center px-6 text-center md:flex">
+            <h1 className="hero-title font-semibold lowercase leading-[.95]" style={{color:'#16235c', fontSize:'clamp(2.5rem, 6.2vw, 5.5rem)'}}>every child<br/>gets to play</h1>
           </div>
+        </div>
 
-          {/* mobile headline (below the band) + shared subtitle & CTAs */}
-          <div className="mx-auto max-w-2xl pt-7 pb-12 text-center md:pt-8">
-            <h1 className="hero-title text-4xl font-semibold lowercase md:hidden">every child gets to play</h1>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
-              <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
-            </div>
+        {/* mobile headline (banner is short on phones) + shared subtitle & CTAs */}
+        <div className="mx-auto max-w-2xl px-6 pt-7 pb-12 text-center md:pt-9">
+          <h1 className="hero-title text-4xl font-semibold lowercase md:hidden">every child gets to play</h1>
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
+            <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
           </div>
         </div>
       </section>
