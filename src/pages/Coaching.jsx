@@ -15,7 +15,7 @@
 
 import { useState, Fragment } from 'react';
 import { I } from '../lib/icons.jsx';
-import { JUNIORS_VIDEO, CONTACT } from '../lib/data.js';
+import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Eyebrow } from '../components/ui.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
@@ -207,26 +207,23 @@ function FaqItem({ q, a, defaultOpen }){
 export function Coaching(){
   return (
     <div>
-      {/* ---------- hero ---------- */}
-      <section className="media-hero relative h-[64vh] min-h-[440px] w-full overflow-hidden">
-        <video className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="metadata">
-          <source src={JUNIORS_VIDEO} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.40) 0%, rgba(4,7,10,.30) 36%, rgba(4,7,10,.95) 100%)'}}></div>
-        {/* colourful glow bar */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 opacity-70" style={{background:'radial-gradient(60% 100% at 50% 100%, rgba(56,189,248,.28), transparent 70%)'}}></div>
-        <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-center px-6 text-center">
-          <div className="pop">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[.2em] text-white backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full" style={{background:'#34D399',boxShadow:'0 0 10px #34D399'}}></span>
-              kids football league · at astro kings
-            </span>
-            <h1 className="hero-title mt-5 text-5xl font-semibold leading-[1.02] lowercase md:text-7xl">every child<br/>gets to play</h1>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team & kit — start with a free trial.</p>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
-              <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
-            </div>
+      {/* ---------- hero — the KFL crest, front & centre ---------- */}
+      <section className="relative w-full overflow-hidden">
+        {/* soft radial lift behind the emblem */}
+        <div className="pointer-events-none absolute inset-0" style={{background:'radial-gradient(60% 55% at 50% 34%, rgba(120,150,220,.20), transparent 62%)'}}></div>
+        <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 pt-28 pb-14 text-center md:pt-32">
+          <img src="/kfl-hero.png" alt="Kids Football League crest" fetchpriority="high"
+               className="pop w-[260px] drop-shadow-[0_30px_60px_rgba(0,0,0,.55)] md:w-[340px]"
+               style={{ WebkitMaskImage:'radial-gradient(closest-side, #000 78%, transparent 100%)', maskImage:'radial-gradient(closest-side, #000 78%, transparent 100%)' }} />
+          <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[.2em] text-white backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full" style={{background:'#34D399',boxShadow:'0 0 10px #34D399'}}></span>
+            kids football league · at astro kings
+          </span>
+          <h1 className="hero-title mt-5 text-4xl font-semibold leading-[1.02] lowercase md:text-6xl">every child gets to play</h1>
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
+            <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
           </div>
         </div>
       </section>
