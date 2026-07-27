@@ -27,13 +27,13 @@ const LEAGUE_TABLES_URL = 'https://kfl1.leaguerepublic.com/';
 
 /* the three leagues — colour-coded, in progression order */
 const LEAGUES = [
-  { key:'foundation',  name:'Foundation',  c:'#34D399', runs:'Sundays',
+  { key:'foundation',  name:'Foundation',  c:'#F26A3D', runs:'Sundays',
     tag:'beginners welcome', img:'/league-foundation.png',
     d:'Where the journey starts. Specially designed sessions teach the FUNdamentals every young player needs to take that next step — most of our players are pulling on a team shirt for the very first time.' },
-  { key:'development', name:'Development', c:'#38BDF8', runs:'Saturdays · girls',
+  { key:'development', name:'Development', c:'#3B82F6', runs:'Saturdays · girls',
     tag:'the next step', img:'/league-development.png',
     d:'Once the FUNdamentals are nailed, it’s time to move on. A more competitive and detailed division where confidence turns into real match understanding.' },
-  { key:'academy',     name:'Academy',     c:'#A78BFA', runs:'Sundays',
+  { key:'academy',     name:'Academy',     c:'#60A5FA', runs:'Sundays',
     tag:'tactical & technical', img:'/league-academy.png',
     d:'The players now understand the game, know how they want to play and are shaping their own tactical preferences. A more tactical, technical division for our older players.' },
 ];
@@ -95,8 +95,8 @@ const FAQ = [
     a:'There’s no minimum term and you can cancel anytime — we just ask for 28 days’ notice by email.' },
 ];
 
-/* one shared colour palette (leagues + accents key off this) */
-const PALETTE = ['#34D399', '#38BDF8', '#A78BFA', '#F472B6'];
+/* club colours — white / blue / orange (matches the KFL crest + hero) */
+const PALETTE = ['#F26A3D', '#3B82F6', '#F59E4B', '#60A5FA'];
 
 /* the founding facts — shown as a slim inline ribbon, not big-number tiles */
 const FACTS = [
@@ -106,44 +106,31 @@ const FACTS = [
   { v:'85%', l:'first-ever team' },
 ];
 
-/* iOS-app-icon gloss: a curved specular dome over the top, a fine light edge,
-   and a soft inner base shadow — sits above the badge, ignores pointer events */
-function Gloss(){
-  return (
-    <div className="pointer-events-none absolute inset-0 rounded-[inherit]">
-      {/* domed reflection across the top half */}
-      <div className="absolute inset-x-0 top-0 h-[58%]"
-           style={{ background:'linear-gradient(180deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,.28) 45%, rgba(255,255,255,.06) 100%)',
-                    borderRadius:'inherit', borderBottomLeftRadius:'50% 100%', borderBottomRightRadius:'50% 100%' }} />
-      {/* crisp top light line + darkened base for the glassy curve */}
-      <div className="absolute inset-0 rounded-[inherit]"
-           style={{ boxShadow:'inset 0 1.5px 1px rgba(255,255,255,.85), inset 0 -14px 22px -10px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.35)' }} />
-    </div>
-  );
-}
+/* a team crest — real badge if /public has the file, else a coloured placeholder.
+   The light backing is feathered at the edges so it melts into the page instead
+   of reading as a hard white box. */
+const CREST_MASK = 'radial-gradient(closest-side, #000 72%, transparent 100%)';
 
-/* a team crest — real badge if /public has the file, else a bright placeholder */
 function Crest({ t }){
   const [broken, setBroken] = useState(false);
   const showLogo = t.logo && !broken;
   return (
     <div className="group text-center">
-      <div className="relative mx-auto w-full max-w-[130px]">
-        {/* team-coloured glow that blooms on hover */}
-        <div className="pointer-events-none absolute -inset-3 rounded-[34px] opacity-35 blur-2xl transition-opacity duration-300 group-hover:opacity-80"
+      <div className="relative mx-auto w-full max-w-[128px]">
+        {/* very soft team-colour halo (barely there) */}
+        <div className="pointer-events-none absolute -inset-1 rounded-[40px] opacity-[.14] blur-2xl transition-opacity duration-300 group-hover:opacity-30"
              style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`}}></div>
         {showLogo ? (
-          /* real badge: neutral light tile so any logo style reads well */
-          <div className="relative grid aspect-square w-full place-items-center overflow-hidden rounded-[28px] bg-white/95 p-4 ring-1 ring-white/20 shadow-[0_22px_44px_-16px_rgba(0,0,0,.75)] transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]">
+          /* feathered light backing so there's no hard box edge */
+          <div className="relative aspect-square w-full transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.03]">
+            <div className="absolute inset-0 rounded-[30px] bg-white" style={{ WebkitMaskImage:CREST_MASK, maskImage:CREST_MASK }}></div>
             <img src={t.logo} alt={`${t.name} team badge`} loading="lazy" onError={()=>setBroken(true)}
-                 className="relative z-[1] h-full w-full object-contain" />
-            <Gloss />
+                 className="absolute inset-0 h-full w-full object-contain p-3.5" />
           </div>
         ) : (
-          <div className="relative grid aspect-square w-full place-items-center overflow-hidden rounded-[28px] ring-1 ring-white/20 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-[1.04]"
-               style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`, boxShadow:`0 22px 44px -16px ${t.b}`}}>
-            <span className="relative z-[1] text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.35)]" aria-hidden>{t.emoji}</span>
-            <Gloss />
+          <div className="relative grid aspect-square w-full place-items-center rounded-[26px] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.03]"
+               style={{background:`linear-gradient(150deg, ${t.a}, ${t.b})`}}>
+            <span className="text-[46px] drop-shadow-[0_3px_6px_rgba(0,0,0,.3)]" aria-hidden>{t.emoji}</span>
           </div>
         )}
       </div>
@@ -208,12 +195,17 @@ export function Coaching(){
   return (
     <div>
       {/* ---------- hero — full-bleed KFL banner, headline filling the centre ---------- */}
-      <section className="relative w-full pt-20 md:pt-24">
+      <section className="relative w-full overflow-hidden pt-20 md:pt-24">
+        {/* ambient orange bleed so the banner sits IN the page, not stuck on it */}
+        <div className="pointer-events-none absolute inset-x-0 top-6 h-[560px]" style={{background:'radial-gradient(62% 58% at 50% 40%, rgba(242,106,61,.16), transparent 72%)'}}></div>
         {/* the banner runs edge-to-edge (crests at both screen edges) */}
         <div className="relative w-full">
           <img src="/kfl-hero.png" alt="Kids Football League" fetchpriority="high" className="block w-full" />
+          {/* feather the top & bottom edges into the dark page */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16" style={{background:'linear-gradient(to top, transparent, rgba(6,9,10,.9))'}}></div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24" style={{background:'linear-gradient(to bottom, transparent, rgba(6,9,10,.95))'}}></div>
           {/* headline sits in the open centre on tablet/desktop */}
-          <div className="absolute inset-0 hidden items-center justify-center px-6 text-center md:flex">
+          <div className="absolute inset-0 z-10 hidden items-center justify-center px-6 text-center md:flex">
             <h1 className="hero-title font-semibold lowercase leading-[.95]" style={{color:'#16235c', fontSize:'clamp(2.5rem, 6.2vw, 5.5rem)'}}>every child<br/>gets to play</h1>
           </div>
         </div>
@@ -254,7 +246,7 @@ export function Coaching(){
             <ul className="mt-4 space-y-3 text-[15px] text-white/80">
               {['Everyone plays, every week','No child sits on the sidelines','A team where each child can shine','A pathway that grows with them'].map(f=>(
                 <li key={f} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full" style={{background:'#34D39922',color:'#34D399'}}><span style={{width:13,height:13}}>{I.check({})}</span></span>{f}
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full" style={{background:'#F26A3D22',color:'#F26A3D'}}><span style={{width:13,height:13}}>{I.check({})}</span></span>{f}
                 </li>
               ))}
             </ul>
@@ -303,7 +295,7 @@ export function Coaching(){
       {/* ---------- the teams — the signature moment ---------- */}
       <section className="relative mx-auto mt-24 max-w-7xl overflow-hidden px-6">
         {/* soft multi-colour glow bed behind the crests */}
-        <div className="pointer-events-none absolute inset-0 opacity-60" style={{background:'radial-gradient(50% 60% at 20% 30%, rgba(56,189,248,.16), transparent 60%), radial-gradient(50% 60% at 80% 40%, rgba(232,121,249,.16), transparent 60%), radial-gradient(60% 60% at 50% 90%, rgba(52,211,153,.14), transparent 60%)'}}></div>
+        <div className="pointer-events-none absolute inset-0" style={{background:'radial-gradient(55% 60% at 22% 32%, rgba(59,130,246,.10), transparent 62%), radial-gradient(55% 60% at 80% 42%, rgba(242,106,61,.10), transparent 62%)'}}></div>
         <div className="relative">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="hero-title text-4xl font-semibold lowercase md:text-5xl">pick a shirt, join a team</h2>
