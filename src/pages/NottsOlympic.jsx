@@ -176,26 +176,36 @@ export function NottsOlympic(){
 
       {/* ---------- the AC Milan connection (the jewel) ---------- */}
       <section className="mx-auto mt-24 max-w-6xl px-6">
-        <Glass strong className="relative overflow-hidden rounded-[34px] p-8 md:p-12">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full opacity-25 blur-3xl" style={{background:RED}}></div>
-          <div className="pointer-events-none absolute -bottom-16 -left-16 h-64 w-64 rounded-full opacity-20 blur-3xl" style={{background:GREEN}}></div>
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-            <div className="text-center lg:text-left">
+        <Glass strong className="relative overflow-hidden rounded-[34px]">
+          <div className="grid lg:grid-cols-2">
+            {/* photo fills the whole left panel, duotoned to the club red/black */}
+            <div className="relative min-h-[300px] overflow-hidden lg:min-h-[460px]">
               <img src="/kilpin.png" alt="Herbert Kilpin in AC Milan stripes"
-                   className="mx-auto mb-4 w-full max-w-[240px] rounded-2xl ring-1 ring-white/15 shadow-[0_18px_40px_-16px_rgba(0,0,0,.75)] lg:mx-0" />
-              <div className="mb-5 text-[12px] text-white/50">Herbert Kilpin · Notts Olympic &amp; founder of AC Milan</div>
-              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:RED+'22',color:RED}}>the rossoneri connection</div>
-              <div className="hero-title mt-4 text-4xl font-semibold lowercase md:text-5xl">from nottingham<br/>to milan</div>
+                   className="absolute inset-0 h-full w-full object-cover object-top" style={{ objectPosition:'50% 15%' }} />
+              <div className="absolute inset-0" style={{ background:'linear-gradient(135deg, rgba(226,55,68,.28), rgba(10,8,9,.5))', mixBlendMode:'multiply' }}></div>
+              {/* fade into the text panel (right on desktop, bottom on mobile) */}
+              <div className="absolute inset-0 hidden lg:block" style={{ background:'linear-gradient(to right, transparent 55%, rgba(18,10,12,.9))' }}></div>
+              <div className="absolute inset-0 lg:hidden" style={{ background:'linear-gradient(to bottom, transparent 55%, rgba(18,10,12,.9))' }}></div>
+              <div className="absolute bottom-5 left-6 text-[12px] text-white/70">Herbert Kilpin · founder of AC Milan</div>
             </div>
-            <div className="text-[16px] leading-relaxed text-white/75">
-              <p><span className="text-white">Herbert Kilpin</span> was born in Nottingham and played for Notts Olympic at
-                the Forest Recreation Ground. He moved to Italy for the lace trade, fell for the game there, and in 1899
-                helped found one of the biggest clubs on earth — <span className="text-white">AC&nbsp;Milan</span>.</p>
-              <p className="mt-4 border-l-2 pl-4 text-[15px] italic text-white/70" style={{borderColor:RED}}>
-                “We shall be a team of devils. Our colours will be red like fire, and black like the fear we shall
-                invoke in our opponents.”
-              </p>
-              <p className="mt-4 text-[14px] text-white/55">That Italian bloodline is why our motto reads <span className="text-white/80">per sempre calcio</span> — forever football.</p>
+
+            {/* text panel */}
+            <div className="relative p-8 md:p-12">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full opacity-20 blur-3xl" style={{background:RED}}></div>
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{background:RED+'22',color:RED}}>the rossoneri connection</div>
+                <h3 className="hero-title mt-4 text-4xl font-semibold lowercase md:text-5xl">from nottingham to milan</h3>
+                <div className="mt-5 text-[16px] leading-relaxed text-white/75">
+                  <p><span className="text-white">Herbert Kilpin</span> was born in Nottingham and played for Notts Olympic at
+                    the Forest Recreation Ground. He moved to Italy for the lace trade, fell for the game there, and in 1899
+                    helped found one of the biggest clubs on earth — <span className="text-white">AC&nbsp;Milan</span>.</p>
+                  <p className="mt-4 border-l-2 pl-4 text-[15px] italic text-white/70" style={{borderColor:RED}}>
+                    “We shall be a team of devils. Our colours will be red like fire, and black like the fear we shall
+                    invoke in our opponents.”
+                  </p>
+                  <p className="mt-4 text-[14px] text-white/55">That Italian bloodline is why our motto reads <span className="text-white/80">per sempre calcio</span> — forever football.</p>
+                </div>
+              </div>
             </div>
           </div>
         </Glass>
