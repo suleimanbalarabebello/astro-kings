@@ -6,6 +6,7 @@
    Placeholders / TODO: real squad list, fixtures, ground, sponsorship pack. */
 
 import { I } from '../lib/icons.jsx';
+import { scrollToId } from '../lib/router.js';
 import { Glass, Btn, Eyebrow } from '../components/ui.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
 import { Section } from './Home.jsx';
@@ -131,7 +132,7 @@ export function NottsOlympic(){
           </p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <a href={PATREON} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>support the club</Btn></a>
-            <a href="#story"><Btn kind="outline" size="lg">our story</Btn></a>
+            <a href="#story" onClick={(e)=>{e.preventDefault(); scrollToId('story');}}><Btn kind="outline" size="lg">our story</Btn></a>
           </div>
         </div>
       </section>
@@ -248,7 +249,7 @@ export function NottsOlympic(){
             </Glass>
           ))}
         </div>
-        <p className="mt-4 text-[13px] text-white/45">Full squad, fixtures and results coming soon. Want to play for Notts Olympic? <a href="#partner" className="accent-text hover:underline">Get in touch about trials</a> or <a href="#coaching" className="accent-text hover:underline">start in the juniors</a>.</p>
+        <p className="mt-4 text-[13px] text-white/45">Full squad, fixtures and results coming soon. Want to play for Notts Olympic? <a href="#partner" onClick={(e)=>{e.preventDefault(); scrollToId('partner');}} className="accent-text hover:underline">Get in touch about trials</a> or <a href="#coaching" className="accent-text hover:underline">start in the juniors</a>.</p>
       </Section>
 
       {/* ---------- get involved ---------- */}
@@ -265,7 +266,7 @@ export function NottsOlympic(){
               <span className="grid h-12 w-12 place-items-center rounded-2xl" style={{background:s.c+'22',color:s.c}}><span style={{width:22,height:22}}>{s.ic({})}</span></span>
               <div className="mt-4 text-[17px] font-medium lowercase">{s.t}</div>
               <p className="mt-2 flex-1 text-[14px] leading-relaxed text-white/60">{s.d}</p>
-              <a href={s.to} {...(s.ext?{target:'_blank',rel:'noreferrer'}:{})} className="mt-4"><Btn kind="outline" size="sm" iconEnd={I.arrow({})}>{s.cta}</Btn></a>
+              <a href={s.to} {...(s.ext?{target:'_blank',rel:'noreferrer'}:{onClick:(e)=>{e.preventDefault(); scrollToId(s.to.slice(1));}})} className="mt-4"><Btn kind="outline" size="sm" iconEnd={I.arrow({})}>{s.cta}</Btn></a>
             </Glass>
           ))}
         </div>

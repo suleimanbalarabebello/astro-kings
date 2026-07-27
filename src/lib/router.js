@@ -20,6 +20,16 @@ export function go(name, params){
   window.scrollTo(0,0);
 }
 
+/* smooth-scroll to an in-page section by id, clearing the fixed nav.
+   Used for on-page anchors (#story, #partner, #register …) that must NOT be
+   treated as routes by the hash router. */
+export function scrollToId(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + window.scrollY - 88;
+  window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+}
+
 export function useRoute(){
   const [r, setR] = useState(parseHash());
   useEffect(()=>{

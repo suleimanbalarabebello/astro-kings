@@ -15,6 +15,7 @@
 
 import { useState, Fragment } from 'react';
 import { I } from '../lib/icons.jsx';
+import { scrollToId } from '../lib/router.js';
 import { CONTACT } from '../lib/data.js';
 import { Glass, Btn, Eyebrow } from '../components/ui.jsx';
 import { EnquiryForm } from '../components/Enquiry.jsx';
@@ -230,7 +231,7 @@ export function Coaching(){
           <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/75">A league for every child, regardless of ability. Weekly coaching, real matchdays, your own team &amp; kit — start with a free trial.</p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <a href={BOOK_TRIAL_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" iconEnd={I.arrow({})}>start a free trial</Btn></a>
-            <a href="#register"><Btn kind="outline" size="lg">how it works</Btn></a>
+            <a href="#register" onClick={(e)=>{e.preventDefault(); scrollToId('register');}}><Btn kind="outline" size="lg">how it works</Btn></a>
           </div>
         </div>
       </section>
