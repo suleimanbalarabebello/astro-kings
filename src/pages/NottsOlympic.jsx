@@ -30,6 +30,16 @@ const SOCIALS = [
   { label:'Threads',   short:'th', to:'https://www.threads.net/@nottsolympic' },
 ];
 
+/* recognizable brand glyphs (currentColor, inherit the pill's colour) */
+const SOCIAL_SVG = {
+  ig: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[18px] w-[18px]"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>),
+  f:  (<svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M13.5 21v-8H16l.5-3h-3V8.2c0-.9.3-1.5 1.6-1.5H16.6V4.1C16.3 4.05 15.3 4 14.2 4c-2.3 0-3.9 1.4-3.9 4v2H7.8v3h2.5v8h3.2z"/></svg>),
+  x:  (<svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M18.2 3h3.1l-6.8 7.8L22.5 21h-6.2l-4.9-6.4L5.8 21H2.7l7.3-8.3L1.9 3h6.3l4.4 5.9L18.2 3zm-1.1 16.1h1.7L7 4.8H5.2l11.9 14.3z"/></svg>),
+  yt: (<svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M23 12s0-3.3-.42-4.87a2.55 2.55 0 0 0-1.8-1.8C19.2 5 12 5 12 5s-7.2 0-8.78.33a2.55 2.55 0 0 0-1.8 1.8C1 8.7 1 12 1 12s0 3.3.42 4.87a2.55 2.55 0 0 0 1.8 1.8C4.8 19 12 19 12 19s7.2 0 8.78-.33a2.55 2.55 0 0 0 1.8-1.8C23 15.3 23 12 23 12zm-13.2 3.2V8.8l5.5 3.2-5.5 3.2z"/></svg>),
+  tk: (<svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M15.8 3c.35 2.3 1.65 3.65 3.9 3.8v2.65c-1.3.13-2.45-.3-3.8-1.1v5.35c0 4.05-3.7 6.6-7.25 4.85-2.15-1.05-2.95-3.55-2.1-5.75.7-1.85 2.5-2.9 4.6-2.65v2.75c-.35-.05-.7-.05-1.05.05-1 .28-1.55 1.1-1.35 2.05.2.9 1.05 1.5 2.05 1.4 1.15-.1 1.85-.95 1.85-2.15V3h3.15z"/></svg>),
+  th: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]"><path d="M12 21c-4.6 0-7.2-3.1-7.2-9S7.4 3 12 3c3.4 0 5.5 1.6 6.4 4M9 13.6c0 1.5 1.2 2.6 3 2.6 2.2 0 3.4-1.3 3.5-3.4.1-2-1-3.5-3.6-3.5-1.9 0-3.2 1-3.2 2.3 0 1.3 1.1 2 2.4 2 1.9 0 3-1.4 3-3.6"/></svg>),
+};
+
 /* Notts Olympic has adopted the policies of Nottinghamshire FA */
 const POLICIES = [
   'FA Safeguarding Children Policy (Youth Teams)',
@@ -73,6 +83,16 @@ const TEAMS = [
   { c:GREEN, t:'juniors', league:'Kids Football League',
     d:'Boys’ and girls’ teams playing through the Kids Football League here at Astro Kings — the pathway to the senior side.' },
 ];
+
+/* a social pill with a real brand icon */
+function SocialLink({ s, className='' }){
+  return (
+    <a href={s.to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${s.label}`} title={s.label}
+       className={`glass grid place-items-center rounded-full text-white/70 transition hover:-translate-y-0.5 hover:bg-white/10 hover:text-white ${className}`}>
+      {SOCIAL_SVG[s.short]}
+    </a>
+  );
+}
 
 /* crest emblem — feathered so its backdrop melts into the page */
 function Crest({ className='' }){
@@ -220,7 +240,7 @@ export function NottsOlympic(){
             { c:GREEN, t:'in the league', d:'Notts Olympic took its place in the Notts Senior League from the 2023/24 season, competing week in, week out.' },
             { c:RED,   t:'a pathway for kids', d:'The Kids Football League runs here too — a route from first kicks all the way to the senior side.' },
           ].map((x,i)=>(
-            <Glass key={i} className="rounded-3xl p-6 fade-up" style={{animationDelay:(i*.06)+'s'}}>
+            <Glass key={i} className="rounded-3xl p-6 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.06)+'s'}}>
               <span className="grid h-11 w-11 place-items-center rounded-2xl" style={{background:x.c+'22',color:x.c}}><span style={{width:20,height:20}}>{I.shield({})}</span></span>
               <div className="mt-4 text-[17px] font-medium lowercase">{x.t}</div>
               <p className="mt-2 text-[14px] leading-relaxed text-white/60">{x.d}</p>
@@ -237,7 +257,7 @@ export function NottsOlympic(){
       <Section eyebrow="who plays" title="our teams">
         <div className="grid gap-4 md:grid-cols-2">
           {TEAMS.map((t,i)=>(
-            <Glass key={t.t} className="rounded-3xl p-7 fade-up" style={{animationDelay:(i*.06)+'s'}}>
+            <Glass key={t.t} className="rounded-3xl p-7 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.06)+'s'}}>
               <div className="flex items-center gap-3">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{background:t.c+'22',color:t.c}}><span style={{width:20,height:20}}>{I.ball({})}</span></span>
                 <div>
@@ -262,7 +282,7 @@ export function NottsOlympic(){
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {SUPPORT.map((s,i)=>(
-            <Glass key={s.t} strong className="flex flex-col rounded-3xl p-6 fade-up" style={{animationDelay:(i*.06)+'s'}}>
+            <Glass key={s.t} strong className="flex flex-col rounded-3xl p-6 transition-transform duration-300 hover:-translate-y-1 fade-up" style={{animationDelay:(i*.06)+'s'}}>
               <span className="grid h-12 w-12 place-items-center rounded-2xl" style={{background:s.c+'22',color:s.c}}><span style={{width:22,height:22}}>{s.ic({})}</span></span>
               <div className="mt-4 text-[17px] font-medium lowercase">{s.t}</div>
               <p className="mt-2 flex-1 text-[14px] leading-relaxed text-white/60">{s.d}</p>
@@ -305,10 +325,7 @@ export function NottsOlympic(){
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2.5">
-            {SOCIALS.map(s=>(
-              <a key={s.short} href={s.to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${s.label}`} title={s.label}
-                 className="glass grid h-11 w-11 place-items-center rounded-full text-[13px] font-medium text-white/75 transition hover:bg-white/10 hover:text-white">{s.short}</a>
-            ))}
+            {SOCIALS.map(s=>(<SocialLink key={s.short} s={s} className="h-11 w-11" />))}
           </div>
         </Glass>
       </Section>
@@ -347,10 +364,7 @@ export function NottsOlympic(){
               ))}
             </div>
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              {SOCIALS.map(s=>(
-                <a key={s.short} href={s.to} target="_blank" rel="noreferrer" aria-label={`Notts Olympic on ${s.label}`} title={s.label}
-                   className="glass grid h-10 w-10 place-items-center rounded-full text-[13px] text-white/70 transition hover:bg-white/10 hover:text-white">{s.short}</a>
-              ))}
+              {SOCIALS.map(s=>(<SocialLink key={s.short} s={s} className="h-10 w-10" />))}
             </div>
           </div>
           <Glass strong className="rounded-[30px] p-7">
