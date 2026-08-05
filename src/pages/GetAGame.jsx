@@ -12,7 +12,8 @@ import { Footer } from '../components/Nav.jsx';
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
 
-/* WhatsApp is the hook — green identity + recognizable glyph */
+/* Social Kicks brand = electric blue; WhatsApp green kept for the group hook */
+const ELECTRIC = '#2F6BFF';
 const GREEN = '#25D366';
 /* TODO: replace with the real Social Kicks WhatsApp invite link */
 const WHATSAPP_URL = 'https://chat.whatsapp.com/';
@@ -47,12 +48,13 @@ export function GetAGame(){
   }
 
   return (
-    <div style={{ '--accent': GREEN, '--accent-2': '#5FE39A' }}>
-      {/* page-scoped WhatsApp-green backdrop */}
+    <div style={{ '--accent': ELECTRIC, '--accent-2': '#7DA8FF' }}>
+      {/* page-scoped electric-blue backdrop (with a WhatsApp-green hint) */}
       <div className="pointer-events-none fixed inset-0" style={{ zIndex:-1, background:
-        'radial-gradient(70% 55% at 15% 2%, rgba(37,211,102,.14), transparent 55%),'+
-        'radial-gradient(80% 60% at 50% 122%, rgba(37,211,102,.09), transparent 60%),'+
-        'linear-gradient(180deg, #07100b 0%, #070b09 55%, #060807 100%)' }}></div>
+        'radial-gradient(70% 55% at 12% 0%, rgba(47,107,255,.20), transparent 55%),'+
+        'radial-gradient(60% 50% at 90% 8%, rgba(37,211,102,.12), transparent 55%),'+
+        'radial-gradient(95% 70% at 50% 122%, rgba(47,107,255,.12), transparent 60%),'+
+        'linear-gradient(180deg, #07111f 0%, #070c14 55%, #05080d 100%)' }}></div>
 
       {/* ---------- hero ---------- */}
       <section className="media-hero relative overflow-hidden">
@@ -62,14 +64,32 @@ export function GetAGame(){
         </video>
         <div className="pointer-events-none absolute inset-0" style={{background:'linear-gradient(180deg, rgba(4,7,10,.55), rgba(4,7,10,.82))'}}></div>
 
-        <div className="relative z-10 mx-auto max-w-5xl px-6 pt-40 pb-24 text-center md:pt-48 md:pb-28">
-          <h1 className="hero-title text-5xl font-semibold leading-[1.05] lowercase md:text-7xl">
-            social kicks —<br/>get a game tonight
+        <div className="relative z-10 mx-auto max-w-5xl px-6 pt-36 pb-24 text-center md:pt-44 md:pb-28">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[.22em] text-white backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full" style={{background:ELECTRIC, boxShadow:`0 0 10px ${ELECTRIC}`}}></span>
+            social kicks · football · friends · every week
+          </span>
+          <h1 className="hero-title mt-5 text-5xl font-semibold leading-[.98] lowercase md:text-7xl">
+            play more.<br/><span style={{color:ELECTRIC}}>meet more.</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/75">Casual pick-up football. Join the WhatsApp group, get invited when a game needs players, turn up and play.</p>
+          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/80">On your own or just a few of you? We’ve weekly pick-up games you can join. Join the WhatsApp group, get the game night invites, turn up and play.</p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" icon={WHATSAPP_ICON} iconEnd={I.arrow({})}>join the whatsapp group</Btn></a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" icon={WHATSAPP_ICON} iconEnd={I.arrow({})} style={{ background:GREEN, color:'#04140b', boxShadow:`0 14px 44px -12px ${GREEN}` }}>join the whatsapp group</Btn></a>
             <a href="#register" onClick={(e)=>{e.preventDefault(); scrollToId('register');}}><Btn kind="outline" size="lg">register for invites</Btn></a>
+          </div>
+
+          {/* the three offers, from the brand */}
+          <div className="mx-auto mt-9 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {[
+              { ic:I.ball, c:ELECTRIC, t:'multiple games each week' },
+              { ic:null,   c:GREEN,    t:'whatsapp group chat', wa:true },
+              { ic:I.cal,  c:ELECTRIC, t:'monthly membership or pay ’n play' },
+            ].map((x,i)=>(
+              <div key={i} className="flex items-center gap-2.5 text-[13.5px] text-white/85">
+                <span className="grid h-8 w-8 place-items-center rounded-full" style={{background:x.c+'22',color:x.c}}><span style={{width:16,height:16}}>{x.wa?WHATSAPP_ICON:x.ic({})}</span></span>
+                {x.t}
+              </div>
+            ))}
           </div>
         </div>
         {/* coral banner divider with the downward notch, mirroring the live site */}
