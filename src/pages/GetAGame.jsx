@@ -3,13 +3,20 @@
 
 import { useState } from 'react';
 import { I } from '../lib/icons.jsx';
+import { scrollToId } from '../lib/router.js';
 import { CONTACT, GETAGAME_VIDEO } from '../lib/data.js';
-import { Glass, Btn, Field, Placeholder } from '../components/ui.jsx';
+import { Glass, Btn, Field } from '../components/ui.jsx';
 import { Turnstile } from '../components/Turnstile.jsx';
 import { Map } from '../components/Map.jsx';
 import { Footer } from '../components/Nav.jsx';
 
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Weekends'];
+
+/* WhatsApp is the hook — green identity + recognizable glyph */
+const GREEN = '#25D366';
+/* TODO: replace with the real Social Kicks WhatsApp invite link */
+const WHATSAPP_URL = 'https://chat.whatsapp.com/';
+const WHATSAPP_ICON = (<svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M17.5 14.4c-.3-.15-1.7-.85-2-.95-.26-.1-.45-.15-.64.15-.19.28-.73.94-.9 1.13-.16.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.85-3.36-.29-.5.29-.46.83-1.54.09-.19.05-.35-.02-.5-.07-.14-.64-1.54-.88-2.11-.23-.55-.47-.48-.64-.49l-.55-.01c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.03 2.76 1.17 2.95c.14.19 2.02 3.08 4.9 4.32.68.29 1.22.47 1.63.6.69.22 1.31.19 1.8.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33zM12 2a10 10 0 0 0-8.6 15.06L2 22l5.06-1.33A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3 .79.8-2.92-.2-.31A8.2 8.2 0 1 1 12 20.2z"/></svg>);
 
 function Check({ on, onClick, children }){
   return (
@@ -40,7 +47,13 @@ export function GetAGame(){
   }
 
   return (
-    <div>
+    <div style={{ '--accent': GREEN, '--accent-2': '#5FE39A' }}>
+      {/* page-scoped WhatsApp-green backdrop */}
+      <div className="pointer-events-none fixed inset-0" style={{ zIndex:-1, background:
+        'radial-gradient(70% 55% at 15% 2%, rgba(37,211,102,.14), transparent 55%),'+
+        'radial-gradient(80% 60% at 50% 122%, rgba(37,211,102,.09), transparent 60%),'+
+        'linear-gradient(180deg, #07100b 0%, #070b09 55%, #060807 100%)' }}></div>
+
       {/* ---------- hero ---------- */}
       <section className="media-hero relative overflow-hidden">
         {/* video background */}
@@ -54,10 +67,10 @@ export function GetAGame(){
             social kicks —<br/>get a game tonight
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/75">Casual pick-up football. Join the WhatsApp group, get invited when a game needs players, turn up and play.</p>
-          {/* TODO: replace with the real Social Kicks WhatsApp invite link */}
-          <a href="https://chat.whatsapp.com/" target="_blank" rel="noreferrer" className="mt-6 inline-block">
-            <Btn kind="primary" iconEnd={I.arrow({})}>join the whatsapp group</Btn>
-          </a>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer"><Btn kind="primary" size="lg" icon={WHATSAPP_ICON} iconEnd={I.arrow({})}>join the whatsapp group</Btn></a>
+            <a href="#register" onClick={(e)=>{e.preventDefault(); scrollToId('register');}}><Btn kind="outline" size="lg">register for invites</Btn></a>
+          </div>
         </div>
         {/* coral banner divider with the downward notch, mirroring the live site */}
         <div className="relative z-10 accent-bg py-5">
@@ -69,7 +82,7 @@ export function GetAGame(){
       </section>
 
       {/* ---------- register ---------- */}
-      <section className="mx-auto mt-20 max-w-6xl px-6">
+      <section id="register" className="mx-auto mt-20 max-w-6xl px-6">
         <div className="grid gap-10 lg:grid-cols-[1fr_440px]">
           {/* concept copy */}
           <div className="max-w-xl">
